@@ -85,5 +85,6 @@ module InstrumentAllTheThings
         expect(current_request).to have_attributes options
       end
     end
+
   end
 end

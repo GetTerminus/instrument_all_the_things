@@ -15,7 +15,14 @@ module InstrumentAllTheThings
         begin_request(payload)
       end
 
-      def complet_rails_action(event)
+      def complete_rails_action(event)
+        complete_request(
+          status: event[:status],
+          runtimes: {
+            view_runtime: event[:view_runtime],
+            db_runtime: event[:db_runtime]
+          }
+        )
       end
 
       def begin_request(controller:, action:, format:, method:, **options)
@@ -25,10 +32,12 @@ module InstrumentAllTheThings
 
       def complete_request(status:, runtimes:, **options)
         request.ingest_settings(status: status, runtimes: runtimes)
+        request.complete_request!
       end
     end
 
     def reset!
+      InstrumentAllTheThings.active_tags -= current_tags
       self.controller = self.action = self.format = self.method =
         self.status = self.runtimes = nil
     end
@@ -37,6 +46,41 @@ module InstrumentAllTheThings
       %i{controller action format method status runtimes}.each do |method|
         self.public_send("#{method}=", settings[method]) if settings.has_key?(method)
       end
+
+      InstrumentAllTheThings.active_tags += current_tags
+    end
+
+    def current_tags
+      return [] unless in_request?
+
+      [
+        "Controller:#{self.controller}",
+        "ControllerAction:#{self.action}",
+        "ControllerFormat:#{self.format}",
+        "ControllerMethod:#{self.method}",
+        "ControllerStatus:#{self.status}",
+      ]
+    end
+
+    def tags
+      InstrumentAllTheThings.active_tags
+    end
+
+    def complete_request!
+      InstrumentAllTheThings.transmitter.increment("controller_action.count", tags: tags)
+
+      self.runtimes ||= {}
+      self.runtimes.each do |type, time|
+        InstrumentAllTheThings.transmitter.timing("controller_action.timings.#{type}", time, tags: tags)
+      end
+
+      InstrumentAllTheThings.transmitter.timing("controller_action.timings.total", self.runtimes.values.compact.inject(&:+), tags: tags)
+
+      reset!
+    end
+
+    def in_request?
+      self.controller
     end
   end
 end
