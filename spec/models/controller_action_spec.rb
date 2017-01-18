@@ -66,7 +66,7 @@ module InstrumentAllTheThings
       let(:options) do
         {
           status: 200,
-          runtimes: {db: 100, view: 100, total: 250}
+          runtimes: {db_runtime: 100, view_runtime: 100}
         }
       end
       before do
@@ -75,12 +75,8 @@ module InstrumentAllTheThings
 
       subject(:complete_action) { ControllerAction.complete_request(options) }
 
-      it "dosn't call reset" do
-        expect(ControllerAction.request).not_to receive(:reset!)
-        complete_action
-      end
-
       it "updates the current request" do
+        allow(current_request).to receive(:reset!).and_return(true)
         complete_action
         expect(current_request).to have_attributes options
       end

@@ -38,6 +38,7 @@ module InstrumentAllTheThings
 
     def reset!
       InstrumentAllTheThings.active_tags -= current_tags
+
       self.controller = self.action = self.format = self.method =
         self.status = self.runtimes = nil
     end
@@ -62,19 +63,20 @@ module InstrumentAllTheThings
       ]
     end
 
-    def tags
-      InstrumentAllTheThings.active_tags
-    end
-
     def complete_request!
-      InstrumentAllTheThings.transmitter.increment("controller_action.count", tags: tags)
+      InstrumentAllTheThings.transmitter.increment("controller_action.count")
 
       self.runtimes ||= {}
       self.runtimes.each do |type, time|
-        InstrumentAllTheThings.transmitter.timing("controller_action.timings.#{type}", time, tags: tags)
+        InstrumentAllTheThings.transmitter.timing("controller_action.timings.#{type}", time)
       end
 
-      InstrumentAllTheThings.transmitter.timing("controller_action.timings.total", self.runtimes.values.compact.inject(&:+), tags: tags)
+      unless self.runtimes.has_key? "total"
+        InstrumentAllTheThings.transmitter.timing(
+          "controller_action.timings.total",
+          self.runtimes.values.compact.inject(&:+)
+        )
+      end
 
       reset!
     end
