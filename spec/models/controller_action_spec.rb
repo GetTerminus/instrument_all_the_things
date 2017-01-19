@@ -58,7 +58,7 @@ module InstrumentAllTheThings
 
       it "updates the request with the passed values" do
         begin_request
-        expect(current_request).to have_attributes options
+        expect(current_request).to have_attributes options.merge(controller: 'omg_controller')
       end
     end
 

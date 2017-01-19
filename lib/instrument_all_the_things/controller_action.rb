@@ -3,7 +3,6 @@ module InstrumentAllTheThings
     attr_accessor :controller, :action, :format, :method, :status, :runtimes
 
     class << self
-
       def request
         @request ||= new
       end
@@ -44,7 +43,9 @@ module InstrumentAllTheThings
     end
 
     def ingest_settings(settings)
-      %i{controller action format method status runtimes}.each do |method|
+      self.controller = InstrumentAllTheThings.normalize_class_name(settings[:controller])
+
+      %i{action format method status runtimes}.each do |method|
         self.public_send("#{method}=", settings[method]) if settings.has_key?(method)
       end
 
@@ -55,16 +56,16 @@ module InstrumentAllTheThings
       return [] unless in_request?
 
       [
-        "Controller:#{self.controller}",
-        "ControllerAction:#{self.action}",
-        "ControllerFormat:#{self.format}",
-        "ControllerMethod:#{self.method}",
-        "ControllerStatus:#{self.status}",
+        "controller:#{self.controller}",
+        "controller_action:#{self.action}",
+        "controller_format:#{self.format}",
+        "controller_method:#{self.method}",
+        "controller_status:#{self.status}",
       ]
     end
 
     def complete_request!
-      InstrumentAllTheThings.transmitter.increment("controller_action.count")
+      InstrumentAllTheThings.transmitter.increment("controller_action.requests.count")
 
       self.runtimes ||= {}
       self.runtimes.each do |type, time|
