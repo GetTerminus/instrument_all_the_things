@@ -22,9 +22,7 @@ module InstrumentAllTheThings
         self.send("_#{meth}_without_instrumentation", *args, &blk)
       end
     rescue => e
-      InstrumentAllTheThings::Exception.register(e)
-      e._instrument_all_the_things = true
-      raise e
+      raise InstrumentAllTheThings::Exception.register(e)
     end
 
     def _naming_for_method(meth)

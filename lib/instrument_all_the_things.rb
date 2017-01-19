@@ -6,7 +6,7 @@ require "instrument_all_the_things/transmission"
 require "instrument_all_the_things/methods"
 require "instrument_all_the_things/sql_query"
 require "instrument_all_the_things/rendered_view"
-require "instrument_all_the_things/exception"
+require "instrument_all_the_things/exception_handler"
 require "instrument_all_the_things/railtie" if defined?(Rails)
 require "instrument_all_the_things/delayed_job" if defined?(Delayed::Job)
 
