@@ -12,10 +12,17 @@ module InstrumentAllTheThings
     def _instrument_method(meth, args, options, &blk)
       InstrumentAllTheThings.with_tags(_tags_for_method(meth)) do
         InstrumentAllTheThings.transmitter.increment("methods.count")
-        InstrumentAllTheThings.transmitter.time("methods.timing") do
-          self.send("_#{meth}_without_instrumentation", *args, &blk)
-        end
+        _run_instrumented_method(meth, args, options, &blk)
       end
+    end
+
+    def _run_instrumented_method(meth, args, options, &blk)
+      InstrumentAllTheThings.transmitter.time("methods.timing") do
+        self.send("_#{meth}_without_instrumentation", *args, &blk)
+      end
+    rescue => e
+      InstrumentAllTheThings::Exception.register(e)
+      raise
     end
 
     def _naming_for_method(meth)
