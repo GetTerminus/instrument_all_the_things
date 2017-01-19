@@ -1,5 +1,7 @@
 module InstrumentAllTheThings
   class ControllerAction
+    include HelperMethods
+
     attr_accessor :controller, :action, :format, :method, :status, :runtimes
 
     class << self
@@ -43,7 +45,7 @@ module InstrumentAllTheThings
     end
 
     def ingest_settings(settings)
-      self.controller = InstrumentAllTheThings.normalize_class_name(settings[:controller])
+      self.controller = normalize_class_name(settings[:controller])
 
       %i{action format method status runtimes}.each do |method|
         self.public_send("#{method}=", settings[method]) if settings.has_key?(method)
@@ -65,15 +67,15 @@ module InstrumentAllTheThings
     end
 
     def complete_request!
-      InstrumentAllTheThings.transmitter.increment("controller_action.requests.count")
+      increment("controller_action.requests.count")
 
       self.runtimes ||= {}
       self.runtimes.each do |type, time|
-        InstrumentAllTheThings.transmitter.timing("controller_action.timings.#{type}", time)
+        timing("controller_action.timings.#{type}", time)
       end
 
       unless self.runtimes.has_key? "total"
-        InstrumentAllTheThings.transmitter.timing(
+        timing(
           "controller_action.timings.total",
           self.runtimes.values.compact.inject(&:+)
         )

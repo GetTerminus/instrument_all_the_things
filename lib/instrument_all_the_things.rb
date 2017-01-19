@@ -1,5 +1,6 @@
 require "set"
 require "instrument_all_the_things/version"
+require "instrument_all_the_things/helper_methods"
 require "instrument_all_the_things/controller_action"
 require "instrument_all_the_things/transmission"
 require "instrument_all_the_things/methods"
@@ -7,6 +8,7 @@ require "instrument_all_the_things/sql_query"
 require "instrument_all_the_things/rendered_view"
 require "instrument_all_the_things/exception"
 require "instrument_all_the_things/railtie" if defined?(Rails)
+require "instrument_all_the_things/delayed_job" if defined?(Delayed::Job)
 
 if defined?(ExceptionNotifier)
   require "exception_notifier/instrument_all_the_things_notifier"

@@ -1,5 +1,6 @@
 module InstrumentAllTheThings
   module SQLQuery
+    include HelperMethods
     class << self
       def record_query(table: nil, action: nil, sql: nil, duration:)
         derived = parse_query(sql) unless table && action
@@ -7,13 +8,13 @@ module InstrumentAllTheThings
         action ||= derived[:action]
 
         tags = [
-          "table:#{InstrumentAllTheThings.normalize_class_name(table)}",
-          "action:#{InstrumentAllTheThings.normalize_class_name(action)}"
+          "table:#{normalize_class_name(table)}",
+          "action:#{normalize_class_name(action)}"
         ]
 
-        InstrumentAllTheThings.with_tags(tags) do
-          InstrumentAllTheThings.transmitter.increment("sql.queries.count")
-          InstrumentAllTheThings.transmitter.timing("sql.queries.timings", duration / 1000.0)
+        with_tags(tags) do
+          increment("sql.queries.count")
+          timing("sql.queries.timings", duration)
         end
       end
 
