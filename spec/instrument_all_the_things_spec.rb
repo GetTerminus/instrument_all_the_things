@@ -16,6 +16,10 @@ describe InstrumentAllTheThings do
   end
 
   describe ".with_tags" do
+    it "returns the block's return value" do
+      expect(InstrumentAllTheThings.with_tags('foo') { 123 }).to eq 123
+    end
+
     it "temporarily adds tags to the active tags" do
       InstrumentAllTheThings.active_tags.clear
       block_run = false
@@ -28,12 +32,30 @@ describe InstrumentAllTheThings do
     end
 
     it "dosn't remove keys that already existed" do
-      InstrumentAllTheThings.active_tags << 'hrm'
-
-      InstrumentAllTheThings.with_tags('hrm', 'bar') do
+      InstrumentAllTheThings.with_tags('hrm') do
+        InstrumentAllTheThings.with_tags('hrm', 'bar') do
+        end
+        expect(InstrumentAllTheThings.active_tags).to include 'hrm'
       end
-
-      expect(InstrumentAllTheThings.active_tags).to include 'hrm'
     end
+
+    it "allow you to exclude exact tags" do
+      InstrumentAllTheThings.with_tags("foo", "foobar") do
+        expect(InstrumentAllTheThings.active_tags).to match_array ["foo", "foobar"]
+        InstrumentAllTheThings.with_tags("dude", "wassup", except: 'foo') do
+          expect(InstrumentAllTheThings.active_tags).to match_array ["dude", "wassup", "foobar"]
+        end
+      end
+    end
+
+    it "allow you to exclude mathcer tags" do
+      InstrumentAllTheThings.with_tags("foo", "omg", "foobar", "yep") do
+        expect(InstrumentAllTheThings.active_tags).to match_array ["foo", "foobar", "omg", "yep"]
+        InstrumentAllTheThings.with_tags("dude", "wassup", except: ['omg', /^foo/]) do
+          expect(InstrumentAllTheThings.active_tags).to match_array ["dude", "wassup", "yep"]
+        end
+      end
+    end
+
   end
 end

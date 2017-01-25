@@ -10,10 +10,20 @@ module InstrumentAllTheThings
       end
     end
 
-    %i{increment time timing}.each do |meth|
+    %i{decrement increment time timing}.each do |meth|
       define_method(meth) do |*args, &blk|
         transmitter.public_send(meth, *args, &blk)
       end
+    end
+
+    def capture_exception(&blk)
+      ExceptionHandler.capture(&blk)
+    end
+
+    def time_block
+      time1 = Time.now
+      yield
+      (Time.now - time1) * 1000
     end
   end
 end

@@ -7,7 +7,10 @@ module InstrumentAllTheThings
     end
 
     def _tags_for_method(meth)
-      ["Method:#{_naming_for_method(meth)}"]
+      [
+        "method:#{_naming_for_method(meth)}",
+        "method_class:#{normalize_class_name(self.class)}"
+      ]
     end
 
     def _instrument_method(meth, args, options, &blk)
@@ -19,17 +22,21 @@ module InstrumentAllTheThings
 
     def _run_instrumented_method(meth, args, options, &blk)
       time("methods.timing") do
-        self.send("_#{meth}_without_instrumentation", *args, &blk)
+        capture_exception do
+          self.send("_#{meth}_without_instrumentation", *args, &blk)
+        end
       end
     rescue => e
       raise InstrumentAllTheThings::Exception.register(e)
     end
 
     def _naming_for_method(meth)
-      "#{normalize_class_name(self.class.to_s)}##{meth}"
+      "##{meth}"
     end
 
     module ClassMethods
+      include HelperMethods
+
       def instrument(options = {})
         @options_for_next_method = options
       end
@@ -45,6 +52,47 @@ module InstrumentAllTheThings
         define_method(meth) do |*args, &blk|
           _instrument_method(meth, args, options, &blk)
         end
+      end
+
+      def singleton_method_added(meth)
+        return unless @options_for_next_method
+
+        options = @options_for_next_method
+        @options_for_next_method = nil
+
+        define_singleton_method("_#{meth}_without_instrumentation", method(meth))
+
+        define_singleton_method(meth) do |*args, &blk|
+          _instrument_method(meth, args, options, &blk)
+        end
+      end
+
+      def _tags_for_method(meth)
+        [
+          "method:#{_naming_for_method(meth)}",
+          "method_class:#{normalize_class_name(self)}"
+        ]
+      end
+
+      def _instrument_method(meth, args, options, &blk)
+        with_tags(_tags_for_method(meth)) do
+          increment("methods.count")
+          _run_instrumented_method(meth, args, options, &blk)
+        end
+      end
+
+      def _run_instrumented_method(meth, args, options, &blk)
+        time("methods.timing") do
+          capture_exception do
+            self.send("_#{meth}_without_instrumentation", *args, &blk)
+          end
+        end
+      rescue => e
+        raise InstrumentAllTheThings::Exception.register(e)
+      end
+
+      def _naming_for_method(meth)
+        ".#{meth}"
       end
     end
   end

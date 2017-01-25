@@ -43,6 +43,14 @@ module InstrumentAllTheThings
       it "identfies an quoted destroy" do
         expect(SQLQuery.parse_query(%Q{DELETE FROM "foobar" WHERE foo = 'bar'})).to eq(table: 'foobar', action: 'delete')
       end
+
+      it "identfies a quoted insert" do
+        expect(SQLQuery.parse_query(%Q{INSERT INTO "delayed_jobs" (foo})).to eq(table: 'delayed_jobs', action: 'insert')
+      end
+
+      it "identfies a unquoted insert" do
+        expect(SQLQuery.parse_query(%Q{INSERT INTO delayed_jobs (foo})).to eq(table: 'delayed_jobs', action: 'insert')
+      end
     end
   end
 end

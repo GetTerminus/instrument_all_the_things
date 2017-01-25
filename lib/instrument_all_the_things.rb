@@ -7,6 +7,7 @@ require "instrument_all_the_things/methods"
 require "instrument_all_the_things/sql_query"
 require "instrument_all_the_things/rendered_view"
 require "instrument_all_the_things/exception_handler"
+require "instrument_all_the_things/backend_job"
 require "instrument_all_the_things/railtie" if defined?(Rails)
 require "instrument_all_the_things/delayed_job" if defined?(Delayed::Job)
 
@@ -27,7 +28,10 @@ module InstrumentAllTheThings
     end
 
     def transmitter
-      @transmitter ||= Transmission.new('localhost', 8125)
+      @transmitter ||= Transmission.new(
+        ENV['DATADOG_HOST'] || 'localhost',
+        ENV['DATADOG_PORT'] || 8125
+      )
     end
 
     def active_tags
@@ -35,11 +39,27 @@ module InstrumentAllTheThings
     end
 
     def with_tags(*tags)
+      options = tags.last.is_a?(Hash) ? tags.pop : {}
       tags = tags.flatten
+
+      return_value = nil
       self.active_tags = self.active_tags.dup.tap do |_|
+
+        self.active_tags.reject! do |t|
+          [*options[:except]].any?{|exclusion| exclusion === t }
+        end
+
         self.active_tags += tags
-        yield if block_given?
+        return_value = yield if block_given?
       end
+
+      return_value
+    end
+
+    def time_block
+      time1 = Time.now
+      yield
+      (Time.now - time1) * 1000
     end
   end
 end

@@ -18,6 +18,7 @@ module InstrumentAllTheThings
       it "increments exceptions.count" do
         expect(InstrumentAllTheThings.transmitter).to receive(:increment)
           .with('exceptions.count', tags: ["exception_class:argument_error"])
+
         ExceptionHandler.register(ex)
       end
     end

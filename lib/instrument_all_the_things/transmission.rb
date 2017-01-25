@@ -10,6 +10,7 @@ module InstrumentAllTheThings
         end
         options[:tags] = options[:tags].to_a.uniq if options[:tags]
         args << options
+        Rails.logger.info "Logging with tags: #{options[:tags].join(',')} args: #{args.inspect}"
         super(*args, &blk)
       end
     end

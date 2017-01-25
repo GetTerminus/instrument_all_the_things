@@ -5,6 +5,13 @@ module InstrumentAllTheThings
     include HelperMethods
 
     class << self
+      def capture(&blk)
+        blk.call
+      rescue => e
+        register(e)
+        raise
+      end
+
       def register(exception)
         return unless exception.is_a?(Exception) && !exception._instrument_all_the_things_reported
 

@@ -63,7 +63,7 @@ module InstrumentAllTheThings
         "controller_format:#{self.format}",
         "controller_method:#{self.method}",
         "controller_status:#{self.status}",
-      ]
+      ].reject{|i| i.split(':', 2).last =~ /\s+/ }
     end
 
     def complete_request!

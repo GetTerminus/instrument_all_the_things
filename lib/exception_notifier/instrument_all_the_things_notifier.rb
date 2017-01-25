@@ -5,7 +5,7 @@ module ExceptionNotifier
       message = ""
 
       send_notice(exception, options, message) do |msg, _|
-        InstrumentAllTheThings::Exception.register(exception)
+        InstrumentAllTheThings::ExceptionHandler.register(exception)
       end
     end
   end
