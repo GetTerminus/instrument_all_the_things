@@ -22,7 +22,9 @@ module InstrumentAllTheThings
 
       ActiveSupport::Notifications.subscribe /render_template.action_view/ do |*args|
         event = ActiveSupport::Notifications::Event.new(*args)
-        InstrumentAllTheThings::RenderedView.record_render(file: event.payload[:identifier].gsub("#{Rails.root}/",''), duration: event.duration)
+        if event.payload[:identifier]
+          InstrumentAllTheThings::RenderedView.record_render(file: event.payload[:identifier].gsub("#{Rails.root}/",''), duration: event.duration)
+        end
       end
     end
   end

@@ -14,6 +14,7 @@ module InstrumentAllTheThings
 
         with_tags(tags_for_job(job, job_klass)) do
           increment("backend_jobs.count")
+          increment("backend_jobs.enqueue.count")
         end
       end
 
@@ -22,6 +23,7 @@ module InstrumentAllTheThings
 
         with_tags(tags_for_job(job, job_klass)) do
           decrement("backend_jobs.count")
+          increment("backend_jobs.completed.count")
           timing("backend_jobs.duration", duration)
         end
       end

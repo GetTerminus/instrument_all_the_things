@@ -10,7 +10,11 @@ module InstrumentAllTheThings
         end
         options[:tags] = options[:tags].to_a.uniq if options[:tags]
         args << options
-        Rails.logger.info "Logging with tags: #{options[:tags].join(',')} args: #{args.inspect}"
+
+        if InstrumentAllTheThings.config.stat_prefix && args.first.is_a?(String)
+          args[0] = "#{InstrumentAllTheThings.config.stat_prefix}.#{args[0]}"
+        end
+
         super(*args, &blk)
       end
     end
