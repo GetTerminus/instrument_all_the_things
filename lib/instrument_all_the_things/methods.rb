@@ -6,15 +6,25 @@ module InstrumentAllTheThings
       other_klass.extend(ClassMethods)
     end
 
-    def _tags_for_method(meth)
+    def _tags_for_method(meth, options, args)
       [
         "method:#{_naming_for_method(meth)}",
         "method_class:#{normalize_class_name(self.class)}"
-      ]
+      ].tap do |arr|
+        if options[:tags].respond_to?(:call)
+          if options[:tags].arity.zero?
+            arr.concat(options[:tags].call)
+          else
+            arr.concat(options[:tags].call(*args))
+          end
+        elsif options[:tags].is_a?(Array)
+          arr.concat(options[:tags])
+        end
+      end
     end
 
     def _instrument_method(meth, args, options, &blk)
-      with_tags(_tags_for_method(meth)) do
+      with_tags(_tags_for_method(meth, options, args)) do
         increment("methods.count")
         _run_instrumented_method(meth, args, options, &blk)
       end
@@ -67,15 +77,25 @@ module InstrumentAllTheThings
         end
       end
 
-      def _tags_for_method(meth)
+      def _tags_for_method(meth, options, args)
         [
           "method:#{_naming_for_method(meth)}",
           "method_class:#{normalize_class_name(self)}"
-        ]
+        ].tap do |arr|
+          if options[:tags].respond_to?(:call)
+            if options[:tags].arity.zero?
+              arr.concat(options[:tags].call)
+            else
+              arr.concat(options[:tags].call(*args))
+            end
+          elsif options[:tags].is_a?(Array)
+            arr.concat(options[:tags])
+          end
+        end
       end
 
       def _instrument_method(meth, args, options, &blk)
-        with_tags(_tags_for_method(meth)) do
+        with_tags(_tags_for_method(meth, options, args)) do
           increment("methods.count")
           _run_instrumented_method(meth, args, options, &blk)
         end

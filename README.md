@@ -38,6 +38,44 @@ class SomeClass
 end
 ```
 
+before any method you want to instrument, you just needto add a call to
+`instrument`
+
+```ruby
+instrument
+def omg
+ # stuff
+end
+
+instrument
+def self.omg
+ # stuff
+end
+```
+
+These methods will be instrumented with some default behaviors. By default it
+count the number of calls, time the total duration, and capture and register
+any exceptions.
+
+By default the following tags are added to any stats call within an
+an instrumented method (and down the stack). `method:METHOD_NAME` and
+`method_class:CLASS_NAME` the method name is the actual method name, pefixed
+with either a `#` or `.` for instance and class method respectivly.
+
+#### Adding more tags
+You can append tags to the instrmentation methods by specifying the tag key
+as either a array of string, or a proc. The proc will be provided with the
+arguments to the method.
+
+```ruby
+instrument tags: ['foo:bar']
+def omg
+end
+
+instrument tags: ->(args) { ["arg1:#{args[1]}"] }
+def omg
+end
+```
 
 ## Development
 

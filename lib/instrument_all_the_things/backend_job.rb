@@ -31,7 +31,8 @@ module InstrumentAllTheThings
 
         with_tags(tags_for_job(job, job_klass)) do
           if expected_start_time
-            timing('backend_jobs.run_time_delay', Time.now - expected_start_time)
+            duration = Time.now - expected_start_time
+            timing('backend_jobs.run_time_delay', duration * 1000)
           end
         end
       end
