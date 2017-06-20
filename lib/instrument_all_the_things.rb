@@ -1,5 +1,6 @@
 require "set"
 require "instrument_all_the_things/version"
+require "instrument_all_the_things/configuration"
 require "instrument_all_the_things/helper_methods"
 require "instrument_all_the_things/controller_action"
 require "instrument_all_the_things/transmission"
@@ -17,7 +18,16 @@ end
 
 module InstrumentAllTheThings
   class << self
-    attr_writer :active_tags
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def configure
+      yield(configuration) if block_given?
+      configuration
+    end
+    alias config configure
+
     def normalize_class_name(word)
       # Thanks ActiveSupport!
       word = word.to_s.gsub(/::/, '-')
@@ -34,8 +44,12 @@ module InstrumentAllTheThings
       )
     end
 
+    def active_tags=(val)
+      Thread.current[:active_tags] = val
+    end
+
     def active_tags
-      @active_tags ||= Set.new
+      Thread.current[:active_tags] ||= Set.new
     end
 
     def with_tags(*tags)

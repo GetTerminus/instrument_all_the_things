@@ -43,6 +43,15 @@ module InstrumentAllTheThings
           expect(instance).to receive(:send_stats).with(anything, anything, anything, a_hash_including(tags: match_array(['bar'])))
           instance.send(meth, 'metric', 1, tags: ['bar'], skip_global_tags: true)
         end
+
+        context "when the stat_prefix is set" do
+          around do |ex|
+            InstrumentAllTheThings.config.stat_prefix = InstrumentAllTheThings.config.stat_prefixInstrumentAllTheThings.config.stat_prefix.tap do |_|
+              InstrumentAllTheThings.config.stat_prefix = 'foobar'
+              ex.run
+            end
+          end
+        end
       end
     end
   end
