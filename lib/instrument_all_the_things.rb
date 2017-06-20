@@ -10,6 +10,11 @@ require "instrument_all_the_things/rendered_view"
 require "instrument_all_the_things/exception_handler"
 require "instrument_all_the_things/backend_job"
 require "instrument_all_the_things/railtie" if defined?(Rails)
+
+begin
+  require 'delayed_jobs'
+rescue LoadError
+end
 require "instrument_all_the_things/delayed_job" if defined?(Delayed::Job)
 
 if defined?(ExceptionNotifier)
