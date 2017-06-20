@@ -6,7 +6,7 @@ module InstrumentAllTheThings
 
     class << self
       def request
-        @request ||= new
+        Thread.current[:iatt_request] ||= new
       end
 
       def begin_rails_action(event)

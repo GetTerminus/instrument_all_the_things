@@ -1,6 +1,7 @@
 module InstrumentAllTheThings
   module BackendJob
     include HelperMethods
+
     class << self
       def tags_for_job(job, klass)
         [
