@@ -13,7 +13,7 @@ module InstrumentAllTheThings
       end
 
       def register(exception)
-        return unless exception.is_a?(Exception) && !exception._instrument_all_the_things_reported
+        return exception unless exception.is_a?(Exception) && !exception._instrument_all_the_things_reported
 
         exception.tap do |ex|
           increment(
