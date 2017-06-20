@@ -36,27 +36,31 @@ describe "Method instumentation" do
   let(:instance) { klass.new }
 
   it 'provides basic instrumetation' do
-    expect(instance).to receive(:_instrument_method)
-      .with(:foo, [], anything).and_call_original
+    expect(
+      InstrumentAllTheThings.transmitter
+    ).to receive(:increment).with("methods.count")
+
     expect(instance.foo).to eq 123
   end
 
   it "provides basic instrumentation at the class level" do
-    expect(klass).to receive(:_instrument_method)
-      .with(:bar, [], anything).and_call_original
+    expect(
+      InstrumentAllTheThings.transmitter
+    ).to receive(:increment).with("methods.count")
+
     expect(klass.bar).to eq 456
   end
 
   context "exceptions" do
     it 'reraises instance errors' do
-      expect(instance).to receive(:_instrument_method)
-        .with(:foo, [], anything).and_raise('Hi there')
+      expect(instance).to receive(:_foo_without_instrumentation)
+        .and_raise('Hi there')
       expect{ instance.foo }.to raise_error('Hi there')
     end
 
     it "provides basic instrumentation at the class level" do
-      expect(klass).to receive(:_instrument_method)
-        .with(:bar, [], anything).and_raise('dude')
+      expect(klass).to receive(:_bar_without_instrumentation)
+        .and_raise('dude')
       expect{ klass.bar }.to raise_error('dude')
     end
 
@@ -64,21 +68,21 @@ describe "Method instumentation" do
 
   context "tagging" do
     it "allows an array of tags" do
-      expect(instance).to receive(:with_tags).
+      expect(klass._instrumentors['#foo']).to receive(:with_tags).
         with(array_including(['foo:bar']))
 
       instance.foo
     end
 
     it "allows a proc to provide tags" do
-      expect(instance).to receive(:with_tags).
+      expect(klass._instrumentors['#hrm']).to receive(:with_tags).
         with(array_including(['magic:mike']))
 
       instance.hrm(15)
     end
 
     it "allows a proc to provide tags" do
-      expect(instance).to receive(:with_tags).
+      expect(klass._instrumentors['#dude']).to receive(:with_tags).
         with(array_including(['magic:3']))
 
       instance.dude(15)
@@ -86,14 +90,14 @@ describe "Method instumentation" do
 
     context "class based instrumentation" do
       it "allows an array of tags" do
-        expect(klass).to receive(:with_tags).
+        expect(klass._instrumentors['.bar']).to receive(:with_tags).
           with(array_including(['foo:bar']))
 
         klass.bar
       end
 
       it "allows a proc to provide tags" do
-        expect(klass).to receive(:with_tags).
+        expect(klass._instrumentors['.nitch']).to receive(:with_tags).
           with(array_including(['magic:mike']))
 
         klass.nitch(15)
@@ -101,7 +105,7 @@ describe "Method instumentation" do
 
 
       it "allows a proc to provide tags" do
-        expect(klass).to receive(:with_tags).
+        expect(klass._instrumentors['.baz']).to receive(:with_tags).
           with(array_including(['magic:3']))
 
         klass.baz(15)
