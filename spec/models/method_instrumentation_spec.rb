@@ -7,6 +7,7 @@ describe "Method instumentation" do
 
       instrument tags: ['foo:bar']
       def foo
+        123
       end
 
       instrument tags: ->(*args) { ["magic:#{args[0]/5}"] }
@@ -19,6 +20,7 @@ describe "Method instumentation" do
 
       instrument tags: ['foo:bar']
       def self.bar
+        456
       end
 
       instrument tags: ->() { ["magic:mike"] }
@@ -34,13 +36,30 @@ describe "Method instumentation" do
   let(:instance) { klass.new }
 
   it 'provides basic instrumetation' do
-    expect(instance).to receive(:_instrument_method).with(:foo, [], anything)
-    instance.foo
+    expect(instance).to receive(:_instrument_method)
+      .with(:foo, [], anything).and_call_original
+    expect(instance.foo).to eq 123
   end
 
   it "provides basic instrumentation at the class level" do
-    expect(klass).to receive(:_instrument_method).with(:bar, [], anything)
-    klass.bar
+    expect(klass).to receive(:_instrument_method)
+      .with(:bar, [], anything).and_call_original
+    expect(klass.bar).to eq 456
+  end
+
+  context "exceptions" do
+    it 'reraises instance errors' do
+      expect(instance).to receive(:_instrument_method)
+        .with(:foo, [], anything).and_raise('Hi there')
+      expect{ instance.foo }.to raise_error('Hi there')
+    end
+
+    it "provides basic instrumentation at the class level" do
+      expect(klass).to receive(:_instrument_method)
+        .with(:bar, [], anything).and_raise('dude')
+      expect{ klass.bar }.to raise_error('dude')
+    end
+
   end
 
   context "tagging" do
