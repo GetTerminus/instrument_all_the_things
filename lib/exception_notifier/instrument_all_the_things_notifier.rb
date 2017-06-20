@@ -1,4 +1,6 @@
 require 'exception_notifier'
+
+#TODO Add version check 4.2 or greater
 module ExceptionNotifier
   class InstrumentAllTheThingsNotifier < BaseNotifier
     def call(exception, options = {})

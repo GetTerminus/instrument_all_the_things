@@ -22,7 +22,22 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Configuration
+Two ENV variables are required to connect InstrumentAllTheThings with DataDog.
+
+1. `DATADOG_HOST` - defaults to localhost
+2. `DATADOG_PORT` - defaults to 8125
+
+### Usage in application code
+Within your application code, the `InstrumentAllTheThings::HelperMethods` moddule
+can be included to provide some helper methods.
+
+```ruby
+class SomeClass
+  include InstrumentAllTheThings::HelperMethods
+end
+```
+
 
 ## Development
 

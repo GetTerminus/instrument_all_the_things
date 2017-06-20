@@ -50,11 +50,11 @@ module InstrumentAllTheThings
     end
 
     def active_tags=(val)
-      Thread.current[:active_tags] = val
+      Thread.current[:iatt_active_tags] = val
     end
 
     def active_tags
-      Thread.current[:active_tags] ||= Set.new
+      Thread.current[:iatt_active_tags] ||= Set.new
     end
 
     def with_tags(*tags)
