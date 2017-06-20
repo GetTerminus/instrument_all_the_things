@@ -4,10 +4,17 @@ module InstrumentAllTheThings
 
     class << self
       def tags_for_job(job, klass)
-        [
-          "backend_job_class:#{normalize_class_name(klass)}",
-          ("backend_job_queue:#{job.queue || "UNKNOWN"}" if job.respond_to?(:queue))
-        ].compact
+        [ "backend_job_class:#{normalize_class_name(klass)}" ].tap do |arr|
+          if queue = queue_name(job, klass)
+            arr << "backend_job_queue:#{queue}"
+          end
+        end
+      end
+
+      def queue_name(job, klass)
+        if job.respond_to?(:queue) && job.queue && !(job.queue =~ /\A\s*\Z/)
+          job.queue
+        end || 'UNKNOWN'
       end
 
       def enqueue(job:, job_klass: nil)
@@ -16,6 +23,16 @@ module InstrumentAllTheThings
         with_tags(tags_for_job(job, job_klass)) do
           increment("backend_jobs.count")
           increment("backend_jobs.enqueue.count")
+        end
+      end
+
+      def start(job: , job_klass: nil, expected_start_time: nil)
+        job_klass ||= job.class
+
+        with_tags(tags_for_job(job, job_klass)) do
+          if expected_start_time
+            timing('backend_jobs.run_time_delay', Time.now - expected_start_time)
+          end
         end
       end
 

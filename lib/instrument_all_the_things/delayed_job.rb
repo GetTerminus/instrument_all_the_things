@@ -22,11 +22,19 @@ module InstrumentAllTheThings
       lifecycle.around(:perform) do |_, job, *args, &blk|
         return unless valid_for_plugin?(job)
 
+        BackendJob.start(
+          base_job_keys(job).merge(expected_start_time: job.run_at)
+        )
+
         time = time_block do
           blk.call(job, *args)
         end
 
-        BackendJob.completed(base_job_keys(job).merge(duration: time))
+        BackendJob.completed(
+          base_job_keys(job).merge(
+            duration: time
+          )
+        )
       end
 
       lifecycle.after(:error) do |_, job, *args|
