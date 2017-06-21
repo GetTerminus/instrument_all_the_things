@@ -38,7 +38,52 @@ class SomeClass
 end
 ```
 
-before any method you want to instrument, you just needto add a call to
+### Instrumentation Helpers
+The helpers provided by the HelperMethods module
+
+#### with_tags(*tags, options = {}, &blk)
+Any instrumentation method with that block will have those tags appended to it.
+
+Options:
+* `except` - an array of strings or regex of active tags to remove from the active tag list
+
+__Example__
+```ruby
+InstrumentAllTheThings.active_tags += ['foo:bar']
+
+class Foo
+  include InstrumentAllTheThings::HelperMethods
+
+  def foo
+    with_tags('omg:wassup', 'dude:car?') do
+      # Tags are now foo:bar, omg:wassup, dude:car?
+      with_tags('baz:nitch', except: [/\Adude:.*/]) do
+        # Tags are now foo:bar, omg:wassup, baz:nitch
+        with_tags(except: [/\Aomg:.*/]) do
+          # Tags are now foo:bar, baz:nitch
+        end
+        # Tags are back to foo:bar, omg:wassup, baz:nitch
+      end
+      # Tags are now back to foo:bar, omg:wassup, dude:car?
+    end
+  end
+end
+```
+
+#### increment(stat, options = {})
+Wrapper for [Datadog::Statsd#increment](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:increment)
+
+#### decrement(stat, options = {})
+Wrapper for [Datadog::Statsd#decrement](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:decrement)
+
+#### time(stat, options = {}, &blk)
+Wrapper for [Datadog::Statsd#time](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:time)
+
+#### timing(stat, options = {}, &blk)
+Wrapper for [Datadog::Statsd#timing](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:timing)
+
+### Method Instrumentation
+Before any method you want to instrument, you just needto add a call to
 `instrument`
 
 ```ruby
