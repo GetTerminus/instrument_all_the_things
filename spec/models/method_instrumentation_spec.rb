@@ -61,7 +61,7 @@ describe "Method instumentation" do
       expect{
         instance.foo
       }.to change {
-        get_counter('foo.bar.baz.counts').total
+        get_counter('foo.bar.baz.count').total
       }.from(nil).to(1)
       .and change {
         get_timings('foo.bar.baz.timing').total
@@ -69,12 +69,13 @@ describe "Method instumentation" do
     end
 
     it "registers the exception with the same name" do
-      allow(instance).to receive(:foo).and_raise "Omg Error!"
+      allow(instance).to receive(:_foo_without_instrumentation)
+        .and_raise "Omg Error!"
 
       expect{
         instance.foo rescue nil
       }.to change{
-        get_counter('foo.bar.baz.exceptions').total
+        get_counter('foo.bar.baz.exceptions.count').total
       }.from(nil).to(1)
     end
   end

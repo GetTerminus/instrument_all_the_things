@@ -5,10 +5,10 @@ module InstrumentAllTheThings
     include HelperMethods
 
     class << self
-      def capture(&blk)
+      def capture(options = {}, &blk)
         blk.call
       rescue => e
-        register(e)
+        register(e, options)
         raise
       end
 
