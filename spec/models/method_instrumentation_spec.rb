@@ -36,79 +36,83 @@ describe "Method instumentation" do
   let(:instance) { klass.new }
 
   it 'provides basic instrumetation' do
-    expect(
-      InstrumentAllTheThings.transmitter
-    ).to receive(:increment).with("methods.count")
-
     expect(instance.foo).to eq 123
+
+    expect(get_counter('methods.count').total).to eq 1
   end
 
   it "provides basic instrumentation at the class level" do
-    expect(
-      InstrumentAllTheThings.transmitter
-    ).to receive(:increment).with("methods.count")
-
     expect(klass.bar).to eq 456
+    expect(get_counter('methods.count').total).to eq 1
   end
 
   context "exceptions" do
     it 'reraises instance errors' do
       expect(instance).to receive(:_foo_without_instrumentation)
         .and_raise('Hi there')
+
       expect{ instance.foo }.to raise_error('Hi there')
+      expect(get_counter('exceptions.count').total).to eq 1
     end
 
     it "provides basic instrumentation at the class level" do
       expect(klass).to receive(:_bar_without_instrumentation)
         .and_raise('dude')
       expect{ klass.bar }.to raise_error('dude')
+      expect(get_counter('exceptions.count').total).to eq 1
     end
 
   end
 
   context "tagging" do
     it "allows an array of tags" do
-      expect(klass._instrumentors['#foo']).to receive(:with_tags).
-        with(array_including(['foo:bar']))
-
-      instance.foo
+      expect {
+        instance.foo
+      }.to change {
+        get_counter('methods.count').with_tags('foo:bar').total
+      }.from(nil).to(1)
     end
 
     it "allows a proc to provide tags" do
-      expect(klass._instrumentors['#hrm']).to receive(:with_tags).
-        with(array_including(['magic:mike']))
-
-      instance.hrm(15)
+      expect {
+        instance.hrm(15)
+      }.to change {
+        get_counter('methods.count').with_tags('magic:mike').total
+      }.from(nil).to(1)
     end
 
     it "allows a proc to provide tags" do
-      expect(klass._instrumentors['#dude']).to receive(:with_tags).
-        with(array_including(['magic:3']))
-
-      instance.dude(15)
+      expect {
+        instance.dude(15)
+      }.to change {
+        get_counter('methods.count').with_tags('magic:3').total
+      }.from(nil).to(1)
     end
 
     context "class based instrumentation" do
       it "allows an array of tags" do
-        expect(klass._instrumentors['.bar']).to receive(:with_tags).
-          with(array_including(['foo:bar']))
-
-        klass.bar
+        expect {
+          klass.bar
+        }.to change {
+          get_counter("methods.count").with_tags('foo:bar').total
+        }.from(nil).to(1)
       end
 
       it "allows a proc to provide tags" do
-        expect(klass._instrumentors['.nitch']).to receive(:with_tags).
-          with(array_including(['magic:mike']))
-
-        klass.nitch(15)
+        expect {
+          klass.nitch(15)
+        }.to change {
+          get_counter("methods.count").with_tags('magic:mike').total
+        }.from(nil).to(1)
       end
 
 
       it "allows a proc to provide tags" do
-        expect(klass._instrumentors['.baz']).to receive(:with_tags).
-          with(array_including(['magic:3']))
-
-        klass.baz(15)
+        expect {
+          klass.baz(15)
+        }.to change {
+          get_counter("methods.count").with_tags('magic:3').total
+        }.from(nil).to(1)
       end
     end
   end
