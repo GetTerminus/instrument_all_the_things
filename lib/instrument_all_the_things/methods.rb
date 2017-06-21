@@ -23,16 +23,20 @@ module InstrumentAllTheThings
         [
           "method:#{_naming_for_method(meth)}",
           "method_class:#{normalize_class_name(self.klass.class)}"
-        ].tap do |arr|
-          if options[:tags].respond_to?(:call)
-            if options[:tags].arity.zero?
-              arr.concat(options[:tags].call)
-            else
-              arr.concat(options[:tags].call(*args))
-            end
-          elsif options[:tags].is_a?(Array)
-            arr.concat(options[:tags])
+        ].concat(user_defined_tags(args))
+      end
+
+      def user_defined_tags(args)
+        if options[:tags].respond_to?(:call)
+          if options[:tags].arity.zero?
+            options[:tags].call
+          else
+            options[:tags].call(*args)
           end
+        elsif options[:tags].is_a?(Array)
+          options[:tags]
+        else
+          []
         end
       end
 
