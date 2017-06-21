@@ -2,6 +2,8 @@ require 'datadog/statsd'
 module InstrumentAllTheThings
   class Transmission < Datadog::Statsd
     %i{count gauge histogram set time timing}.each do |meth|
+      alias_method "_original_#{meth}", meth
+
       define_method(meth) do |*args, &blk|
         options = args.last.is_a?(Hash) ? args.pop : {}
         unless options.delete :skip_global_tags
@@ -15,7 +17,7 @@ module InstrumentAllTheThings
           args[0] = "#{InstrumentAllTheThings.config.stat_prefix}.#{args[0]}"
         end
 
-        super(*args, &blk)
+        send("_original_#{meth}", *args, &blk)
       end
     end
   end

@@ -107,11 +107,15 @@ an instrumented method (and down the stack). `method:METHOD_NAME` and
 `method_class:CLASS_NAME` the method name is the actual method name, pefixed
 with either a `#` or `.` for instance and class method respectivly.
 
+#### Output Instrumentation
+By default every method produces a `methods.count` and `methods.timing`
+
 #### Adding more tags
 You can append tags to the instrmentation methods by specifying the tag key
 as either a array of string, or a proc. The proc will be provided with the
 arguments to the method.
 
+__Example__
 ```ruby
 instrument tags: ['foo:bar']
 def omg
@@ -119,8 +123,33 @@ end
 
 instrument tags: ->(args) { ["arg1:#{args[1]}"] }
 def omg
+  increment('omg.count')
 end
 ```
+
+Note: Any instrumentation call that occurrs within the method will have the
+tags method's tags applied to it. See the docs for `with_tags`
+
+### Testing Support
+IATT comes with some helpers to make testing a little easier for RSpec. If you
+incldue the module, outbound messages will be intercepted at the transmitter.
+
+First you need to require the helpers in your `spec_helper.rb` with
+`require 'instrument_all_the_things/testing/setup'`. This will install the
+interceptor, and if RSpec is already required it will add a before filter to
+clear the stored metrics on each test.
+
+During a test you can get access to the counters and filtering them using a few
+helpers.
+
+* __get_counter(counter_name)__ - gets an object with all calls to a counter with a given name
+
+#### Working with stats
+The following methods can be used to filter or total the stats that have been
+transmitted. Each method modifies the object in-place
+* __with_tags(*tag_filters)__ - only takes stats that match ALL of the tag
+  filters. Each tag filter can be a string for an exact match, or a regular
+  expression.
 
 ## Development
 
