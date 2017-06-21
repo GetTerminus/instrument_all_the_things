@@ -1,9 +1,5 @@
 # InstrumentAllTheThings
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/instrument_all_the_things`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -29,7 +25,7 @@ Two ENV variables are required to connect InstrumentAllTheThings with DataDog.
 2. `DATADOG_PORT` - defaults to 8125
 
 ### Usage in application code
-Within your application code, the `InstrumentAllTheThings::HelperMethods` moddule
+Within your application code, the `InstrumentAllTheThings::HelperMethods` module
 can be included to provide some helper methods.
 
 ```ruby
@@ -96,7 +92,7 @@ Wrapper for [Datadog::Statsd#time](http://www.rubydoc.info/github/DataDog/dogsta
 Wrapper for [Datadog::Statsd#timing](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:timing)
 
 ### Method Instrumentation
-Before any method you want to instrument, you just needto add a call to
+Before any method you want to instrument, you just need to add a call to
 `instrument`
 
 ```ruby
@@ -112,10 +108,10 @@ end
 ```
 
 These methods will be instrumented with some default behaviors. By default it
-count the number of calls, time the total duration, and capture and register
+counts the number of calls, times the total duration, and captures and registers
 any exceptions.
 
-By default the following tags are added to any stats call within an
+By default the following tags are added to any stats call within
 an instrumented method (and down the stack). `method:METHOD_NAME` and
 `method_class:CLASS_NAME` the method name is the actual method name, pefixed
 with either a `#` or `.` for instance and class method respectivly.
@@ -152,10 +148,10 @@ def omg
 end
 ```
 
-Note: Any instrumentation call that occurrs within the method will have the
+Note: Any instrumentation call that occurs within the method will have the
 tags method's tags applied to it. See the docs for `with_tags`
 
-#### Exceptoins
+#### Exceptions
 If an exception is raised within a method that is instrumented it will be
 recorded in `exceptions.count` with all of the method tags defined for that
 method. If a custom name is provided via `:as` it will be regsitered as
@@ -163,7 +159,7 @@ method. If a custom name is provided via `:as` it will be regsitered as
 
 ### Testing Support
 IATT comes with some helpers to make testing a little easier for RSpec. If you
-incldue the module, outbound messages will be intercepted at the transmitter.
+include the module, outbound messages will be intercepted at the transmitter.
 
 First you need to require the helpers in your `spec_helper.rb` with
 `require 'instrument_all_the_things/testing/setup'`. This will install the
@@ -173,7 +169,7 @@ clear the stored metrics on each test. You should also add
 config to enable the helpers below.
 
 
-During a test you can get access to the counters and filtering them using a few
+During a test you can get access to the counters and filter them using a few
 helpers.
 
 * __get_counter(counter_name)__ - gets an object with all calls to a counter with a given name
