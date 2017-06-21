@@ -108,7 +108,19 @@ an instrumented method (and down the stack). `method:METHOD_NAME` and
 with either a `#` or `.` for instance and class method respectivly.
 
 #### Output Instrumentation
-By default every method produces a `methods.count` and `methods.timing`
+By default every method produces a `methods.count` and `methods.timing`. If you
+would like to provide a custom naming scheme, you can specify the `:as` option.
+
+__Example__
+```ruby
+instrument as: 'foo.bar.baz'
+def foo
+end
+```
+
+All calls to `foo` will be instrumented as `foo.bar.baz.count` and
+`foo.bar.baz.timing`.
+
 
 #### Adding more tags
 You can append tags to the instrmentation methods by specifying the tag key
@@ -129,6 +141,12 @@ end
 
 Note: Any instrumentation call that occurrs within the method will have the
 tags method's tags applied to it. See the docs for `with_tags`
+
+#### Exceptoins
+If an exception is raised within a method that is instrumented it will be
+recorded in `exceptions.count` with all of the method tags defined for that
+method. If a custom name is provided via `:as` it will be regsitered as
+`custom.name.exceptions.count`
 
 ### Testing Support
 IATT comes with some helpers to make testing a little easier for RSpec. If you

@@ -16,8 +16,8 @@ module InstrumentAllTheThings
       end
     end
 
-    def capture_exception(&blk)
-      ExceptionHandler.capture(&blk)
+    def capture_exception(*args, &blk)
+      ExceptionHandler.capture(*args, &blk)
     end
 
     def time_block
