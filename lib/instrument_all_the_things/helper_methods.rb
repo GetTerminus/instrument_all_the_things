@@ -18,6 +18,7 @@ module InstrumentAllTheThings
       guage
       histogram
       set
+      count
     }.each do |meth|
       define_method(meth) do |*args, &blk|
         transmitter.public_send(meth, *args, &blk)
