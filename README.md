@@ -91,7 +91,22 @@ Wrapper for [Datadog::Statsd#time](http://www.rubydoc.info/github/DataDog/dogsta
 #### timing(stat, options = {}, &blk)
 Wrapper for [Datadog::Statsd#timing](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:timing)
 
-### Method Instrumentation
+#### guage(stat, value, options = {})
+Wrapper for [Datadog::Statsd#guage](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:gauge)
+
+#### histogram(stat,value, options = {})
+Wrapper for [Datadog::Statsd#histogram](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:histogram)
+
+#### set(stat,value, options = {})
+Wrapper for [Datadog::Statsd#set](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:set)
+
+#### count(stat,value, options = {})
+Wrapper for [Datadog::Statsd#count](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:count)
+
+#### event(title, text, options = {})
+Wrapper for [Datadog::Statsd#event](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:event)
+
+[[###]] Method Instrumentation
 Before any method you want to instrument, you just need to add a call to
 `instrument`
 
