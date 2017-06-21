@@ -6,6 +6,8 @@ SimpleCov.start do
 end
 
 require 'instrument_all_the_things'
+require 'instrument_all_the_things/testing/setup'
+require 'instrument_all_the_things/testing/aggregators'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -30,6 +32,8 @@ RSpec.configure do |config|
     # `true` in RSpec 4.
     mocks.verify_partial_doubles = true
   end
+
+  config.include InstrumentAllTheThings::Testing::Aggregators
 
   config.after :each do
     InstrumentAllTheThings::ControllerAction.instance_variable_set(:@request, nil)
