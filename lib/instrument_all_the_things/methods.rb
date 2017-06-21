@@ -14,7 +14,7 @@ module InstrumentAllTheThings
 
       def call(context, args, &blk)
         with_tags(tags_for_method(args)) do
-          increment("methods.count")
+          increment("#{instrumentation_key}.count")
           _run_instrumented_method(context, args, &blk)
         end
       end
@@ -41,13 +41,17 @@ module InstrumentAllTheThings
       end
 
       def _run_instrumented_method(context, args, &blk)
-        time("methods.timing") do
-          capture_exception do
+        time("#{instrumentation_key}.timing") do
+          capture_exception(as: options[:as]) do
             context.send("_#{meth}_without_instrumentation", *args, &blk)
           end
         end
       rescue => e
         raise InstrumentAllTheThings::ExceptionHandler.register(e)
+      end
+
+      def instrumentation_key
+        options[:as] || 'methods'
       end
 
       def _naming_for_method(meth)

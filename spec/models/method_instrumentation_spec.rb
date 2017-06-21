@@ -46,6 +46,39 @@ describe "Method instumentation" do
     expect(get_counter('methods.count').total).to eq 1
   end
 
+  context "renaming exceptions" do
+    let(:klass) do
+      Class.new do
+        include InstrumentAllTheThings::Methods
+
+        instrument as: 'foo.bar.baz'
+        def foo
+        end
+      end
+    end
+
+    it "allows a the instrumentation output string to be specified" do
+      expect{
+        instance.foo
+      }.to change {
+        get_counter('foo.bar.baz.counts').total
+      }.from(nil).to(1)
+      .and change {
+        get_timings('foo.bar.baz.timing').total
+      }.from(nil)
+    end
+
+    it "registers the exception with the same name" do
+      allow(instance).to receive(:foo).and_raise "Omg Error!"
+
+      expect{
+        instance.foo rescue nil
+      }.to change{
+        get_counter('foo.bar.baz.exceptions').total
+      }.from(nil).to(1)
+    end
+  end
+
   context "exceptions" do
     it 'reraises instance errors' do
       expect(instance).to receive(:_foo_without_instrumentation)

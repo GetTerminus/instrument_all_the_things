@@ -16,10 +16,25 @@ module InstrumentAllTheThings
       end
 
       it "increments exceptions.count" do
-        expect(InstrumentAllTheThings.transmitter).to receive(:increment)
-          .with('exceptions.count', tags: ["exception_class:argument_error"])
+        expect {
+          ExceptionHandler.register(ex)
+        }.to change {
+          get_counter('exceptions.count')
+            .with_tags("exception_class:argument_error").total
+        }.from(nil).to(1)
+      end
 
-        ExceptionHandler.register(ex)
+      it "allows a custom name to be sent" do
+        expect {
+          ExceptionHandler.register(ex, as: 'foo.bar')
+        }.to change {
+          get_counter('exceptions.count')
+            .with_tags("exception_class:argument_error").total
+        }.from(nil).to(1)
+        .and change {
+          get_counter('foo.bar.exceptions.count')
+            .with_tags("exception_class:argument_error").total
+        }.from(nil).to(1)
       end
     end
   end
