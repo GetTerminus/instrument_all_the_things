@@ -35,6 +35,19 @@ can be included to provide some helper methods.
 ```ruby
 class SomeClass
   include InstrumentAllTheThings::HelperMethods
+
+  instrument
+  def foo
+     increment('thing.in.progress')
+     time('time.me') do
+       # Do more work
+     end
+     decrement('thing.in.progress')
+  end
+
+  def bar
+    decrement('dowacky') # instrumentation of the entire method is not required
+  end
 end
 ```
 
@@ -114,11 +127,11 @@ would like to provide a custom naming scheme, you can specify the `:as` option.
 __Example__
 ```ruby
 instrument as: 'foo.bar.baz'
-def foo
+def omg
 end
 ```
 
-All calls to `foo` will be instrumented as `foo.bar.baz.count` and
+All calls to `omg` will be instrumented as `foo.bar.baz.count` and
 `foo.bar.baz.timing`.
 
 
