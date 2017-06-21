@@ -10,7 +10,15 @@ module InstrumentAllTheThings
       end
     end
 
-    %i{decrement increment time timing}.each do |meth|
+    %i{
+      decrement
+      increment
+      time
+      timing
+      guage
+      histogram
+      set
+    }.each do |meth|
       define_method(meth) do |*args, &blk|
         transmitter.public_send(meth, *args, &blk)
       end
