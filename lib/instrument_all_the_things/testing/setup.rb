@@ -14,12 +14,20 @@ module InstrumentAllTheThings
       self.timings = Hash.new{|h,k| h[k] = [] }
     end
 
+    alias _original_count_old _original_count
     def _original_count(stat, change, options = {})
       self.counts[stat] << { value: change, tags: options[:tags] || [] }
+      _original_count_old(stat, change, options)
     end
 
+    alias _original_timing_old _original_timing
     def _original_timing(stat, ms, options = {})
       self.timings[stat] << { value: ms, tags: options[:tags] || [] }
+      _original_timing_old(stat, ms, options)
+    end
+
+    def send_stats(*_)
+      # Don't do anything
     end
   end
 end
