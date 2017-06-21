@@ -106,7 +106,7 @@ Wrapper for [Datadog::Statsd#count](http://www.rubydoc.info/github/DataDog/dogst
 #### event(title, text, options = {})
 Wrapper for [Datadog::Statsd#event](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:event)
 
-[[###]] Method Instrumentation
+### Method Instrumentation
 Before any method you want to instrument, you just need to add a call to
 `instrument`
 
