@@ -21,13 +21,15 @@ module InstrumentAllTheThings
         BackendJob.enqueue(base_job_keys(job)) if valid_for_plugin?(job)
       end
 
-      lifecycle.around(:perform) do |_, job, *args, &blk|
+      lifecycle.around(:perform) do |worker, job, *args, &blk|
         if valid_for_plugin?(job)
           BackendJob.start(
             base_job_keys(job).merge(expected_start_time: job.run_at)
           ) do
-            blk.call(job, *args)
+            blk.call(worker, job, *args, &blk)
           end
+        else
+          blk.call(worker, job, *args, &blk
         end
       end
 
