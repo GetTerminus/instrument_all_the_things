@@ -22,7 +22,7 @@ module InstrumentAllTheThings
       def tags_for_method(args)
         [
           "method:#{_naming_for_method(meth)}",
-          "method_class:#{normalize_class_name(self.klass.class)}"
+          "method_class:#{normalize_class_name(self.klass)}"
         ].concat(user_defined_tags(args))
       end
 
