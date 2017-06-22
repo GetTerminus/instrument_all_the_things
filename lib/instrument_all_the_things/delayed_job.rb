@@ -18,30 +18,30 @@ module InstrumentAllTheThings
 
     callbacks do |lifecycle|
       lifecycle.after(:enqueue) do |job, *_|
-        return unless valid_for_plugin?(job)
-        BackendJob.enqueue(base_job_keys(job))
+        BackendJob.enqueue(base_job_keys(job)) if valid_for_plugin?(job)
       end
 
       lifecycle.around(:perform) do |_, job, *args, &blk|
-        return unless valid_for_plugin?(job)
-
-        BackendJob.start(
-          base_job_keys(job).merge(expected_start_time: job.run_at)
-        ) do
-          blk.call(job, *args)
+        if valid_for_plugin?(job)
+          BackendJob.start(
+            base_job_keys(job).merge(expected_start_time: job.run_at)
+          ) do
+            blk.call(job, *args)
+          end
         end
       end
 
       lifecycle.after(:error) do |_, job, *args|
-        return unless valid_for_plugin?(job)
-        BackendJob.error(base_job_keys(job).merge(exception: job.error))
+        if valid_for_plugin?(job)
+          BackendJob.error(base_job_keys(job).merge(exception: job.error))
+        end
       end
 
       lifecycle.after(:failure) do |_, job|
-        return unless valid_for_plugin?(job)
-        BackendJob.error(base_job_keys(job).merge(log_error: false, final: true))
+        if valid_for_plugin?(job)
+          BackendJob.error(base_job_keys(job).merge(log_error: false, final: true))
+        end
       end
-
     end
   end
 
