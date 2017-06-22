@@ -108,7 +108,7 @@ Wrapper for [Datadog::Statsd#event](http://www.rubydoc.info/github/DataDog/dogst
 
 ### Method Instrumentation
 Before any method you want to instrument, you just need to add a call to
-`instrument`
+`instrument` in any class which includes `InstrumentAllTheThings::Methods`
 
 ```ruby
 instrument
