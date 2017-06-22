@@ -29,7 +29,7 @@ module InstrumentAllTheThings
             blk.call(worker, job, *args, &blk)
           end
         else
-          blk.call(worker, job, *args, &blk
+          blk.call(worker, job, *args, &blk)
         end
       end
 
