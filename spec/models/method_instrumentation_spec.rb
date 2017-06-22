@@ -44,7 +44,7 @@ describe "Method instumentation" do
   it "provides basic instrumentation at the class level" do
     expect(klass.bar).to eq 456
     expect(get_counter('methods.count').total).to eq 1
-    expect(get_counter('methods.timing').values.length).to eq 1
+    expect(get_timings('methods.timing').values.length).to eq 1
   end
 
   context "renaming exceptions" do
