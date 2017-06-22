@@ -7,6 +7,9 @@ module InstrumentAllTheThings
       job.payload_object && (
         !defined?(ActiveJob::Base) || !job.payload_object.is_a?(ActiveJob::Base)
       )
+    rescue => e
+      STDERR.puts "Exception in DJ Handler for InstrumentAllTheThings: #{e.message}"
+      false
     end
 
     def self.base_job_keys(job)
