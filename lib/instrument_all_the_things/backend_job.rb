@@ -26,13 +26,21 @@ module InstrumentAllTheThings
         end
       end
 
-      def start(job: , job_klass: nil, expected_start_time: nil)
+      def start(job: , job_klass: nil, expected_start_time: nil, &blk)
         job_klass ||= job.class
 
         with_tags(tags_for_job(job, job_klass)) do
           if expected_start_time
             duration = Time.now - expected_start_time
             timing('backend_jobs.run_time_delay', duration * 1000)
+          end
+
+          if blk
+            time = time_block do
+              blk.call()
+            end
+
+            completed(job: job, job_klass: job_klass, duration: time)
           end
         end
       end
