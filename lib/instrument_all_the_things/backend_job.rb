@@ -20,7 +20,7 @@ module InstrumentAllTheThings
       def enqueue(job:, job_klass: nil)
         job_klass ||= job.class
 
-        with_tags(tags_for_job(job, job_klass)) do
+        with_tags(tags_for_job(job, job_klass), except: [/\Abackend_job_queue:.*/, /\Abackend_job_class:.*/]) do
           increment("backend_jobs.count")
           increment("backend_jobs.enqueue.count")
         end
