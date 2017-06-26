@@ -65,6 +65,7 @@ module InstrumentAllTheThings
 
     def self.included(other_klass)
       other_klass.extend(ClassMethods)
+      other_klass.include(HelperMethods)
     end
 
     module ClassMethods
