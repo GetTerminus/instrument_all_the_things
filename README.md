@@ -18,6 +18,24 @@ Or install it yourself as:
 
 ## Usage
 
+### Rails Apps (or anything with Active Record Classes)
+
+InstrumentAllTheThings will override the `count` method, so instead of including the helpers in your class, create an instrumentation class, include the `InstrumentAllTheThings::HelperMethods` and then use that class to send stats. Like so:
+
+```
+class Instrumentation
+  include InstrumentAllTheThings::HelperMethods
+end
+
+class Foo < ActiveRecord::Base
+  def bar
+    Instrumentation.increment("your.label")
+  end
+end
+
+```
+
+
 ### Configuration
 Two ENV variables are required to connect InstrumentAllTheThings with DataDog.
 
