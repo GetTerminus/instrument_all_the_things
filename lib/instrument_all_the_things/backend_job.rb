@@ -35,13 +35,15 @@ module InstrumentAllTheThings
             timing('backend_jobs.run_time_delay', duration * 1000)
           end
 
+          ret = nil
           if blk
             time = time_block do
-              blk.call()
+              ret = blk.call()
             end
 
             completed(job: job, job_klass: job_klass, duration: time)
           end
+          ret
         end
       end
 
