@@ -15,6 +15,14 @@ module InstrumentAllTheThings
         ]
       end
 
+      context ".start" do
+        it "returns the block value" do
+          expect(
+            BackendJob.start(job: 1){ 1234 }
+          ).to eq 1234
+        end
+      end
+
       context "when there is a queue attribute set on the job" do
         let(:faux_job) do
           stub_const("Omg::FooBarBaz", Class.new { attr_accessor :queue })
