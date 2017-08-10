@@ -47,6 +47,70 @@ class SomeClass
 end
 ```
 
+#### `instrument` options
+
+##### `as`
+
+```
+class TestModule::TestClass
+
+  instrument
+  def base
+  end
+
+  instrument as: "override_foo"
+  def foo
+  end
+
+
+  instrument as: -> { "proc_override"}
+  def foo_with_proc
+  end
+
+  instrument as: -> (m) { m.key_name }
+  def foo_with_proc_options
+  end
+
+  def key_name
+    "key_name_from_proc"
+  end
+end
+```
+
+will create the following metrics:
+
+* `test_module.test_class.instance.base.count`
+* `test_module.test_class.instance.base.timing`
+* `override_foo.count`
+* `override_foo.timing`
+* `proc_override.count`
+* `proc_override.timing`
+* `key_name_from_proc.count`
+* `key_name_from_proc.timing`
+
+
+##### `prefix`
+
+You can also pass a `prefix` option to instrument, which will prefix the key with the provided string. Examples:
+
+```
+class TestModule::TestClass
+  instrument prefix: 'my_prefix'
+  def foo
+  end
+
+  instrument prefix: 'my_prefix'
+  def self.foo
+  end
+```
+
+will create the following metrics when called:
+
+* `my_prefix.test_module.test_class.instance.foo.count`
+* `my_prefix.test_module.test_class.instance.foo.timing`
+* `my_prefix.test_module.test_class.class.foo.count`
+* `my_prefix.test_module.test_class.class.foo.timing`
+
 ### Instrumentation Helpers
 The helpers provided by the HelperMethods module
 
