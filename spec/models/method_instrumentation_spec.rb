@@ -80,10 +80,76 @@ describe "Method instumentation" do
         def proc_with_argument
         end
 
+
+        instrument prefix: "services"
+        def self.base_with_prefix
+        end
+
+        instrument prefix: "services"
+        def base_with_prefix
+        end
+
+        instrument prefix: "services", as: -> { "123" }
+        def with_proc_with_prefix
+        end
+
+        instrument prefix: "services", as: 'class.with_string'
+        def with_string_with_prefix
+        end
+
+
+        instrument prefix: "services", as: -> (c) { c.arg_name }
+        def proc_with_argument_with_prefix
+        end
+
         def arg_name
           "arg_name"
         end
       end
+    end
+
+    context "Prefixes" do
+
+      it "defaults to the module class name . method name" do
+        expect {
+          TestModule::TestClass.base_with_prefix
+        }.to change {
+          get_counter('services.test_module.test_class.class.base_with_prefix.count').total
+        }.from(nil).to(1)
+      end
+
+      it "defaults to the module class name . method name" do
+        expect {
+          instance.base_with_prefix
+        }.to change {
+          get_counter('services.test_module.test_class.instance.base_with_prefix.count').total
+        }.from(nil).to(1)
+      end
+
+      it "accepts a proc with no params" do
+        expect {
+          instance.with_proc_with_prefix
+        }.to change {
+          get_counter('services.123.count').total
+        }.from(nil).to(1)
+      end
+
+      it "accepts a string" do
+        expect {
+          instance.with_string_with_prefix
+        }.to change {
+          get_counter('services.class.with_string.count').total
+        }.from(nil).to(1)
+      end
+
+      it "accepts a proc with arg" do
+        expect {
+          instance.proc_with_argument_with_prefix
+        }.to change {
+          get_counter('services.arg_name.count').total
+        }.from(nil).to(1)
+      end
+
     end
 
     it "defaults to the module class name . method name" do
@@ -146,10 +212,38 @@ describe "Method instumentation" do
         def no_args
         end
 
+        instrument prefix: "services"
+        def with_prefix
+          raise StandardError
+        end
+
         instrument
         def self.no_args
           raise StandardError
         end
+
+        instrument prefix: "services"
+        def self.with_prefix
+          raise StandardError
+        end
+      end
+    end
+
+    context "prefix" do
+      it "prefixes isntance error keys" do
+        expect{
+          instance.with_prefix rescue nil
+        }.to change{
+          get_counter('services.test_module.test_class.instance.with_prefix.exceptions.count').total
+        }.from(nil).to(1)
+      end
+
+      it "prefixes class error keys" do
+        expect{
+          klass.with_prefix rescue nil
+        }.to change{
+          get_counter('services.test_module.test_class.class.with_prefix.exceptions.count').total
+        }.from(nil).to(1)
       end
     end
 

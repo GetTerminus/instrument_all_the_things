@@ -54,16 +54,24 @@ module InstrumentAllTheThings
 
       def instrumentation_key(context)
         as = options[:as]
+        prefix = options[:prefix]
+        key = nil
         if as.respond_to?(:call)
           if as.arity == 0
-            as.call
+            key = as.call
           else
-            as.call(context)
+            key = as.call(context)
           end
         elsif as
-          as
+          key = as
         else
-          [context.base_instrumentation_key, self.type, meth].join('.')
+          key = [context.base_instrumentation_key, self.type, meth].join('.')
+        end
+
+        if prefix
+          "#{prefix}.#{key}"
+        else
+          key
         end
       end
 
