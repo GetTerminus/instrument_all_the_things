@@ -25,10 +25,10 @@ module InstrumentAllTheThings
         [
           "method:#{_naming_for_method(meth)}",
           "method_class:#{normalize_class_name(self.klass)}"
-        ].concat(user_defined_tags(context, args))
+        ].concat(user_defined_tags(args))
       end
 
-      def user_defined_tags(context, args)
+      def user_defined_tags(args)
         if options[:tags].respond_to?(:call)
           if options[:tags].arity.zero?
             options[:tags].call
@@ -98,7 +98,7 @@ module InstrumentAllTheThings
       include HelperMethods
 
       def base_instrumentation_key
-        to_s.underscore.gsub('/','.')
+        to_s.underscore.tr('/','.')
       end
 
       def instrument(options = {})
