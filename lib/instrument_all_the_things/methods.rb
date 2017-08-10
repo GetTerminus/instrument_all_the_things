@@ -15,13 +15,13 @@ module InstrumentAllTheThings
       end
 
       def call(context, args, &blk)
-        with_tags(tags_for_method(context, args)) do
+        with_tags(tags_for_method(args)) do
           increment("#{instrumentation_key(context)}.count")
           _run_instrumented_method(context, args, &blk)
         end
       end
 
-      def tags_for_method(context, args)
+      def tags_for_method(args)
         [
           "method:#{_naming_for_method(meth)}",
           "method_class:#{normalize_class_name(self.klass)}"
