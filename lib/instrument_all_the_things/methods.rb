@@ -1,3 +1,5 @@
+require 'active_support/core_ext/string/inflections'
+
 module InstrumentAllTheThings
   module Methods
     class IntrumentedMethod
@@ -13,20 +15,20 @@ module InstrumentAllTheThings
       end
 
       def call(context, args, &blk)
-        with_tags(tags_for_method(args)) do
-          increment("#{instrumentation_key}.count")
+        with_tags(tags_for_method(context, args)) do
+          increment("#{instrumentation_key(context)}.count")
           _run_instrumented_method(context, args, &blk)
         end
       end
 
-      def tags_for_method(args)
+      def tags_for_method(context, args)
         [
           "method:#{_naming_for_method(meth)}",
           "method_class:#{normalize_class_name(self.klass)}"
-        ].concat(user_defined_tags(args))
+        ].concat(user_defined_tags(context, args))
       end
 
-      def user_defined_tags(args)
+      def user_defined_tags(context, args)
         if options[:tags].respond_to?(:call)
           if options[:tags].arity.zero?
             options[:tags].call
@@ -41,8 +43,8 @@ module InstrumentAllTheThings
       end
 
       def _run_instrumented_method(context, args, &blk)
-        time("#{instrumentation_key}.timing") do
-          capture_exception(as: options[:as]) do
+        time("#{instrumentation_key(context)}.timing") do
+          capture_exception(as: instrumentation_key(context)) do
             context.send("_#{meth}_without_instrumentation", *args, &blk)
           end
         end
@@ -50,9 +52,21 @@ module InstrumentAllTheThings
         raise InstrumentAllTheThings::ExceptionHandler.register(e)
       end
 
-      def instrumentation_key
-        options[:as] || 'methods'
+      def instrumentation_key(context)
+        as = options[:as]
+        if as.respond_to?(:call)
+          if as.arity == 0
+            as.call
+          else
+            as.call(context)
+          end
+        elsif as
+          as
+        else
+          [context.base_instrumentation_key, self.type, meth].join('.')
+        end
       end
+
 
       def _naming_for_method(meth)
         if self.type == :instance
@@ -68,8 +82,16 @@ module InstrumentAllTheThings
       other_klass.include(HelperMethods)
     end
 
+    def base_instrumentation_key
+      self.class.base_instrumentation_key
+    end
+
     module ClassMethods
       include HelperMethods
+
+      def base_instrumentation_key
+        to_s.underscore.gsub('/','.')
+      end
 
       def instrument(options = {})
         @options_for_next_method = options
@@ -103,7 +125,7 @@ module InstrumentAllTheThings
 
         define_singleton_method("_#{meth}_without_instrumentation", method(meth))
 
-        _instrumentors[".#{meth}"] = IntrumentedMethod.new(meth, options, self, :instance)
+        _instrumentors[".#{meth}"] = IntrumentedMethod.new(meth, options, self, :class)
         instrumentor = _instrumentors[".#{meth}"]
 
         define_singleton_method(meth) do |*args, &blk|
