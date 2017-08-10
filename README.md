@@ -52,6 +52,12 @@ end
 ##### `as`
 
 ```
+class TestModule::TestClass
+
+  instrument
+  def base
+  end
+
   instrument as: "override_foo"
   def foo
   end
@@ -61,16 +67,20 @@ end
   def foo_with_proc
   end
 
-  def foo_with_proc_options -> (m) { m.key_name }
+  instrument as: -> (m) { m.key_name }
+  def foo_with_proc_options
   end
 
   def key_name
     "key_name_from_proc"
   end
+end
 ```
 
 will create the following metrics:
 
+* `test_module.test_class.instance.base.count`
+* `test_module.test_class.instance.base.timing`
 * `override_foo.count`
 * `override_foo.timing`
 * `proc_override.count`
@@ -96,10 +106,10 @@ class TestModule::TestClass
 
 will create the following metrics when called:
 
-* `my_prefix.test_module.test_class.instance.count`
-* `my_prefix.test_module.test_class.instance.timing`
-* `my_prefix.test_module.test_class.class.count`
-* `my_prefix.test_module.test_class.class.timing`
+* `my_prefix.test_module.test_class.instance.foo.count`
+* `my_prefix.test_module.test_class.instance.foo.timing`
+* `my_prefix.test_module.test_class.class.foo.count`
+* `my_prefix.test_module.test_class.class.foo.timing`
 
 ### Instrumentation Helpers
 The helpers provided by the HelperMethods module
