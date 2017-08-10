@@ -75,7 +75,6 @@ module InstrumentAllTheThings
         end
       end
 
-
       def _naming_for_method(meth)
         if self.type == :instance
           "##{meth}"
