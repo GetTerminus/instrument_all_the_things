@@ -14,7 +14,7 @@ module InstrumentAllTheThings
         args << options
 
         if InstrumentAllTheThings.config.stat_prefix && args.first.is_a?(String)
-          args[0] = "#{InstrumentAllTheThings.config.stat_prefix}.#{args[0]}"
+          args[0] = "#{InstrumentAllTheThings.config.stat_prefix}.#{args[0]}" unless meth == :time
         end
 
         send("_original_#{meth}", *args, &blk)

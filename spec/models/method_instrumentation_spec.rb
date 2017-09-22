@@ -52,6 +52,22 @@ describe "Method instumentation" do
   end
 
 
+  context "with stat_prefix set" do
+    around do |ex|
+      InstrumentAllTheThings.config.stat_prefix = InstrumentAllTheThings.config.stat_prefix.tap do |_|
+        InstrumentAllTheThings.config.stat_prefix = 'stat_prefix'
+        ex.run
+      end
+    end
+
+
+    it "provides basic instrumentation at the class level" do
+      expect(klass.bar).to eq 456
+      # expect(get_counter('stat_prefix.test_module.test_class.class.bar.count').total).to eq 1
+      expect(get_timings('stat_prefix.test_module.test_class.class.bar.timing').values.length).to eq 1
+    end
+  end
+
   
   context "renaming metric key #instrumentation_key" do
 
