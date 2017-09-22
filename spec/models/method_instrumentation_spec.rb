@@ -63,7 +63,7 @@ describe "Method instumentation" do
 
     it "provides basic instrumentation at the class level" do
       expect(klass.bar).to eq 456
-      # expect(get_counter('stat_prefix.test_module.test_class.class.bar.count').total).to eq 1
+      expect(get_counter('stat_prefix.test_module.test_class.class.bar.count').total).to eq 1
       expect(get_timings('stat_prefix.test_module.test_class.class.bar.timing').values.length).to eq 1
     end
   end
