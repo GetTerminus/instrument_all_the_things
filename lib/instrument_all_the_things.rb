@@ -17,6 +17,12 @@ rescue LoadError
 end
 require "instrument_all_the_things/delayed_job" if defined?(Delayed::Job)
 
+begin
+  require 'hermes_messenger_of_the_gods'
+rescue LoadError
+end
+require "instrument_all_the_things/hermes" if defined?(HermesMessengerOfTheGods)
+
 if defined?(ExceptionNotifier)
   require "exception_notifier/instrument_all_the_things_notifier"
 end
