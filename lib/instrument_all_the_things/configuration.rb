@@ -13,5 +13,6 @@ module InstrumentAllTheThings
 
 
     attr_accessor_with_default :stat_prefix, nil
+    attr_accessor_with_default :exclude_rails_instrumentation, false
   end
 end
