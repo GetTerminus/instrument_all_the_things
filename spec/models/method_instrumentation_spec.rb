@@ -68,6 +68,43 @@ describe "Method instumentation" do
     end
   end
 
+  context "class which has helper methods already defined" do
+    let(:module_with_similar_methods) do
+      Module.new do
+        def count
+          "Count"
+        end
+      end
+    end
+
+    let(:klass) do
+      Class.new do
+        include ModuleWithSimilarMethods
+        include InstrumentAllTheThings::HelperMethods
+        include InstrumentAllTheThings::Methods    
+
+        def foo
+          increment "foo"
+        end  
+      end
+    end
+
+    before do
+      stub_const("ModuleWithSimilarMethods", module_with_similar_methods)
+    end
+
+    it "increments the counter" do
+      expect {
+        instance.foo
+      }.to change {
+        get_counter('foo').total
+      }.from(nil).to(1)
+    end
+
+    it "doesn't override helper methods when they're already defined" do
+      expect(instance.count).to eq("Count")
+    end
+  end
   
   context "renaming metric key #instrumentation_key" do
 
