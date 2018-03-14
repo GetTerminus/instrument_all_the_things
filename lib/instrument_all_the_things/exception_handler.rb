@@ -21,7 +21,7 @@ module InstrumentAllTheThings
             "exceptions.count",
             ("#{options[:as]}.exceptions.count" if options[:as])
           ].compact.each do |key|
-            increment(
+            instrumentation_increment(
               key,
               tags: ["exception_class:#{normalize_class_name(ex.class)}"]
             )

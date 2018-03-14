@@ -1,22 +1,28 @@
 module InstrumentAllTheThings
+  module HelperMethodHelpers
+    METHODS_LIST = [
+      :increment,
+      :decrement,
+      :time,
+      :timing,
+      :guage,
+      :histogram,
+      :set,
+      :count,
+    ].freeze
+    
+    def self.instrumented_method_name(meth)
+      "instrumentation_#{meth}"
+    end
+  end
+  
   module HelperMethods
-    IATT_HELPER_METHODS = [
-        :increment,
-        # :decrement,
-        # :time,
-        # :timing,
-        # :guage,
-        # :histogram,
-        # :set,
-        # :count,
-      ].freeze
-
     def self.included(base)
       base.extend self
 
       base.class_eval do
-        IATT_HELPER_METHODS.each do | meth |
-          alias_method meth, "instrumentation_#{meth}".to_sym unless base.instance_methods.include?(meth)
+        InstrumentAllTheThings::HelperMethodHelpers::METHODS_LIST.each do | meth |
+          alias_method meth, HelperMethodHelpers.instrumented_method_name(meth).to_sym unless base.instance_methods.include?(meth)
         end
       end
     end
@@ -27,15 +33,11 @@ module InstrumentAllTheThings
       end
     end
 
-    IATT_HELPER_METHODS.each do |meth|
-      full_method_name = "instrumentation_#{meth}"
+    InstrumentAllTheThings::HelperMethodHelpers::METHODS_LIST.each do |meth|
+      full_method_name = HelperMethodHelpers.instrumented_method_name(meth)
       define_method(full_method_name) do |*args, &blk|
         transmitter.public_send(meth, *args, &blk)
       end
-
-      # if (defined?(meth) == nil)
-      #   alias meth full_method_name 
-      # end
     end
 
     def capture_exception(*args, &blk)
@@ -49,3 +51,4 @@ module InstrumentAllTheThings
     end
   end
 end
+

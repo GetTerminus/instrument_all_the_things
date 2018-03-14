@@ -51,9 +51,9 @@ module InstrumentAllTheThings
         job_klass ||= job.class
 
         with_tags(tags_for_job(job, job_klass)) do
-          decrement("backend_jobs.count")
-          increment("backend_jobs.completed.count")
-          timing("backend_jobs.duration", duration)
+          instrumentation_decrement("backend_jobs.count")
+          instrumentation_increment("backend_jobs.completed.count")
+          instrumentation_timing("backend_jobs.duration", duration)
         end
       end
 
