@@ -21,8 +21,8 @@ module InstrumentAllTheThings
         job_klass ||= job.class
 
         with_tags(tags_for_job(job, job_klass), except: [/\Abackend_job_queue:.*/, /\Abackend_job_class:.*/]) do
-          increment("backend_jobs.count")
-          increment("backend_jobs.enqueue.count")
+          instrumentation_increment("backend_jobs.count")
+          instrumentation_increment("backend_jobs.enqueue.count")
         end
       end
 
@@ -32,7 +32,7 @@ module InstrumentAllTheThings
         with_tags(tags_for_job(job, job_klass)) do
           if expected_start_time
             duration = Time.now - expected_start_time
-            timing('backend_jobs.run_time_delay', duration * 1000)
+            instrumentation_timing('backend_jobs.run_time_delay', duration * 1000)
           end
 
           ret = nil
@@ -61,9 +61,9 @@ module InstrumentAllTheThings
         job_klass ||= job.class
 
         with_tags(tags_for_job(job, job_klass)) do
-          decrement("backend_jobs.count") if final
+          instrumentation_decrement("backend_jobs.count") if final
           if log_error && exception
-            increment(
+            instrumentation_increment(
               "backend_jobs.errors",
               tags: [
                 "backend_job_exception:#{normalize_class_name(exception)}"

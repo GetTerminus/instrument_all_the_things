@@ -5,7 +5,7 @@ module InstrumentAllTheThings
       :decrement,
       :time,
       :timing,
-      :guage,
+      :gauge,
       :histogram,
       :set,
       :count,
@@ -15,7 +15,7 @@ module InstrumentAllTheThings
       "instrumentation_#{meth}"
     end
   end
-  
+
   module HelperMethods
     def self.included(base)
       base.extend self
