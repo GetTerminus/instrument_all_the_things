@@ -1,53 +1,36 @@
 require 'spec_helper'
 
-
-module ModuleWithAliasedMethods
-  def count
-    "Count"
-  end
-end
-
-class DupMethodClass
-  include ModuleWithAliasedMethods
-  include InstrumentAllTheThings::HelperMethods
-  include InstrumentAllTheThings::Methods 
-
-  def foo
-    increment "foo"
-  end  
-end
-
 describe "Helper Methods" do
   
-  # before do
-  #   stub_const("ModuleWithSimilarMethods", module_with_similar_methods)
-  #   stub_const("TestModule::TestClass", klass)
-  # end
+  before do
+    stub_const("ModuleWithSimilarMethods", module_with_similar_methods)
+    stub_const("TestModule::TestClass", klass)
+  end
 
-  # let(:klass) do
-  #   Class.new do
-  #     include ModuleWithSimilarMethods
-  #     include InstrumentAllTheThings::HelperMethods
-  #     include InstrumentAllTheThings::Methods    
+  let(:module_with_similar_methods) do
+    Module.new do
+      def count
+        "Count"
+      end
+    end
+  end
 
-  #     def foo
-  #       increment "foo"
-  #     end  
-  #   end
-  # end
+  let(:klass) do
+    Class.new do
+      include ModuleWithSimilarMethods
+      include InstrumentAllTheThings::HelperMethods
+      include InstrumentAllTheThings::Methods    
 
-  let(:klass) { DupMethodClass }
+      def foo
+        increment "foo"
+      end  
+    end
+  end
 
   let(:instance) { klass.new }
 
   context "class which has helper methods already defined" do
-    # let(:module_with_similar_methods) do
-    #   Module.new do
-    #     def count
-    #       "Count"
-    #     end
-    #   end
-    # end
+
 
     it "increments the counter" do
       expect {
