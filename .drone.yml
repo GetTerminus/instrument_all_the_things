@@ -1,0 +1,11 @@
+workspace:
+  base: /src
+  path: github.com/GetTerminus/instrument-all-the-things
+ 
+pipeline:
+ 
+  test:
+    image: ruby:2.3.3
+    commands:
+      - bundle install --path=.bundle
+      - bundle exec rspec
