@@ -1,3 +1,5 @@
+require 'active_support/deprecation'
+
 module InstrumentAllTheThings
   module HelperMethodHelpers
     METHODS_LIST = [
@@ -10,7 +12,7 @@ module InstrumentAllTheThings
       :set,
       :count,
     ].freeze
-    
+
     def self.instrumented_method_name(meth)
       "instrumentation_#{meth}"
     end
@@ -19,12 +21,6 @@ module InstrumentAllTheThings
   module HelperMethods
     def self.included(base)
       base.extend self
-
-      base.class_eval do
-        InstrumentAllTheThings::HelperMethodHelpers::METHODS_LIST.each do | meth |
-          alias_method meth, HelperMethodHelpers.instrumented_method_name(meth).to_sym unless base.instance_methods.include?(meth)
-        end
-      end
     end
 
     %i{with_tags transmitter normalize_class_name}.each do |meth|
@@ -35,6 +31,12 @@ module InstrumentAllTheThings
 
     InstrumentAllTheThings::HelperMethodHelpers::METHODS_LIST.each do |meth|
       full_method_name = HelperMethodHelpers.instrumented_method_name(meth)
+
+      define_method(meth) do |*args, &blk|
+        ActiveSupport::Deprecation.warn("IATT #{meth} is deprecated and will be replaced with #{full_method_name}")
+        transmitter.public_send(meth, *args, &blk)
+      end
+
       define_method(full_method_name) do |*args, &blk|
         transmitter.public_send(meth, *args, &blk)
       end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Helper Methods" do
-  
+
   before do
     stub_const("ModuleWithSimilarMethods", module_with_similar_methods)
     stub_const("TestModule::TestClass", klass)
@@ -19,19 +19,17 @@ describe "Helper Methods" do
     Class.new do
       include ModuleWithSimilarMethods
       include InstrumentAllTheThings::HelperMethods
-      include InstrumentAllTheThings::Methods    
+      include InstrumentAllTheThings::Methods
 
       def foo
         increment "foo"
-      end  
+      end
     end
   end
 
   let(:instance) { klass.new }
 
   context "class which has helper methods already defined" do
-
-
     it "increments the counter" do
       expect {
         instance.foo
@@ -40,9 +38,8 @@ describe "Helper Methods" do
       }.from(nil).to(1)
     end
 
-    it "doesn't override helper methods when they're already defined" do
-      expect { instance.count }.not_to raise_error(ArgumentError)
-      expect(instance.count).to eq("Count")
+    it "depractes the old count and jj" do
+      expect(instance.preinstrumented_count).to eq("Count")
     end
   end
 end
