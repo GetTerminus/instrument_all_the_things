@@ -6,12 +6,12 @@ module InstrumentAllTheThings
     class IntrumentedMethod
       include HelperMethods
 
-      attr_accessor :meth, :options, :klass, :type, :trace_name
+      attr_accessor :meth, :options, :klass, :type
 
       def initialize(meth, options, klass, type)
         self.meth = meth
-        self.trace_name = options[:trace] ? options[:trace].delete(:as) : nil
         self.options = options
+        self.options[:trace] = {} if self.options[:trace] == true
         self.klass = klass
         self.type = type
       end
@@ -56,7 +56,7 @@ module InstrumentAllTheThings
 
       def _trace_method(context, args, &blk)
         if tracing_availiable?
-          tracer.trace(self.trace_name, trace_options) do
+          tracer.trace(trace_name(context), trace_options) do
             context.send("_#{meth}_without_instrumentation", *args, &blk)
           end
         else
@@ -107,6 +107,18 @@ module InstrumentAllTheThings
       end
 
       private
+
+      def trace_name(context)
+        return unless options[:trace]
+        if options[:trace].is_a?(Hash) && options[:trace][:as]
+          options[:trace][:as]
+        elsif context.is_a?(Class)
+          context.to_s + _naming_for_method(self.meth)
+        else
+          context.class.to_s + _naming_for_method(self.meth)
+        end
+      end
+
       def tracer
         InstrumentAllTheThings.config.tracer
       end
@@ -116,7 +128,7 @@ module InstrumentAllTheThings
       end
 
       def traced?
-        !!self.trace_name
+        !!options[:trace]
       end
 
       def trace_options

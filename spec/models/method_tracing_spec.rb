@@ -28,6 +28,14 @@ describe "Method instumentation" do
       def self.bar
         456
       end
+
+      instrument trace: true
+      def hello
+      end
+
+      instrument trace: true
+      def self.hello
+      end
     end
   end
 
@@ -43,6 +51,16 @@ describe "Method instumentation" do
 
     expect(instance.foo).to eq 123
     expect(klass.bar).to eq 456
+  end
+
+  it 'assumes a default name for instance methods' do
+    expect(fake_trace).to receive(:trace).with('TestModule::TestClass#hello', an_instance_of(Hash))
+    instance.hello
+  end
+
+  it 'assumes a default name for instance methods' do
+    expect(fake_trace).to receive(:trace).with('TestModule::TestClass.hello', an_instance_of(Hash))
+    klass.hello
   end
 
   it 'logs a warning if tracing is requested with no tracer set' do
