@@ -1,4 +1,5 @@
 require 'active_support/core_ext/string/inflections'
+require 'active_support/core_ext/hash'
 
 module InstrumentAllTheThings
   module Methods
@@ -10,6 +11,7 @@ module InstrumentAllTheThings
       def initialize(meth, options, klass, type)
         self.meth = meth
         self.options = options
+        self.options[:trace] = {} if self.options[:trace] == true
         self.klass = klass
         self.type = type
       end
@@ -17,7 +19,7 @@ module InstrumentAllTheThings
       def call(context, args, &blk)
         with_tags(tags_for_method(args)) do
           instrumentation_increment("#{instrumentation_key(context)}.count")
-          _run_instrumented_method(context, args, &blk)
+          execute_method(context, args, &blk)
         end
       end
 
@@ -42,14 +44,35 @@ module InstrumentAllTheThings
         end
       end
 
+      def execute_method(context, args, &blk)
+        if traced?
+          _trace_method(context, args, &blk)
+        else
+          _run_instrumented_method(context, args, &blk)
+        end
+      rescue => e
+        raise InstrumentAllTheThings::ExceptionHandler.register(e)
+      end
+
+      def _trace_method(context, args, &blk)
+        if tracing_availiable?
+          tracer.trace(trace_name(context), trace_options) do
+            context.send("_#{meth}_without_instrumentation", *args, &blk)
+          end
+        else
+          InstrumentAllTheThings.config.logger.warn do
+            "Requested tracing on #{meth} but no tracer configured"
+          end
+          context.send("_#{meth}_without_instrumentation", *args, &blk)
+        end
+      end
+
       def _run_instrumented_method(context, args, &blk)
         instrumentation_time("#{instrumentation_key(context)}.timing") do
           capture_exception(as: instrumentation_key(context)) do
             context.send("_#{meth}_without_instrumentation", *args, &blk)
           end
         end
-      rescue => e
-        raise InstrumentAllTheThings::ExceptionHandler.register(e)
       end
 
       def instrumentation_key(context)
@@ -81,6 +104,47 @@ module InstrumentAllTheThings
         else
           ".#{meth}"
         end
+      end
+
+      private
+
+      def trace_name(context)
+        return unless options[:trace]
+        if options[:trace].is_a?(Hash) && options[:trace][:as]
+          options[:trace][:as]
+        else
+          auto_name_selection(context)
+        end
+      end
+
+      def auto_name_selection(context)
+        if context.is_a?(Class)
+          context.to_s + _naming_for_method(self.meth)
+        else
+          context.class.to_s + _naming_for_method(self.meth)
+        end
+      end
+
+      def tracer
+        InstrumentAllTheThings.config.tracer
+      end
+
+      def tracing_availiable?
+        !!tracer
+      end
+
+      def traced?
+        !!options[:trace]
+      end
+
+      def trace_options
+        (self.options[:trace] || {}).merge(tags: tracer_tags)
+      end
+
+      def tracer_tags
+        Hash[
+          InstrumentAllTheThings.active_tags.map{|t| t.split(':')}
+        ].with_indifferent_access.merge(self.options[:trace].fetch( :tags, {}))
       end
     end
 

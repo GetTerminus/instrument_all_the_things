@@ -24,6 +24,26 @@ Two ENV variables are required to connect InstrumentAllTheThings with DataDog.
 1. `DATADOG_HOST` - defaults to localhost
 2. `DATADOG_PORT` - defaults to 8125
 
+
+## Global Configuration
+When configuring IATT you can set global configuration options like so:
+
+```ruby
+InstrumentAllTheThings.config do |config|
+  config.config_options = wassup
+end
+```
+
+Allowed configuration options:
+
+| Configuration Option          | Default               | Description
+| --------------------          | --------------------- | --------------
+| stat_prefix                   | nil                   | string to prefix to all outgoing stats
+| exclude_rails_instrumentation | false                 | set to true to disable auto instrumentation of the rails stack
+| tracer                        | `Datadog.tracer`      | The tracer to use for tracing. If nil warnings will be issued when tracing is attempted.
+| logger                        | Rails Logger or STDOUT Logger      | Logger for IATT related issues
+
+
 ### Usage in application code
 Within your application code, the `InstrumentAllTheThings::HelperMethods` module
 can be included to provide some helper methods.
@@ -235,6 +255,23 @@ If an exception is raised within a method that is instrumented it will be
 recorded in `exceptions.count` with all of the method tags defined for that
 method. If a custom name is provided via `:as` it will be regsitered as
 `custom.name.exceptions.count`
+
+### Method Tracing
+
+```
+instrument trace: { as: 'foo' }
+def bar
+end
+```
+
+Options available for tracing are [DataDog Docs](http://gems.datadoghq.com/trace/docs/Datadog/Tracer.html#trace-instance_method)
+* +service+: the service name for this span
+* +resource+: the resource this span refers, or \name if it's missing
+* +span_type+: the type of the span (such as \http, \db and so on)
+* +tags+: extra tags which should be added to the span.
+
+Tags provided directly in the `trace` options key are preferred to tags generated
+via the `tags` key or from within a `with_tags` block.
 
 ### Testing Support
 IATT comes with some helpers to make testing a little easier for RSpec. If you

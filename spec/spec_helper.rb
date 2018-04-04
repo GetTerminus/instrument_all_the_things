@@ -3,6 +3,7 @@ require 'pry'
 require 'simplecov'
 SimpleCov.start do
   add_filter "/spec/"
+  add_filter ".bundle"
 end
 
 require 'instrument_all_the_things'
