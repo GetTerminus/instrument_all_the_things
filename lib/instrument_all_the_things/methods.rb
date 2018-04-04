@@ -1,4 +1,5 @@
 require 'active_support/core_ext/string/inflections'
+require 'active_support/core_ext/hash'
 
 module InstrumentAllTheThings
   module Methods
@@ -55,14 +56,13 @@ module InstrumentAllTheThings
 
       def _trace_method(context, args, &blk)
         if tracing_availiable?
-          tracer.trace(self.trace_name, self.options[:trace]) do
+          tracer.trace(self.trace_name, trace_options) do
             context.send("_#{meth}_without_instrumentation", *args, &blk)
           end
         else
           InstrumentAllTheThings.config.logger.warn do
             "Requested tracing on #{meth} but no tracer configured"
           end
-
           context.send("_#{meth}_without_instrumentation", *args, &blk)
         end
       end
@@ -117,6 +117,16 @@ module InstrumentAllTheThings
 
       def traced?
         !!self.trace_name
+      end
+
+      def trace_options
+        (self.options[:trace] || {}).merge(tags: tracer_tags)
+      end
+
+      def tracer_tags
+        Hash[
+          InstrumentAllTheThings.active_tags.map{|t| t.split(':')}
+        ].with_indifferent_access.merge(self.options[:trace].fetch( :tags, {}))
       end
     end
 

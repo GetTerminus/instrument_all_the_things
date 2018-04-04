@@ -264,6 +264,15 @@ def bar
 end
 ```
 
+Options available for tracing are [DataDog Docs](http://gems.datadoghq.com/trace/docs/Datadog/Tracer.html#trace-instance_method)
+* +service+: the service name for this span
+* +resource+: the resource this span refers, or \name if it's missing
+* +span_type+: the type of the span (such as \http, \db and so on)
+* +tags+: extra tags which should be added to the span.
+
+Tags provided directly in the `trace` options key are preferred to tags generated
+via the `tags` key or from within a `with_tags` block.
+
 ### Testing Support
 IATT comes with some helpers to make testing a little easier for RSpec. If you
 include the module, outbound messages will be intercepted at the transmitter.

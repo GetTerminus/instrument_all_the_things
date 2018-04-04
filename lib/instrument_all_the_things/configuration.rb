@@ -10,8 +10,11 @@ module InstrumentAllTheThings
         attr_writer meth
 
         define_method(meth) do
-          instance_variable_get("@#{meth}") ||
+          if instance_variable_defined?("@#{meth}")
+            instance_variable_get("@#{meth}")
+          else
             instance_variable_set("@#{meth}", default)
+          end
         end
       end
     end
