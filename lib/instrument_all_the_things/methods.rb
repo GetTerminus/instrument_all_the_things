@@ -112,7 +112,13 @@ module InstrumentAllTheThings
         return unless options[:trace]
         if options[:trace].is_a?(Hash) && options[:trace][:as]
           options[:trace][:as]
-        elsif context.is_a?(Class)
+        else
+          auto_name_selection(context)
+        end
+      end
+
+      def auto_name(context)
+        if context.is_a?(Class)
           context.to_s + _naming_for_method(self.meth)
         else
           context.class.to_s + _naming_for_method(self.meth)
