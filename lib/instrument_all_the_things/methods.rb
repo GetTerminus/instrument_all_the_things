@@ -117,7 +117,7 @@ module InstrumentAllTheThings
         end
       end
 
-      def auto_name(context)
+      def auto_name_selection(context)
         if context.is_a?(Class)
           context.to_s + _naming_for_method(self.meth)
         else
