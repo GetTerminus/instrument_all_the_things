@@ -37,9 +37,5 @@ describe "Helper Methods" do
         get_counter('foo').total
       }.from(nil).to(1)
     end
-
-    it "depractes the old count and jj" do
-      expect(instance.preinstrumented_count).to eq("Count")
-    end
   end
 end
