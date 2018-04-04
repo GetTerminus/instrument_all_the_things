@@ -1,4 +1,23 @@
+require 'active_support/deprecation'
+
 module InstrumentAllTheThings
+  module HelperMethodHelpers
+    METHODS_LIST = [
+      :increment,
+      :decrement,
+      :time,
+      :timing,
+      :gauge,
+      :histogram,
+      :set,
+      :count,
+    ].freeze
+
+    def self.instrumented_method_name(meth)
+      "instrumentation_#{meth}"
+    end
+  end
+
   module HelperMethods
     def self.included(base)
       base.extend self
@@ -10,17 +29,15 @@ module InstrumentAllTheThings
       end
     end
 
-    %i{
-      decrement
-      increment
-      time
-      timing
-      guage
-      histogram
-      set
-      count
-    }.each do |meth|
+    InstrumentAllTheThings::HelperMethodHelpers::METHODS_LIST.each do |meth|
+      full_method_name = HelperMethodHelpers.instrumented_method_name(meth)
+
       define_method(meth) do |*args, &blk|
+        ActiveSupport::Deprecation.warn("IATT #{meth} is deprecated and will be replaced with #{full_method_name}")
+        transmitter.public_send(meth, *args, &blk)
+      end
+
+      define_method(full_method_name) do |*args, &blk|
         transmitter.public_send(meth, *args, &blk)
       end
     end
@@ -36,3 +53,4 @@ module InstrumentAllTheThings
     end
   end
 end
+

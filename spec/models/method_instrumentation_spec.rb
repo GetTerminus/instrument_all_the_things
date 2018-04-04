@@ -67,7 +67,6 @@ describe "Method instumentation" do
       expect(get_timings('stat_prefix.test_module.test_class.class.bar.timing').values.length).to eq 1
     end
   end
-
   
   context "renaming metric key #instrumentation_key" do
 

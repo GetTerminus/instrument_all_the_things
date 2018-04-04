@@ -67,15 +67,15 @@ module InstrumentAllTheThings
     end
 
     def complete_request!
-      increment("controller_action.requests.count")
+      instrumentation_increment("controller_action.requests.count")
 
       self.runtimes ||= {}
       self.runtimes.each do |type, time|
-        timing("controller_action.timings.#{type}", time)
+        instrumentation_timing("controller_action.timings.#{type}", time)
       end
 
       unless self.runtimes.has_key? "total"
-        timing(
+        instrumentation_timing(
           "controller_action.timings.total",
           self.runtimes.values.compact.inject(&:+)
         )

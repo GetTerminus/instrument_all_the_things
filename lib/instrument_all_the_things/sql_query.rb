@@ -13,8 +13,8 @@ module InstrumentAllTheThings
         ]
 
         with_tags(tags) do
-          increment("sql.queries.count")
-          timing("sql.queries.timings", duration)
+          instrumentation_increment("sql.queries.count")
+          instrumentation_timing("sql.queries.timings", duration)
         end
       end
 
