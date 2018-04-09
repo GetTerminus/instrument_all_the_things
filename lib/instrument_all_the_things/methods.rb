@@ -56,7 +56,7 @@ module InstrumentAllTheThings
 
       def _trace_method(context, args, &blk)
         if tracing_availiable?
-          tracer.trace(trace_name(context), trace_options) do
+          tracer.trace(trace_name(context), trace_options(context)) do
             context.send("_#{meth}_without_instrumentation", *args, &blk)
           end
         else
@@ -113,11 +113,11 @@ module InstrumentAllTheThings
         if options[:trace].is_a?(Hash) && options[:trace][:as]
           options[:trace][:as]
         else
-          auto_name_selection(context)
+          'method.execution'
         end
       end
 
-      def auto_name_selection(context)
+      def resource_name(context)
         if context.is_a?(Class)
           context.to_s + _naming_for_method(self.meth)
         else
@@ -137,8 +137,10 @@ module InstrumentAllTheThings
         !!options[:trace]
       end
 
-      def trace_options
-        (self.options[:trace] || {}).merge(tags: tracer_tags)
+      def trace_options(context)
+        base_options = (self.options[:trace] || {}).merge(tags: tracer_tags)
+        base_options[:resource] ||= resource_name(context)
+        base_options
       end
 
       def tracer_tags
