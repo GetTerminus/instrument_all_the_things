@@ -45,7 +45,7 @@ describe "Method instumentation" do
     expect(fake_trace).to receive(:trace).with('hello', a_hash_including(resource: 'hrm')) do |&blk|
       blk.call
     end
-    expect(fake_trace).to receive(:trace).with('bar.hello', a_hash_including(resource: 'bar.hello')) do |&blk|
+    expect(fake_trace).to receive(:trace).with('bar.hello', a_hash_including(resource: 'TestModule::TestClass.bar')) do |&blk|
       blk.call
     end
 
@@ -54,12 +54,12 @@ describe "Method instumentation" do
   end
 
   it 'assumes a default name for instance methods' do
-    expect(fake_trace).to receive(:trace).with('TestModule::TestClass#hello', a_hash_including(resource: 'TestModule::TestClass#hello'))
+    expect(fake_trace).to receive(:trace).with('method.execution', a_hash_including(resource: 'TestModule::TestClass#hello'))
     instance.hello
   end
 
   it 'assumes a default name for instance methods' do
-    expect(fake_trace).to receive(:trace).with('TestModule::TestClass.hello', an_instance_of(Hash))
+    expect(fake_trace).to receive(:trace).with('method.execution', an_instance_of(Hash))
     klass.hello
   end
 
