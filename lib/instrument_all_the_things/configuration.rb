@@ -1,4 +1,5 @@
 begin
+  require 'datadog/statsd'
   require 'ddtrace'
 rescue LoadError
 end
