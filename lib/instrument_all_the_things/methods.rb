@@ -144,11 +144,13 @@ module InstrumentAllTheThings
       end
 
       def tracer_tags
-        return {} if self.options[:trace].fetch(:tagless, true)
+        base = if self.options[:trace].fetch(:include_parent_tags, false)
+                 Hash[InstrumentAllTheThings.active_tags.map{|t| t.split(':')}]
+               else
+                 {}
+               end.with_indifferent_access
 
-        Hash[
-          InstrumentAllTheThings.active_tags.map{|t| t.split(':')}
-        ].with_indifferent_access.merge(self.options[:trace].fetch( :tags, {}))
+       base.merge(self.options[:trace].fetch( :tags, {}))
       end
     end
 
