@@ -88,7 +88,25 @@ describe "Method instumentation" do
         def self.bar
           456
         end
+
+        instrument trace: { as: 'test', tagless: true }
+        def self.baz
+          456
+        end
       end
+    end
+
+    it 'drops parent tags' do
+      InstrumentAllTheThings.with_tags('hrm:wassup') do
+        expect(fake_trace).to receive(:trace).with(
+          'test',
+          a_hash_including(tags: {})
+        ) do |&blk|
+          blk.call
+        end
+      end
+
+      klass.baz
     end
 
     it "tags traces" do

@@ -269,6 +269,7 @@ Options available for tracing are [DataDog Docs](http://gems.datadoghq.com/trace
 * +resource+: the resource this span refers, or \name if it's missing
 * +span_type+: the type of the span (such as \http, \db and so on)
 * +tags+: extra tags which should be added to the span.
+* +tagless+: Appends no tags (including those from parent spans) from the trace
 
 Tags provided directly in the `trace` options key are preferred to tags generated
 via the `tags` key or from within a `with_tags` block.
