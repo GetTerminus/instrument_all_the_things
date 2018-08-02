@@ -269,9 +269,13 @@ Options available for tracing are [DataDog Docs](http://gems.datadoghq.com/trace
 * +resource+: the resource this span refers, or \name if it's missing
 * +span_type+: the type of the span (such as \http, \db and so on)
 * +tags+: extra tags which should be added to the span.
+* +include_parent_tags+: Appends the tags that were applied from parent spans or
+    with a `with_tags` block
 
 Tags provided directly in the `trace` options key are preferred to tags generated
-via the `tags` key or from within a `with_tags` block.
+via the `tags` key or from within a `with_tags` block. Tags provided via
+`with_tags` or a `tags` parameter to the `instrument` call are ignored unless
+`include_parent_tags` is specified.
 
 ### Testing Support
 IATT comes with some helpers to make testing a little easier for RSpec. If you

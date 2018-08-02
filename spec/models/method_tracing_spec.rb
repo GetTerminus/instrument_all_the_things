@@ -79,16 +79,34 @@ describe "Method instumentation" do
       Class.new do
         include InstrumentAllTheThings::Methods
 
-        instrument trace: { as: 'hello' }, tags: ['foo:bar']
+        instrument trace: { as: 'hello', include_parent_tags: true }, tags: ['foo:bar']
         def foo
           123
         end
 
-        instrument trace: { as: 'bar.hello', tags: {baz: 'nitch'} }, tags: ['wassup:bar', 'baz:123']
+        instrument trace: { as: 'bar.hello', tags: {baz: 'nitch'}, include_parent_tags: true}, tags: ['wassup:bar', 'baz:123']
         def self.bar
           456
         end
+
+        instrument trace: { as: 'test' }
+        def self.baz
+          456
+        end
       end
+    end
+
+    it 'drops parent tags' do
+      InstrumentAllTheThings.with_tags('hrm:wassup') do
+        expect(fake_trace).to receive(:trace).with(
+          'test',
+          a_hash_including(tags: {})
+        ) do |&blk|
+          blk.call
+        end
+      end
+
+      klass.baz
     end
 
     it "tags traces" do
