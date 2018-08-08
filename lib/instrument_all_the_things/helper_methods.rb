@@ -32,11 +32,6 @@ module InstrumentAllTheThings
     InstrumentAllTheThings::HelperMethodHelpers::METHODS_LIST.each do |meth|
       full_method_name = HelperMethodHelpers.instrumented_method_name(meth)
 
-      define_method(meth) do |*args, &blk|
-        ActiveSupport::Deprecation.warn("IATT #{meth} is deprecated and will be replaced with #{full_method_name}")
-        transmitter.public_send(meth, *args, &blk)
-      end
-
       define_method(full_method_name) do |*args, &blk|
         transmitter.public_send(meth, *args, &blk)
       end
