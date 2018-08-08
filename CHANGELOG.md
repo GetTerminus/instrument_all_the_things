@@ -1,4 +1,4 @@
-# Pundit
+# Instrument All The Things
 
 ## 1.0.0 (2018-08-08)
 
