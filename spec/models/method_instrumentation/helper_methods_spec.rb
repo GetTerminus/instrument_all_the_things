@@ -22,7 +22,7 @@ describe "Helper Methods" do
       include InstrumentAllTheThings::Methods
 
       def foo
-        increment "foo"
+        instrumentation_increment "foo"
       end
     end
   end

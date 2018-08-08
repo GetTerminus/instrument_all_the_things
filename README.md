@@ -54,15 +54,15 @@ class SomeClass
 
   instrument
   def foo
-     increment('thing.in.progress')
+     instrumentation_increment('thing.in.progress')
      time('time.me') do
        # Do more work
      end
-     decrement('thing.in.progress')
+     instrumentation_decrement('thing.in.progress')
   end
 
   def bar
-    decrement('dowacky') # instrumentation of the entire method is not required
+    instrumentation_decrement('dowacky') # instrumentation of the entire method is not required
   end
 end
 ```
@@ -163,31 +163,31 @@ class Foo
 end
 ```
 
-#### increment(stat, options = {})
-Wrapper for [Datadog::Statsd#increment](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:increment)
+#### instrumentation_increment(stat, options = {})
+Wrapper for [Datadog::Statsd#instrumentation_increment](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:instrumentation_increment)
 
-#### decrement(stat, options = {})
-Wrapper for [Datadog::Statsd#decrement](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:decrement)
+#### instrumentation_decrement(stat, options = {})
+Wrapper for [Datadog::Statsd#instrumentation_decrement](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:instrumentation_decrement)
 
-#### time(stat, options = {}, &blk)
+#### instrumentation_time(stat, options = {}, &blk)
 Wrapper for [Datadog::Statsd#time](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:time)
 
-#### timing(stat, options = {}, &blk)
+#### instrumentation_iming(stat, options = {}, &blk)
 Wrapper for [Datadog::Statsd#timing](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:timing)
 
-#### guage(stat, value, options = {})
+#### instrumentation_guage(stat, value, options = {})
 Wrapper for [Datadog::Statsd#guage](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:gauge)
 
-#### histogram(stat,value, options = {})
+#### instrumentation_histogram(stat,value, options = {})
 Wrapper for [Datadog::Statsd#histogram](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:histogram)
 
-#### set(stat,value, options = {})
+#### instrumentation_set(stat,value, options = {})
 Wrapper for [Datadog::Statsd#set](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:set)
 
-#### count(stat,value, options = {})
+#### instrumentation_count(stat,value, options = {})
 Wrapper for [Datadog::Statsd#count](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:count)
 
-#### event(title, text, options = {})
+#### instrumentation_event(title, text, options = {})
 Wrapper for [Datadog::Statsd#event](http://www.rubydoc.info/github/DataDog/dogstatsd-ruby/master/Datadog%2FStatsd:event)
 
 ### Method Instrumentation
@@ -243,7 +243,7 @@ end
 
 instrument tags: ->(args) { ["arg1:#{args[1]}"] }
 def omg
-  increment('omg.count')
+  instrumentation_increment('omg.count')
 end
 ```
 
@@ -312,11 +312,11 @@ class Foo
   def bar(entries, old_way)
     if old_way
       with_tags('type:old') do
-        increment('did.things', entries.length)
+        instrumentation_increment('did.things', entries.length)
       end
     else
       with_tags('type:new') do
-        increment('did.things', entries.length)
+        instrumentation_increment('did.things', entries.length)
       end
     end
   end
