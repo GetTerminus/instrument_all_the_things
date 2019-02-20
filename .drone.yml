@@ -1,11 +1,8 @@
-workspace:
-  base: /src
-  path: github.com/GetTerminus/instrument-all-the-things
- 
 pipeline:
- 
   test:
-    image: ruby:2.3.3
+    image: getterminus/ruby-ci-image:2.6-je-20190205
+    group: test
+    secrets: [ CODECOV_TOKEN ]
     commands:
-      - bundle install --path=.bundle
+      - bundle --local
       - bundle exec rspec
