@@ -28,7 +28,7 @@ begin
 rescue LoadError
 end
 
-require "instrument_all_the_things/level2" if defined?(Level2)
+require "instrument_all_the_things/level2" if defined?(ActiveSupport::Cache::Level2)
 
 if defined?(ExceptionNotifier)
   require "exception_notifier/instrument_all_the_things_notifier"
