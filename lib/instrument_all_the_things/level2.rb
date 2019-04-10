@@ -50,7 +50,6 @@ module InstrumentAllTheThings
       max_size = payload[:cache].instance_variable_get(:@max_size)
       actual_size = payload[:cache].instance_variable_get(:@cache_size)
 
-      puts "Max size: #{max_size} - Real Size: #{actual_size}"
       instrumentation_gauge(
         'cache.memory.max',
         max_size,
