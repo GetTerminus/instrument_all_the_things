@@ -6,7 +6,7 @@ module InstrumentAllTheThings
     ActiveSupport::Notifications.subscribe('multi_layer_cache.read') do |_, start, finish, _, payload|
       instrumentation_increment('cache.read.count', tags: ["store:#{payload[:store_name]}", "layer:#{payload[:cache_name]}" ] )
       instrumentation_timing(
-        'read.duration',
+        'cache.read.duration',
         (finish - start) * 1000,
         tags: ["store:#{payload[:store_name]}", "layer:#{payload[:cache_name]}" ]
       )
@@ -15,7 +15,7 @@ module InstrumentAllTheThings
     ActiveSupport::Notifications.subscribe('multi_layer_cache.write') do |_, start, finish, _, payload|
       instrumentation_increment('cache.write.count', tags: ["store:#{payload[:store_name]}", "layer:#{payload[:cache_name]}" ] )
       instrumentation_timing(
-        'write.duration',
+        'cache.write.duration',
         (finish - start) * 1000,
         tags: ["store:#{payload[:store_name]}", "layer:#{payload[:cache_name]}" ]
       )
@@ -37,7 +37,7 @@ module InstrumentAllTheThings
     ActiveSupport::Notifications.subscribe('multi_layer_cache.delete') do |_, start, finish, _, payload|
       instrumentation_increment('cache.delete.count', tags: ["store:#{payload[:store_name]}", "layer:#{payload[:cache_name]}" ] )
       instrumentation_timing(
-        'delete.duration',
+        'cache.delete.duration',
         (finish - start) * 1000,
         tags: ["store:#{payload[:store_name]}", "layer:#{payload[:cache_name]}" ]
       )
