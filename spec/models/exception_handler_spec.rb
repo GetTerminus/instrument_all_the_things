@@ -19,8 +19,7 @@ module InstrumentAllTheThings
         expect {
           ExceptionHandler.register(ex)
         }.to change {
-          get_counter('exceptions.count')
-            .with_tags("exception_class:argument_error").total
+          get_counter('exceptions.count').total
         }.from(nil).to(1)
       end
 
@@ -28,12 +27,10 @@ module InstrumentAllTheThings
         expect {
           ExceptionHandler.register(ex, as: 'foo.bar')
         }.to change {
-          get_counter('exceptions.count')
-            .with_tags("exception_class:argument_error").total
+          get_counter('exceptions.count').total
         }.from(nil).to(1)
         .and change {
-          get_counter('foo.bar.exceptions.count')
-            .with_tags("exception_class:argument_error").total
+          get_counter('foo.bar.exceptions.count').total
         }.from(nil).to(1)
       end
     end
