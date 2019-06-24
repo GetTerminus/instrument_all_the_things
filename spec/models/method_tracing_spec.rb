@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ddtrace'
 
-describe "Method instumentation" do
+describe 'Method instumentation' do
   let(:fake_trace) { double(Datadog::Tracer) }
 
   before do
-    stub_const("TestModule::TestClass", klass)
+    stub_const('TestModule::TestClass', klass)
   end
 
   around do |ex|
@@ -30,12 +32,10 @@ describe "Method instumentation" do
       end
 
       instrument trace: true
-      def hello
-      end
+      def hello; end
 
       instrument trace: true
-      def self.hello
-      end
+      def self.hello; end
     end
   end
 
@@ -58,7 +58,7 @@ describe "Method instumentation" do
     instance.hello
   end
 
-  it 'assumes a default name for instance methods' do
+  it 'assumes a default name for class methods' do
     expect(fake_trace).to receive(:trace).with('method.execution', an_instance_of(Hash))
     klass.hello
   end
@@ -69,12 +69,12 @@ describe "Method instumentation" do
     InstrumentAllTheThings.config.logger = faux_logger
 
     expect(faux_logger).to receive(:warn) do |&blk|
-      expect(blk.call()).to include "Requested tracing on foo"
+      expect(blk.call).to include 'Requested tracing on foo'
     end
     expect(instance.foo).to eq 123
   end
 
-  context "tagging" do
+  context 'tagging' do
     let(:klass) do
       Class.new do
         include InstrumentAllTheThings::Methods
@@ -84,7 +84,7 @@ describe "Method instumentation" do
           123
         end
 
-        instrument trace: { as: 'bar.hello', tags: {baz: 'nitch'}, include_parent_tags: true}, tags: ['wassup:bar', 'baz:123']
+        instrument trace: { as: 'bar.hello', tags: { baz: 'nitch' }, include_parent_tags: true }, tags: ['wassup:bar', 'baz:123']
         def self.bar
           456
         end
@@ -109,17 +109,17 @@ describe "Method instumentation" do
       klass.baz
     end
 
-    it "tags traces" do
+    it 'tags traces' do
       expect(fake_trace).to receive(:trace).with(
         'hello',
-        a_hash_including(tags: a_hash_including({'foo' => 'bar'}))
+        a_hash_including(tags: a_hash_including('foo' => 'bar'))
       ) do |&blk|
         blk.call
       end
 
       expect(fake_trace).to receive(:trace).with(
         'bar.hello',
-        a_hash_including(tags: a_hash_including({'baz' => 'nitch', 'wassup' => 'bar'}))
+        a_hash_including(tags: a_hash_including('baz' => 'nitch', 'wassup' => 'bar'))
       ) do |&blk|
         blk.call
       end
@@ -128,7 +128,7 @@ describe "Method instumentation" do
       klass.bar
     end
 
-    it "persists return values" do
+    it 'persists return values' do
       expect(fake_trace).to receive(:trace) do |&blk|
         blk.call
       end
