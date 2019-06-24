@@ -45,14 +45,16 @@ module InstrumentAllTheThings
       end
 
       def execute_method(context, args, &blk)
-        result = if traced?
-          _trace_method(context, args, &blk)
-        else
-          _run_instrumented_method(context, args, &blk)
-        end
+        instrumentation_time("#{instrumentation_key(context)}.timing") do
+          result = if traced?
+            _trace_method(context, args, &blk)
+          else
+            _run_instrumented_method(context, args, &blk)
+          end
 
-        instrumentation_increment("#{instrumentation_key(context)}.success.count")
-        result
+          instrumentation_increment("#{instrumentation_key(context)}.success.count")
+          result
+        end
       rescue => e
         raise InstrumentAllTheThings::ExceptionHandler.register(e)
       end
@@ -71,10 +73,8 @@ module InstrumentAllTheThings
       end
 
       def _run_instrumented_method(context, args, &blk)
-        instrumentation_time("#{instrumentation_key(context)}.timing") do
-          capture_exception(as: instrumentation_key(context)) do
-            context.send("_#{meth}_without_instrumentation", *args, &blk)
-          end
+        capture_exception(as: instrumentation_key(context)) do
+          context.send("_#{meth}_without_instrumentation", *args, &blk)
         end
       end
 

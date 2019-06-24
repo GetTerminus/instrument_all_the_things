@@ -53,6 +53,20 @@ describe 'Method instumentation' do
     expect(klass.bar).to eq 456
   end
 
+  it 'provides timing at the instance level' do
+    expect(fake_trace).to receive(:trace).with('method.execution', a_hash_including(resource: 'TestModule::TestClass#hello'))
+
+    instance.hello
+    expect(get_timings('test_module.test_class.instance.hello.timing').values.length).to eq 1
+  end
+
+  it 'provides timing at the class level' do
+    expect(fake_trace).to receive(:trace).with('method.execution', an_instance_of(Hash))
+
+    klass.hello
+    expect(get_timings('test_module.test_class.class.hello.timing').values.length).to eq 1
+  end
+
   it 'assumes a default name for instance methods' do
     expect(fake_trace).to receive(:trace).with('method.execution', a_hash_including(resource: 'TestModule::TestClass#hello'))
     instance.hello

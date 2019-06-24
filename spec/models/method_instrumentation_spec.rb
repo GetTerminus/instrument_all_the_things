@@ -48,6 +48,16 @@ describe 'Method instumentation' do
     expect(klass.bar).to eq 456
     expect(get_counter('test_module.test_class.class.bar.count').total).to eq 1
     expect(get_counter('test_module.test_class.class.bar.success.count').total).to eq 1
+  end
+
+  it 'provides timing at the instance level' do
+    expect(instance.foo).to eq 123
+
+    expect(get_timings('test_module.test_class.instance.foo.timing').values.length).to eq 1
+  end
+
+  it 'provides timing at the class level' do
+    expect(klass.bar).to eq 456
     expect(get_timings('test_module.test_class.class.bar.timing').values.length).to eq 1
   end
 
@@ -63,6 +73,12 @@ describe 'Method instumentation' do
       expect(klass.bar).to eq 456
       expect(get_counter('stat_prefix.test_module.test_class.class.bar.count').total).to eq 1
       expect(get_timings('stat_prefix.test_module.test_class.class.bar.timing').values.length).to eq 1
+    end
+
+    it 'provides basic instrumentation at the instance level' do
+      expect(instance.foo).to eq 123
+      expect(get_counter('stat_prefix.test_module.test_class.instance.foo.count').total).to eq 1
+      expect(get_timings('stat_prefix.test_module.test_class.instance.foo.timing').values.length).to eq 1
     end
   end
 
