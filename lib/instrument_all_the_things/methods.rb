@@ -18,8 +18,7 @@ module InstrumentAllTheThings
 
       def call(context, args, &blk)
         with_tags(tags_for_method(args)) do
-          instrumentation_increment("#{instrumentation_key(context)}.count")
-          execute_method(context, args, &blk)
+          instrument_method(context, args, &blk)
         end
       end
 
@@ -44,19 +43,25 @@ module InstrumentAllTheThings
         end
       end
 
-      def execute_method(context, args, &blk)
-        instrumentation_time("#{instrumentation_key(context)}.timing") do
-          result = if traced?
-            _trace_method(context, args, &blk)
-          else
-            _run_instrumented_method(context, args, &blk)
-          end
+      def instrument_method(context, args, &blk)
+        instrumentation_increment("#{instrumentation_key(context)}.count")
 
-          instrumentation_increment("#{instrumentation_key(context)}.success.count")
-          result
+        instrumentation_time("#{instrumentation_key(context)}.timing") do
+          capture_exception(as: instrumentation_key(context)) do
+
+            execute_method(context,args, &blk).tap {
+              instrumentation_increment("#{instrumentation_key(context)}.success.count")
+            }
+          end
         end
-      rescue => e
-        raise InstrumentAllTheThings::ExceptionHandler.register(e)
+      end
+
+      def execute_method(context, args, &blk)
+        if traced?
+          _trace_method(context, args, &blk)
+        else
+          context.send("_#{meth}_without_instrumentation", *args, &blk)
+        end
       end
 
       def _trace_method(context, args, &blk)
@@ -68,12 +73,6 @@ module InstrumentAllTheThings
           InstrumentAllTheThings.config.logger.warn do
             "Requested tracing on #{meth} but no tracer configured"
           end
-          context.send("_#{meth}_without_instrumentation", *args, &blk)
-        end
-      end
-
-      def _run_instrumented_method(context, args, &blk)
-        capture_exception(as: instrumentation_key(context)) do
           context.send("_#{meth}_without_instrumentation", *args, &blk)
         end
       end

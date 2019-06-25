@@ -88,6 +88,77 @@ describe 'Method instumentation' do
     expect(instance.foo).to eq 123
   end
 
+  context 'when exceptions are raised' do
+    let(:klass) do
+      Class.new do
+        include InstrumentAllTheThings::Methods
+
+        instrument trace: true
+        def foo
+          123
+        end
+
+        instrument trace: true
+        def self.bar
+          456
+        end
+      end
+    end
+
+    before do
+      allow(fake_trace).to receive(:trace) do |&blk|
+        blk.call
+      end
+    end
+
+    describe 'instance methods' do
+      before { allow(instance).to receive(:_foo_without_instrumentation).and_raise 'Omg Error!' }
+
+      it 'counts exceptions' do
+        expect do
+          instance.foo
+        rescue StandardError
+          nil
+        end.to change {
+          get_counter('test_module.test_class.instance.foo.exceptions.count').total
+        }.from(nil).to(1)
+      end
+
+      it 'no longer counts success' do
+        expect do
+          instance.foo
+        rescue StandardError
+          nil
+        end.to_not change {
+          get_counter('test_module.test_class.instance.foo.success.count').total
+        }.from(nil)
+      end
+    end
+
+    describe 'class methods' do
+      before { allow(klass).to receive(:_bar_without_instrumentation).and_raise 'Omg Error!' }
+      it 'counts exceptions' do
+        expect do
+          klass.bar
+        rescue StandardError
+          nil
+        end.to change {
+          get_counter('test_module.test_class.class.bar.exceptions.count').total
+        }.from(nil).to(1)
+      end
+
+      it 'no longer counts success' do
+        expect do
+          klass.bar
+        rescue StandardError
+          nil
+        end.to_not change {
+          get_counter('test_module.test_class.class.bar.success.count').total
+        }.from(nil)
+      end
+    end
+  end
+
   context 'tagging' do
     let(:klass) do
       Class.new do
