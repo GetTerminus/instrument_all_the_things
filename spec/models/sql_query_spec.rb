@@ -4,7 +4,7 @@ module InstrumentAllTheThings
   describe SQLQuery do
     describe ".parse_query" do
 
-      it "handls gibberish" do
+      it "handles gibberish" do
         expect(SQLQuery.parse_query("asfasdf")).to eq(table: 'unknown', action: 'unknown')
       end
 
