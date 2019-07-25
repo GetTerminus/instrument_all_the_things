@@ -2,7 +2,7 @@ require 'instrument_all_the_things/testing/rspec' if defined?(RSpec)
 
 module InstrumentAllTheThings
   class Transmission
-    attr_accessor :counts, :timings
+    attr_accessor :counts, :timings, :histogram
 
     def initialize(*args, &blk)
       reset!
