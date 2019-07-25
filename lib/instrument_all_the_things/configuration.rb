@@ -1,3 +1,5 @@
+require 'datadog/statsd'
+require 'logger'
 begin
   require 'ddtrace'
 rescue LoadError
