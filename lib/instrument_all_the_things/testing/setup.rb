@@ -2,7 +2,7 @@ require 'instrument_all_the_things/testing/rspec' if defined?(RSpec)
 
 module InstrumentAllTheThings
   class Transmission
-    attr_accessor :counts, :timings, :histogram
+    attr_accessor :counts, :timings, :histograms
 
     def initialize(*args, &blk)
       reset!
@@ -12,7 +12,7 @@ module InstrumentAllTheThings
     def reset!
       self.counts    = Hash.new{|h,k| h[k] = [] }
       self.timings   = Hash.new{|h,k| h[k] = [] }
-      self.histogram = Hash.new{|h,k| h[k] = [] }
+      self.histograms = Hash.new{|h,k| h[k] = [] }
     end
 
     alias _original_count_old _original_count
