@@ -16,7 +16,7 @@ module InstrumentAllTheThings
 
       def get_histogram(hist_name)
         BaseAggregator.new(
-          InstrumentAllTheThings.transmitter.histogram[hist_name]
+          InstrumentAllTheThings.transmitter.histograms[hist_name]
         )
       end
 
