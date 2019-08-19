@@ -61,7 +61,8 @@ describe 'Method instumentation' do
       blk.call(fake_span)
     end
 
-    expect(fake_span).to receive(:set_tag).with('allocations', an_instance_of(Integer))
+    expect(fake_span).to receive(:set_tag).with('allocation_increase', an_instance_of(Integer))
+    expect(fake_span).to receive(:set_tag).with('page_increase', an_instance_of(Integer))
     instance.foo
   end
 

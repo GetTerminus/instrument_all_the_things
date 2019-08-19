@@ -63,12 +63,22 @@ describe 'Method instumentation' do
 
   it 'provides allocations at the instance level' do
     expect(instance.foo).to eq 123
-    expect(get_histogram('test_module.test_class.instance.foo.allocations').values.length).to eq 1
+    expect(get_histogram('test_module.test_class.instance.foo.allocation_increase').values.length).to eq 1
   end
 
   it 'provides allocations at the class level' do
     expect(klass.bar).to eq 456
-    expect(get_histogram('test_module.test_class.class.bar.allocations').values.length).to eq 1
+    expect(get_histogram('test_module.test_class.class.bar.allocation_increase').values.length).to eq 1
+  end
+
+  it 'provides pages at the instance level' do
+    expect(instance.foo).to eq 123
+    expect(get_histogram('test_module.test_class.instance.foo.page_increase').values.length).to eq 1
+  end
+
+  it 'provides pages at the class level' do
+    expect(klass.bar).to eq 456
+    expect(get_histogram('test_module.test_class.class.bar.page_increase').values.length).to eq 1
   end
 
   context 'with stat_prefix set' do

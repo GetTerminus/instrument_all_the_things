@@ -49,23 +49,34 @@ module InstrumentAllTheThings
       (Time.now - time1) * 1000
     end
 
-    def instrument_allocations(metric_name, &blk)
-      ret, allocations = measure_allocations(&blk)
+    def instrument_allocations(metric_prefix, &blk)
+      ret, new_allocations, new_pages = measure_memory_impact(&blk)
 
-      transmitter.histogram(metric_name, allocations)
+      transmitter.histogram("#{metric_prefix}.allocation_increase", new_allocations)
+      transmitter.histogram("#{metric_prefix}.page_increase", new_pages)
 
       ret
     end
 
-    def measure_allocations
+    def measure_memory_impact
       starting_allocations = now_allocations
+      starting_pages = now_allocations
       ret_value = yield
       ending_allocations = now_allocations
-      [ret_value, ending_allocations - starting_allocations]
+      ending_pages = now_pages
+      [
+        ret_value,
+        ending_allocations - starting_allocations,
+        ending_pages - starting_pages
+      ]
     end
 
     def now_allocations
       GC.stat(:total_allocated_objects)
+    end
+
+    def now_pages
+      GC.stat(:total_allocated_pages)
     end
   end
 end
