@@ -14,6 +14,12 @@ module InstrumentAllTheThings
         )
       end
 
+      def get_histogram(hist_name)
+        BaseAggregator.new(
+          InstrumentAllTheThings.transmitter.histograms[hist_name]
+        )
+      end
+
       class BaseAggregator
         attr_accessor :metrics
 
