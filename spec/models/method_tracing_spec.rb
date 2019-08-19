@@ -40,18 +40,31 @@ describe 'Method instumentation' do
   end
 
   let(:instance) { klass.new }
+  let(:fake_span) { double(Datadog::Span) }
+  before{ allow(fake_span).to receive(:set_tag) }
+
 
   it 'provides basic tracing' do
     expect(fake_trace).to receive(:trace).with('hello', a_hash_including(resource: 'hrm')) do |&blk|
-      blk.call
+      blk.call(fake_span)
     end
     expect(fake_trace).to receive(:trace).with('bar.hello', a_hash_including(resource: 'TestModule::TestClass.bar')) do |&blk|
-      blk.call
+      blk.call(fake_span)
     end
 
     expect(instance.foo).to eq 123
     expect(klass.bar).to eq 456
   end
+
+  it 'adds a allocations tag' do
+    allow(fake_trace).to receive(:trace).with('hello', a_hash_including(resource: 'hrm')) do |&blk|
+      blk.call(fake_span)
+    end
+
+    expect(fake_span).to receive(:set_tag).with('allocations', an_instance_of(Integer))
+    instance.foo
+  end
+
 
   it 'provides timing at the instance level' do
     expect(fake_trace).to receive(:trace).with('method.execution', a_hash_including(resource: 'TestModule::TestClass#hello'))
@@ -187,7 +200,7 @@ describe 'Method instumentation' do
           'test',
           a_hash_including(tags: {})
         ) do |&blk|
-          blk.call
+          blk.call(fake_span)
         end
       end
 
@@ -199,14 +212,14 @@ describe 'Method instumentation' do
         'hello',
         a_hash_including(tags: a_hash_including('foo' => 'bar'))
       ) do |&blk|
-        blk.call
+        blk.call(fake_span)
       end
 
       expect(fake_trace).to receive(:trace).with(
         'bar.hello',
         a_hash_including(tags: a_hash_including('baz' => 'nitch', 'wassup' => 'bar'))
       ) do |&blk|
-        blk.call
+        blk.call(fake_span)
       end
 
       instance.foo
@@ -215,10 +228,10 @@ describe 'Method instumentation' do
 
     it 'persists return values' do
       expect(fake_trace).to receive(:trace) do |&blk|
-        blk.call
+        blk.call(fake_span)
       end
       expect(fake_trace).to receive(:trace) do |&blk|
-        blk.call
+        blk.call(fake_span)
       end
 
       expect(instance.foo).to eq 123

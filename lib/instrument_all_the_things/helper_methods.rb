@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 require 'active_support/deprecation'
 
 module InstrumentAllTheThings
   module HelperMethodHelpers
-    METHODS_LIST = [
-      :increment,
-      :decrement,
-      :time,
-      :timing,
-      :gauge,
-      :histogram,
-      :set,
-      :count,
+    METHODS_LIST = %i[
+      increment
+      decrement
+      time
+      timing
+      gauge
+      histogram
+      set
+      count
     ].freeze
 
     def self.instrumented_method_name(meth)
@@ -23,7 +25,7 @@ module InstrumentAllTheThings
       base.extend self
     end
 
-    %i{with_tags transmitter normalize_class_name}.each do |meth|
+    %i[with_tags transmitter normalize_class_name].each do |meth|
       define_method(meth) do |*args, &blk|
         InstrumentAllTheThings.public_send(meth, *args, &blk)
       end
@@ -46,6 +48,24 @@ module InstrumentAllTheThings
       yield
       (Time.now - time1) * 1000
     end
+
+    def instrument_allocations(metric_name, &blk)
+      ret, allocations = measure_allocations(&blk)
+
+      transmitter.histogram(metric_name, allocations)
+
+      ret
+    end
+
+    def measure_allocations
+      starting_allocations = now_allocations
+      ret_value = yield
+      ending_allocations = now_allocations
+      [ret_value, ending_allocations - starting_allocations]
+    end
+
+    def now_allocations
+      GC.stat(:total_allocated_objects)
+    end
   end
 end
-
