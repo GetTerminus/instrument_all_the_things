@@ -49,9 +49,11 @@ module InstrumentAllTheThings
         instrumentation_time("#{instrumentation_key(context)}.timing") do
           capture_exception(as: instrumentation_key(context)) do
 
-            execute_method(context,args, &blk).tap {
-              instrumentation_increment("#{instrumentation_key(context)}.success.count")
-            }
+            instrument_allocations(instrumentation_key(context)) do
+              execute_method(context,args, &blk).tap {
+                instrumentation_increment("#{instrumentation_key(context)}.success.count")
+              }
+            end
           end
         end
       end
@@ -66,8 +68,15 @@ module InstrumentAllTheThings
 
       def _trace_method(context, args, &blk)
         if tracing_availiable?
-          tracer.trace(trace_name(context), trace_options(context)) do
-            context.send("_#{meth}_without_instrumentation", *args, &blk)
+          tracer.trace(trace_name(context), trace_options(context)) do |span|
+            ret_value, allocations, pages = measure_memory_impact do
+              context.send("_#{meth}_without_instrumentation", *args, &blk)
+            end
+
+            span.set_tag('allocation_increase', allocations)
+            span.set_tag('page_increase', pages)
+
+            ret_value
           end
         else
           InstrumentAllTheThings.config.logger.warn do
