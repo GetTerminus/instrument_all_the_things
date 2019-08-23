@@ -60,7 +60,7 @@ module InstrumentAllTheThings
 
     def measure_memory_impact
       starting_allocations = now_allocations
-      starting_pages = now_allocations
+      starting_pages = now_pages
       ret_value = yield
       ending_allocations = now_allocations
       ending_pages = now_pages
