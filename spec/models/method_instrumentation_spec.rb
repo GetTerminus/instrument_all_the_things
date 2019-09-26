@@ -19,7 +19,7 @@ describe 'Method instumentation' do
       instrument tags: ->(*args) { ["magic:#{args[0] / 5}"] }
       def dude(foo); end
 
-      instrument tags: ->(*args, iatt_context: ) { ["magic:#{args[0] * iatt_context.foo}"] }
+      instrument tags: ->(*args, instrumentation_context: ) { ["magic:#{args[0] * instrumentation_context.foo}"] }
       def args_and_context(foo); end
 
       instrument tags: -> { ['magic:mike'] }
