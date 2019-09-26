@@ -19,6 +19,9 @@ describe 'Method instumentation' do
       instrument tags: ->(*args) { ["magic:#{args[0] / 5}"] }
       def dude(foo); end
 
+      instrument tags: ->(*args, context: ) { ["magic:#{args[0] * context.foo}"] }
+      def args_and_context(foo); end
+
       instrument tags: -> { ['magic:mike'] }
       def hrm(foo); end
 
@@ -375,6 +378,14 @@ describe 'Method instumentation' do
         instance.dude(15)
       end.to change {
         get_counter('test_module.test_class.instance.dude.count').with_tags('magic:3').total
+      }.from(nil).to(1)
+    end
+
+    it 'allows a proc with arity -2 to provide tags' do
+      expect do
+        instance.args_and_context(2)
+      end.to change {
+        get_counter('test_module.test_class.instance.args_and_context.count').with_tags('magic:246').total
       }.from(nil).to(1)
     end
 

@@ -17,22 +17,24 @@ module InstrumentAllTheThings
       end
 
       def call(context, args, &blk)
-        with_tags(tags_for_method(args)) do
+        with_tags(tags_for_method(args, context)) do
           instrument_method(context, args, &blk)
         end
       end
 
-      def tags_for_method(args)
+      def tags_for_method(args, context)
         [
           "method:#{_naming_for_method(meth)}",
           "method_class:#{normalize_class_name(self.klass)}"
-        ].concat(user_defined_tags(args))
+        ].concat(user_defined_tags(args, context))
       end
 
-      def user_defined_tags(args)
+      def user_defined_tags(args, context)
         if options[:tags].respond_to?(:call)
           if options[:tags].arity.zero?
             options[:tags].call
+          elsif options[:tags].arity == -2
+            options[:tags].call(*args, context: context)            
           else
             options[:tags].call(*args)
           end
