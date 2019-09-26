@@ -235,16 +235,30 @@ You can append tags to the instrmentation methods by specifying the tag key
 as either a array of string, or a proc. The proc will be provided with the
 arguments to the method.
 
+If the keyword `iatt_context` is provided along with args, the context will be passed in.
+
 __Example__
 ```ruby
-instrument tags: ['foo:bar']
-def omg
+
+class Foo
+  attr_accessor :bar
+
+  instrument tags: ['foo:bar']
+  def omg
+  end
+
+  instrument tags: ->(args) { ["arg1:#{args[1]}"] }
+  def omg
+    instrumentation_increment('omg.count')
+  end
+
+
+  instrument tags: ->(*args, iatt_context:) { ["arg1:#{args[1]}", "bar.val:#{iatt_context.bar}"] }
+  def def omg
+    instrumentation_increment('omg.count')
+  end
 end
 
-instrument tags: ->(args) { ["arg1:#{args[1]}"] }
-def omg
-  instrumentation_increment('omg.count')
-end
 ```
 
 Note: Any instrumentation call that occurs within the method will have the

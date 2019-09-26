@@ -35,9 +35,8 @@ module InstrumentAllTheThings
 
           if tag_proc.arity.zero?
             tag_proc.call
-          elsif tag_proc.arity == -2 && (tag_proc.parameters.detect {|p| p[0] == :keyreq})
-            context_param = (tag_proc.parameters.detect {|p| p[0] == :keyreq})[1]
-            tag_proc.call(*args, context_param => context)            
+          elsif tag_proc.arity == -2 && (iatt_context = tag_proc.parameters.detect {|p| p[0] == :keyreq && p[1] == :iatt_context })
+            tag_proc.call(*args, iatt_context: context)            
           else
             tag_proc.call(*args)
           end
