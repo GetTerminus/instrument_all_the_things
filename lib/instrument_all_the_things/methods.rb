@@ -31,12 +31,15 @@ module InstrumentAllTheThings
 
       def user_defined_tags(args, context)
         if options[:tags].respond_to?(:call)
-          if options[:tags].arity.zero?
-            options[:tags].call
-          elsif options[:tags].arity == -2
-            options[:tags].call(*args, context: context)            
+          tag_proc = options[:tags]
+
+          if tag_proc.arity.zero?
+            tag_proc.call
+          elsif tag_proc.arity == -2 && (tag_proc.parameters.detect {|p| p[0] == :keyreq})
+            context_param = (tag_proc.parameters.detect {|p| p[0] == :keyreq})[1]
+            tag_proc.call(*args, context_param => context)            
           else
-            options[:tags].call(*args)
+            tag_proc.call(*args)
           end
         elsif options[:tags].is_a?(Array)
           options[:tags]
