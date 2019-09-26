@@ -1,3 +1,6 @@
+kind: pipeline
+name: default
+
 steps:
 - name: test-ruby
   image: getterminus/ruby-ci-image:2.6-je-20190205
@@ -8,3 +11,4 @@ steps:
   commands:
     - bundle check --path=/usr/local/bundle || bundle --local --path=/usr/local/bundle
     - bundle exec rspec
+
