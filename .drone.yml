@@ -2,7 +2,6 @@ steps:
 - name: test-ruby
   image: getterminus/ruby-ci-image:2.6-je-20190205
   group: bundler
-  secrets: [ CODECOV_TOKEN ]
   volumes:
     - name: bundledir
       path: /usr/local/bundle
