@@ -36,7 +36,7 @@ module InstrumentAllTheThings
           if tag_proc.arity.zero?
             tag_proc.call
           elsif tag_proc.arity == -2 && (instrumentation_context = tag_proc.parameters.detect {|p| p[0] == :keyreq && p[1] == :instrumentation_context })
-            tag_proc.call(*args, instrumentation_context: context)            
+            tag_proc.call(*args, instrumentation_context: context)
           else
             tag_proc.call(*args)
           end
@@ -133,7 +133,7 @@ module InstrumentAllTheThings
       end
 
       def resource_name(context)
-        if context.is_a?(Class)
+        if context.is_a?(Class) || context.is_a?(Module)
           context.to_s + _naming_for_method(self.meth)
         else
           context.class.to_s + _naming_for_method(self.meth)

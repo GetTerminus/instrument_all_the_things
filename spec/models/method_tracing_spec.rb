@@ -102,6 +102,35 @@ describe 'Method instumentation' do
     expect(instance.foo).to eq 123
   end
 
+  context 'when tracing a module' do
+    before do
+      stub_const('TestModule::SubModule', mod)
+    end
+
+    let(:mod) do
+      Module.new do
+        include InstrumentAllTheThings::Methods
+
+        instrument trace: { service: 'baz' }
+        def self.bar
+          456
+        end
+      end
+    end
+
+
+    it 'provides basic tracing' do
+      expect(fake_trace).to receive(:trace).with(
+        'method.execution',
+        a_hash_including(service: 'baz', resource: 'TestModule::SubModule.bar')
+      ) do |&blk|
+        blk.call(fake_span)
+      end
+
+      expect(TestModule::SubModule.bar).to eq 456
+    end
+  end
+
   context 'when exceptions are raised' do
     let(:klass) do
       Class.new do
