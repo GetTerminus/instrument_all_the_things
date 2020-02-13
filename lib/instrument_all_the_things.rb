@@ -21,16 +21,24 @@ module InstrumentAllTheThings
             Logger.new(STDOUT)
           end)
 
-  setting(:stats_transmitter,
+  setting(:stat_reporter,
           if defined?(Datadog::Statsd)
-            require_relative './clients/datadog'
-            Clients::DataDog.new(
+            require_relative './clients/stat_reporter/datadog'
+            Clients::StatReporter::DataDog.new(
               ENV.fetch('DATADOG_HOST', 'localhost'),
               ENV.fetch('DATADOG_PORT', 8125)
             )
           else
-            require_relative './instrument_all_the_things/clients/blackhole'
-            Clients::Blackhole.new
+            require 'instrument_all_the_things/clients/stat_reporter/blackhole'
+            Clients::StatReporter::Blackhole.new
+          end)
+
+  setting(:tracer,
+          if defined?(Datadog) && Datadog&.tracer
+            Datadog.tracer
+          else
+            require 'instrument_all_the_things/clients/tracer/blackhole'
+            BlackholeTracer.new
           end)
 end
 
