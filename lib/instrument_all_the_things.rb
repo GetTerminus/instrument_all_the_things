@@ -11,6 +11,8 @@ module InstrumentAllTheThings
 
   extend Dry::Configurable
 
+  setting(:stat_prefix)
+
   setting(:logger,
           if defined?(Rails)
             Rails.logger
