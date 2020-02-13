@@ -1,8 +1,8 @@
 # InstrumentAllTheThings
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/instrument_all_the_things`. To experiment with that code, run `bin/console` for an interactive prompt.
+Visibility into your application is one of the most critical parts of software development. At best, visibility is typically an afterthought and this is a problem. So what do you do?
 
-TODO: Delete this and the text above, and describe your gem
+![Instrument all the things](https://raw.githubusercontent.com/getterminus/instrument-all-the-things/v1/logo.jpg)
 
 ## Installation
 
@@ -23,6 +23,8 @@ Or install it yourself as:
 ## Usage
 *Note:* For convenience the InstrumentAllTheThings constant is aliased to IATT.
 
+
+## Testing Support
 
 
 ## Configuration
