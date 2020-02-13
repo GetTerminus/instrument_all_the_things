@@ -4,6 +4,8 @@ Visibility into your application is one of the most critical parts of software d
 
 ![Instrument all the things](../v1/logo.jpg?raw=true)
 
+At Terminus we use DataDog for our application visibility. InstrumentAllTheThings provides simple ways to quickly and unobtrusively add detailed instrumentation to Datadog metrics and Datadog APM.
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -22,6 +24,7 @@ Or install it yourself as:
 
 ## Usage
 *Note:* For convenience the InstrumentAllTheThings constant is aliased to IATT.
+
 
 
 ## Testing Support
