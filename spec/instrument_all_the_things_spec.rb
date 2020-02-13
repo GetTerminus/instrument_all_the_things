@@ -1,7 +1,7 @@
 require 'pry'
 
 class Foo
-  include IATT
+  include IATT::Helpers
 
   def initialize(x)
     @x = x
@@ -25,7 +25,7 @@ RSpec.describe InstrumentAllTheThings do
 
   it "does something useful" do
     x = Foo.new(123)
-    binding.pry
+    x.bar
     expect(false).to eq(true)
   end
 end

@@ -1,34 +1,37 @@
 # frozen_string_literal: true
 
+require 'dry-configurable'
+
 require 'instrument_all_the_things/version'
 
-require_relative './instrument_all_the_things/method_proxy'
+require_relative './instrument_all_the_things/helpers'
 
 module InstrumentAllTheThings
   class Error < StandardError; end
 
-  module ClassMethods
-    def instrument(trace: true)
-      @last_settings = {
-        trace: trace
-      }
-    end
+  extend Dry::Configurable
 
-    def method_added(method_name)
-      return unless @last_settings
+  setting(:logger,
+          if defined?(Rails)
+            Rails.logger
+          elsif defined?(App) && App.respond_to?(:logger)
+            App.logger
+          else
+            require 'logger'
+            Logger.new(STDOUT)
+          end)
 
-      settings = @last_settings
-      @last_settings = nil
-
-      InstrumentAllTheThings::MethodProxy
-        .for_class(self)
-        .wrap_implementation(method_name, settings)
-    end
-  end
-
-  def self.included(other_class)
-    other_class.extend(ClassMethods)
-  end
+  setting(:stats_transmitter,
+          if defined?(Datadog::Statsd)
+            require_relative './clients/datadog'
+            Clients::DataDog.new(
+              ENV.fetch('DATADOG_HOST', 'localhost'),
+              ENV.fetch('DATADOG_PORT', 8125)
+            )
+          else
+            require_relative './instrument_all_the_things/clients/blackhole'
+            Clients::Blackhole.new
+          end)
 end
 
 IATT = InstrumentAllTheThings

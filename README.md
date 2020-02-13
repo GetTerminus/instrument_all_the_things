@@ -24,6 +24,15 @@ Or install it yourself as:
 
 TODO: Write usage instructions here
 
+
+### Configuration
+The configuration for IATT is available through the InstrumentAllTheThings.config helpers.
+
+| Config Name | Description                               | Default
+| ----------- | -----------                               | -------
+| logger      | The logger used to report errors and info | If the constant `Rails` is set, use `Rails.logger`. If `App` and it responds to `logger` use `App.logger`. Otherwise create a new `Logger` sent to STDOUT
+| stats_transmitter | The logger used to report errors and info | If the constant `Rails` is set, use `Rails.logger`. If `App` and it responds to `logger` use `App.logger`. Otherwise create a new `Logger` sent to STDOUT
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
