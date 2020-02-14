@@ -29,6 +29,31 @@ Or install it yourself as:
 
 ## Testing Support
 
+You can setup your test environment by running the following setup:
+
+```ruby
+require 'instrument_all_the_things/testing/stat_tracker'
+require 'instrument_all_the_things/testing/trace_tracker'
+
+Datadog.configure do |c|
+  c.tracer transport_options: proc { |t|
+    t.adapter :test, IATT::Testing::TraceTracker.new
+  }
+end
+
+IATT.config.stat_reporter = IATT::Testing::StatTracker.new
+```
+
+This injects middleware and in the StatsD interface as well as in the Tracer output. By doing this you can start using
+some awesome rspec helpers like so:
+
+```ruby
+let(:klass) do
+  Class.new do
+    include InstrumentAllTheThings::Helpers
+  end
+end
+```
 
 ## Configuration
 The configuration for IATT is available through the InstrumentAllTheThings.config helpers.
@@ -49,21 +74,9 @@ Initialized with environment variables
 * `DATADOG_HOST` if set, otherwise `localhost`
 * `DATADOG_POST` if set, otherwise `8125`
 
-#### Blackhole
-A stat reporter with no logic, all stats are discarded.
-
-#### TestHarness
-A stat reporter which keeps all reported data in memory. Specifically used for test envs.
-
 ### Tracers
 #### Datadog
 The default client if the constant `Datadog` is found and has a non-null value for `tracer`.
-
-#### Blackhole
-A tracer with minimal logic, all traces are discarded.
-
-#### TestHarness
-A stat reporter which keeps all reported data in memory. Specifically used for test envs.
 
 ## Development
 

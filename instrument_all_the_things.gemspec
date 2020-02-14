@@ -30,6 +30,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'dry-configurable', '~> 0.8'
+  spec.add_dependency 'ddtrace'
+  spec.add_dependency 'dogstatsd-ruby'
 
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'pry'
