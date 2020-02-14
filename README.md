@@ -53,7 +53,8 @@ also be passed to the DataDog tracer, and their [options](https://github.com/Dat
 
 | Option  | Description                                                                                                                                                          | Default |
 | -----   | ----                                                                                                                                                                 | -----   |
-| service | This is the value which shows up on the [first page of the APM screen](https://app.datadoghq.com/apm/home) this should be set at the entry point of your application | `nil`
+| service | This is the value which shows up on the [first page of the APM screen](https://app.datadoghq.com/apm/home) this should be set at the entry point of your application or process | `nil`
+| resource | How this method will show up when viewing a service in APM. | For instance methods `ClassName.method_name`<br>For class methods `ClassName#method_name`
 
 
 ## Testing Support
