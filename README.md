@@ -26,6 +26,27 @@ Or install it yourself as:
 *Note:* For convenience the InstrumentAllTheThings constant is aliased to IATT.
 
 
+## Method Instrumentation
+Method instrumentation both in APM as well as in simple counts & timings is the bread and butter of visibility, and it
+is trivial to implement with IATT.
+
+Each measured metric may be individually disabled, and some may be provided additional configuration. All measurments
+default to on, unless otherwise specified. You may disable the specified measurement by providing a falsy value to the
+configuration key when calling `instrument`
+
+*Example*
+```ruby
+class Foo
+  include InstrumentAllTheThings
+
+  instrument config_key: {configuration_option: 123}
+  def foo
+  end
+end
+```
+
+### Tracing
+_Configuration Key `trace`_
 
 ## Testing Support
 

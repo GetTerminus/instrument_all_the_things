@@ -6,7 +6,7 @@ require 'pry'
 RSpec.describe 'basic trace' do
   let(:klass) do
     Class.new do
-      include InstrumentAllTheThings::Helpers
+      include InstrumentAllTheThings
 
       instrument
       def foo; end
@@ -16,7 +16,8 @@ RSpec.describe 'basic trace' do
   it 'creates a trace' do
     expect { klass.new.foo }.to change {
       emitted_spans(
-        filtered_by: {name: 'method.execution'}).length
+        filtered_by: { name: 'method.execution' }
+      ).length
     }.by(1)
   end
 end

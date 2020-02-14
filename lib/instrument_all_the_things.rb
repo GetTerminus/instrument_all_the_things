@@ -34,6 +34,10 @@ module InstrumentAllTheThings
   )
 
   setting(:tracer, Datadog.tracer)
+
+  def self.included(other)
+    other.include(Helpers)
+  end
 end
 
 IATT = InstrumentAllTheThings
