@@ -48,6 +48,14 @@ end
 ### Tracing
 _Configuration Key `trace`_
 
+When set to a non falsy value, a span for this method will be created. The defaults are listed below. This hash will
+also be passed to the DataDog tracer, and their (https://github.com/DataDog/dd-trace-rb/blob/master/docs/GettingStarted.md#manual-instrumentation)[options] should also be understood.
+
+| Option  | Description                                                                                                                                                          | Default |
+| -----   | ----                                                                                                                                                                 | -----   |
+| service | This is the value which shows up on the (https://app.datadoghq.com/apm/home)[first page of the APM screen] this should be set at the entry point of your application | `nil`
+
+
 ## Testing Support
 
 You can setup your test environment by running the following setup:
