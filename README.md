@@ -51,10 +51,13 @@ _Configuration Key `trace`_
 When set to a non falsy value, a span for this method will be created. The defaults are listed below. This hash will
 also be passed to the DataDog tracer, and their [options](https://github.com/DataDog/dd-trace-rb/blob/master/docs/GettingStarted.md#manual-instrumentation) should also be understood.
 
-| Option  | Description                                                                                                                                                          | Default |
-| -----   | ----                                                                                                                                                                 | -----   |
-| service | This is the value which shows up on the [first page of the APM screen](https://app.datadoghq.com/apm/home) this should be set at the entry point of your application or process | `nil`
-| resource | How this method will show up when viewing a service in APM. | For instance methods `ClassName.method_name`<br>For class methods `ClassName#method_name`
+| Option    | Description                                                   | Default
+| -----     | ----                                                          | -----
+| service   | This is the value which shows up on the [first page of the APM screen](https://app.datadoghq.com/apm/home) this should be set at the entry point of your application or process | `nil`
+| resource  | How this method will show up when viewing the service in APM. | For instance methods `ClassName.method_name`<br>For class methods `ClassName#method_name`
+| span_name | You probably don't want to change this                        | `method.execution`
+| span_type | See DD Docs.                                                  | `nil`
+| tags      | Set of tags to be added to the span, expected to be a hash    | {}
 
 
 ## Testing Support
