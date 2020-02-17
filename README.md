@@ -1,8 +1,8 @@
-# InstrumentAllTheThings
-
 Visibility into your application is one of the most critical parts of software development. At best, visibility is typically an afterthought and this is a problem. So what do you do?
 
 ![Instrument all the things](./logo.jpg?raw=true)
+
+# InstrumentAllTheThings
 
 At Terminus we use DataDog for our application visibility. InstrumentAllTheThings provides simple ways to quickly and unobtrusively add detailed instrumentation to Datadog metrics and Datadog APM.
 
