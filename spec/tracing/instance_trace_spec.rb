@@ -39,6 +39,25 @@ RSpec.describe 'instance method tracing' do
     }.by(1)
   end
 
+  describe 'a config of true' do
+    let(:trace_options) { true }
+
+    it 'respects the configuration' do
+      expect { call_traced_method }.to change {
+        emitted_spans(
+          filtered_by: {
+            name: 'method.execution',
+            service: '',
+            resource: 'KlassName.foo',
+            type: '',
+            meta: {}
+          }
+        ).length
+      }.by(1)
+    end
+
+  end
+
   describe 'when the service name is configured' do
     let(:trace_options) { { service: 'foobar' } }
 
