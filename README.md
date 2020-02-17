@@ -49,6 +49,10 @@ _Configuration Key `gc_stats`_
 
 Collects the difference between the specified keys during the execution of the method.
 
+Stat diffs are added to the active trace span as a tag, and a stat is emitted with the following format
+
+`klass_name.(instance|class)_methods.(stat_name)_change`
+
 #### Description of default stats
 _GC Stats are not thread local, if your app is multi threaded other threads may be contributing to these stats_
 | Option                  | Description

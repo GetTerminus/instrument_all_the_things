@@ -6,7 +6,8 @@ module InstrumentAllTheThings
   class MethodInstrumentor
     WAPPERS = {
       trace: Instrumentors::TRACE_WRAPPER,
-      error_logging: Instrumentors::ERROR_LOGGING_WRAPPER
+      error_logging: Instrumentors::ERROR_LOGGING_WRAPPER,
+      gc_stats: Instrumentors::GC_STATS_WRAPPER,
     }.freeze
 
     DEFAULT_OPTIONS = {
