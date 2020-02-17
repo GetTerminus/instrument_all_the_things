@@ -44,6 +44,18 @@ class Foo
   end
 end
 ```
+### Error Logging
+_Configuration Key `log_errors`_
+
+When set to a non falsy value all errors raised in a span will be logged to the configured IATT logger and re-emitted.
+The first traces span where they are seen logs them only, they will not be re-logged by IATT at any future level
+
+By default call stacks are logged without all gem paths (as defined by the `Bundler.bundle_path`)
+
+| Option              | Description                                                                         | Default
+| -----               | ----                                                                                | -----
+| rescue_class        | The parent error which should be caught and logged                                  | StandardError
+| exclude_bundle_path | If truthy, remove all entries from the error backtrace which are in the bundle path | true
 
 ### Tracing
 _Configuration Key `trace`_
@@ -105,7 +117,7 @@ some awesome rspec helpers like so:
     expect {
       klass.new.foo
 
-      # Datadog writes trace to the wire, to the test harness asynchronously
+      # Datadog writes trace to the wire and to the test harness asynchronously
       # This helper is provided to force the flush before expectations are stated
       flush_traces
     }.to change{

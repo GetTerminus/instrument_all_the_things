@@ -5,7 +5,8 @@ require_relative './instrumentors/simple'
 module InstrumentAllTheThings
   class MethodInstrumentor
     WAPPERS = {
-      trace: Instrumentors::TRACE_WRAPPER
+      trace: Instrumentors::TRACE_WRAPPER,
+      error_logging: Instrumentors::ERROR_LOGGING_WRAPPER
     }.freeze
 
     DEFAULT_OPTIONS = {

@@ -39,6 +39,14 @@ RSpec.describe 'instance method tracing' do
     }.by(1)
   end
 
+  describe 'when disabled' do
+    let(:trace_options) { false }
+
+    it 'respects the configuration' do
+      expect { call_traced_method }.not_to(change { emitted_spans.length })
+    end
+  end
+
   describe 'a config of true' do
     let(:trace_options) { true }
 
@@ -55,7 +63,6 @@ RSpec.describe 'instance method tracing' do
         ).length
       }.by(1)
     end
-
   end
 
   describe 'when the service name is configured' do

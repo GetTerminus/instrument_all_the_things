@@ -4,7 +4,7 @@ module InstrumentAllTheThings
   module Testing
     module RSpecMatchers
       def flush_traces
-        Datadog.tracer.writer.worker.flush_data
+        Datadog.tracer&.writer&.worker&.flush_data
       end
 
       def emitted_spans(filtered_by: nil)
