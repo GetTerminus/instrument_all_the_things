@@ -32,6 +32,9 @@ module InstrumentAllTheThings
       rescue_class: StandardError,
     }.freeze
 
+    ERROR_LOGGER = lambda do |exception, backtrace_cleaner|
+    end
+
     ERROR_LOGGING_WRAPPER = lambda do |opts, context|
       opts = if opts == true
                DEFAULT_ERROR_LOGGING_OPTIONS
@@ -39,22 +42,28 @@ module InstrumentAllTheThings
                DEFAULT_ERROR_LOGGING_OPTIONS.merge(opts)
              end
 
+      backtrace_cleaner = if opts[:exclude_bundle_path ] && defined?(Bundler)
+                            bundle_path = Bundler.bundle_path.to_s
+                            ->(trace) { trace.reject{|p| p.start_with?(bundle_path)} }
+                          else
+                            ->(trace) { trace }
+                          end
+
       lambda do |next_blk, actual_code|
         next_blk.call(actual_code)
       rescue opts[:rescue_class] => e
+        val = e.instance_variable_get(:@_logged_by_iatt)
+        raise if val
+        val = e.instance_variable_set(:@_logged_by_iatt, true)
+
         IATT.config&.logger&.error("An error occurred in #{context.trace_name}")
         IATT.config&.logger&.error(e.message)
 
-        callstack = if opts[:exclude_bundle_path ] && defined?(Bundler) && e.backtrace
-                      bundle_path = Bundler.bundle_path.to_s
-                      e.backtrace.reject do |path|
-                        path.start_with?(bundle_path)
-                      end
-                    else
-                      e.backtrace || []
-                    end
+        callstack = backtrace_cleaner.call(e.backtrace || [])
 
         callstack.each{|path| IATT.config&.logger&.error(path) }
+
+        raise
       end
     end
   end

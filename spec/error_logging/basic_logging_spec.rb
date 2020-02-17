@@ -4,6 +4,11 @@ RSpec.describe 'error logging on instance methods' do
     Class.new do
       include InstrumentAllTheThings
 
+      instrument error_logging: true
+      def bar
+        foo
+      end
+
       def self.to_s
         'KlassName'
       end
@@ -21,8 +26,20 @@ RSpec.describe 'error logging on instance methods' do
   it 'logs the error to the IATT logger' do
     expect(IATT.config.logger).to receive(:error).with('An error occurred in KlassName.foo')
     expect(IATT.config.logger).to receive(:error).with('Foobar')
-    expect(IATT.config.logger).to receive(:error).at_least(1).times
+    expect(IATT.config.logger).to receive(:error).with(/.*\.rb/).at_least(1).times
 
     call_error_logged_method rescue nil
+  end
+
+  it 're-raises the exception' do
+    expect(IATT.config.logger).to receive(:error).at_least(1).times
+    expect { call_error_logged_method }.to raise_error('Foobar')
+  end
+
+  it 'only logs the error once' do
+    expect(IATT.config.logger).not_to receive(:error).with('An error occurred in KlassName.bar')
+    expect(IATT.config.logger).to receive(:error).at_least(1).times
+
+    instance.bar rescue nil
   end
 end
