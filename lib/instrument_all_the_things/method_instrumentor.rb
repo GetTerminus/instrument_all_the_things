@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './instrumentors/simple'
+require_relative './instrumentors/all'
 
 module InstrumentAllTheThings
   class MethodInstrumentor

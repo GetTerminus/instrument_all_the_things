@@ -44,6 +44,24 @@ class Foo
   end
 end
 ```
+### Garbage Collection Stats
+_Configuration Key `gc_stats`_
+
+Collects the difference between the specified keys during the execution of the method.
+
+#### Description of default stats
+_GC Stats are not thread local, if your app is multi threaded other threads may be contributing to these stats_
+| Option                  | Description
+| -----                   | ----
+| total_allocated_pages   | Total number of memory pages owned by this ruby process. Mature processes tend to see a slowdown in page allocations
+| total_allocated_objects | Total number of objects which have not been garbage collected yet
+| count                   | Total number of GC runs during this method's exuection
+
+#### Options
+| Option       | Description              | Default
+| -----        | ----                     | -----
+| diffed_stats | Stats to diff and record | [:total_allocated_pages, :total_allocated_objects, :count]
+
 ### Error Logging
 _Configuration Key `log_errors`_
 
