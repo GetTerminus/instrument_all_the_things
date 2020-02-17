@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'pry'
 
-RSpec.describe 'basic trace' do
+RSpec.describe 'class method tracing' do
   let(:trace_options) { {} }
   let(:klass) do
     Class.new do
@@ -16,13 +16,13 @@ RSpec.describe 'basic trace' do
   end
 
   subject(:call_traced_method) do
-    klass.new.foo
+    klass.foo
     flush_traces
   end
 
   before do
     klass.instrument(trace: trace_options)
-    klass.define_method(:foo) { |*i| }
+    klass.define_singleton_method(:foo) { |*i| }
   end
 
   it 'creates a trace with defaults' do
@@ -31,7 +31,7 @@ RSpec.describe 'basic trace' do
         filtered_by: {
           name: 'method.execution',
           service: '',
-          resource: 'KlassName.foo',
+          resource: 'KlassName#foo',
           type: '',
           meta: {}
         }

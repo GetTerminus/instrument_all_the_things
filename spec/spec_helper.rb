@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
+require 'simplecov'
+SimpleCov.start do
+  enable_coverage :branch
+end
+
 require 'instrument_all_the_things'
 
 require 'instrument_all_the_things/testing/stat_tracker'

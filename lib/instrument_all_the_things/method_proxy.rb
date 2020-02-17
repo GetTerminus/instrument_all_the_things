@@ -24,7 +24,7 @@ module InstrumentAllTheThings
     def self.construct_for_class(klass)
       Module.new do
         extend Instrumentor
-      end.tap{|m| m._iatt_built_for = klass}
+      end.tap { |m| m._iatt_built_for = klass }
     end
 
     module Instrumentor
@@ -37,7 +37,7 @@ module InstrumentAllTheThings
       end
 
       def _iatt_built_for=(val)
-        @_iatt_built_for=val
+        @_iatt_built_for = val
       end
 
       def wrap_implementation(method_name, settings)
