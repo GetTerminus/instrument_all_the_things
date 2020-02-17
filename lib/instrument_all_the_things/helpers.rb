@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative './method_proxy'
+require_relative './context'
 
 module InstrumentAllTheThings
   module Helpers
@@ -16,6 +17,12 @@ module InstrumentAllTheThings
 
         settings = @last_settings
         @last_settings = nil
+
+        settings[:context] = Context.new(
+          klass: self,
+          method_name: method_name,
+          instance: true
+        )
 
         InstrumentAllTheThings::MethodProxy
           .for_class(self)

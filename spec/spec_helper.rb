@@ -16,6 +16,13 @@ end
 IATT.config.stat_reporter = IATT::Testing::StatTracker.new
 
 RSpec.configure do |config|
+  config.before(:each) do
+    IATT::Testing::TraceTracker.tracker.reset!
+    IATT.config.stat_reporter.reset!
+  end
+end
+
+RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = '.rspec_status'
 

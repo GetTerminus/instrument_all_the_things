@@ -4,8 +4,8 @@ require_relative './instrumentors/simple'
 
 module InstrumentAllTheThings
   class MethodInstrumentor
-    INSTRUMENTOR = {
-      trace: TRACE_WRAPPER
+    WAPPERS = {
+      trace: Instrumentors::TRACE_WRAPPER
     }.freeze
 
     DEFAULT_OPTIONS = {
@@ -15,17 +15,21 @@ module InstrumentAllTheThings
     attr_accessor :options, :instrumentor
 
     def initialize(options)
-      self.options = options.merge(DEFAULT_OPTIONS)
+      self.options = DEFAULT_OPTIONS.merge(options)
 
-      procs = INSTRUMENTOR.collect do |type, builder|
-        next unless self.options[type]
+      build_instrumentor
 
-        builder.call(self.options[type])
+      freeze
+    end
+
+    def build_instrumentor
+      procs = WAPPERS.collect do |type, builder|
+        next unless options[type]
+
+        builder.call(options[type], options[:context])
       end.compact
 
       self.instrumentor = combine_procs(procs)
-
-      freeze
     end
 
     def invoke(&blk)

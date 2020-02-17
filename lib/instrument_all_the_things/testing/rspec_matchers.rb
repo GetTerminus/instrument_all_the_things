@@ -3,6 +3,10 @@
 module InstrumentAllTheThings
   module Testing
     module RSpecMatchers
+      def flush_traces
+        Datadog.tracer.writer.worker.flush_data
+      end
+
       def emitted_spans(filtered_by: nil)
         sleep 0.01
         traces = IATT::Testing::TraceTracker.tracker.traces.map(&:dup)

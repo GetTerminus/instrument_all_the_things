@@ -59,7 +59,6 @@ also be passed to the DataDog tracer, and their [options](https://github.com/Dat
 | span_type | See DD Docs.                                                  | `nil`
 | tags      | Set of tags to be added to the span, expected to be a hash    | {}
 
-
 ## Testing Support
 
 You can setup your test environment by running the following setup:
@@ -75,15 +74,45 @@ Datadog.configure do |c|
 end
 
 IATT.config.stat_reporter = IATT::Testing::StatTracker.new
+
+RSpec.configure do |config|
+  config.before(:each) do
+    IATT::Testing::TraceTracker.tracker.reset!
+    IATT.config.stat_reporter.reset!
+  end
+end
 ```
 
 This injects middleware and in the StatsD interface as well as in the Tracer output. By doing this you can start using
 some awesome rspec helpers like so:
 
 ```ruby
-let(:klass) do
-  Class.new do
-    include InstrumentAllTheThings::Helpers
+  let(:klass) do
+    Class.new do
+      include InstrumentAllTheThings::Helpers
+
+      instrument
+      def foo
+      end
+
+      def self.inspect
+        'KlassName'
+      end
+    end
+  end
+
+  it 'traces' do
+    expect {
+      klass.new.foo
+
+      # Datadog writes trace to the wire, to the test harness asynchronously
+      # This helper is provided to force the flush before expectations are stated
+      flush_traces
+    }.to change{
+      emitted_spans(
+        filtered_by: {resource: 'KlassName.foo'}
+      )
+    }.by(1)
   end
 end
 ```
