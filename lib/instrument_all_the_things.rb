@@ -45,6 +45,9 @@ module InstrumentAllTheThings
 
     %i[
       increment
+      decrement
+      count
+      gauge
     ].each do |method_name|
       define_method(method_name) do |*args, **kwargs, &blk|
         return unless stat_reporter

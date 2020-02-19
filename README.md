@@ -50,6 +50,27 @@ expect {
   .and change { counter_value('my.counter', with_tags: ['foo:baz']) }.from(0).to(2)
 ```
 
+### Decrement
+See Increment for all examples
+```ruby
+expect{
+  InstrumentAllTheThings.increment('my.counter')
+}.to change{ counter_value('my.counter') }.from(0).to(-1)
+```
+
+### Count
+Count underlies both increment and decrement, and works in a similar way.
+
+```ruby
+expect {
+  InstrumentAllTheThings.count('my.counter', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.count('my.counter', 2, tags: ['a:b', 'foo:baz'])
+}.to change { counter_value('my.counter') }.from(0).to(5)
+  .and change { counter_value('my.counter', with_tags: ['a:b']) }.from(0).to(5)
+  .and change { counter_value('my.counter', with_tags: ['foo:bar']) }.from(0).to(3)
+  .and change { counter_value('my.counter', with_tags: ['foo:baz']) }.from(0).to(2)
+```
+
 ## Method Instrumentation
 Method instrumentation both in APM as well as in simple counts & timings is the bread and butter of visibility, and it
 is trivial to implement with IATT.
