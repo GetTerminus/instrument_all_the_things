@@ -107,12 +107,12 @@ Datadog.configure do |c|
   }
 end
 
-IATT.config.stat_reporter = IATT::Testing::StatTracker.new
+IATT.stat_reporter = IATT::Testing::StatTracker.new
 
 RSpec.configure do |config|
   config.before(:each) do
     IATT::Testing::TraceTracker.tracker.reset!
-    IATT.config.stat_reporter.reset!
+    IATT.stat_reporter.reset!
   end
 end
 ```

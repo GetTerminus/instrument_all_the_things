@@ -15,10 +15,14 @@ module InstrumentAllTheThings
     GC_STAT_GETTER = -> { GC.stat }
 
     GC_STATS_WRAPPER = lambda do |opts, context|
-      opts = DEFAULT_GC_STATS_OPTIONS.merge(opts)
+      opts = if opts == true
+               DEFAULT_GC_STATS_OPTIONS
+             else
+               DEFAULT_GC_STATS_OPTIONS.merge(opts)
+            end
 
       report_value = proc do |klass, stat_name, value|
-        IATT.config.stat_reporter.histogram(
+        IATT.stat_reporter.histogram(
           context.stats_name(klass) + ".#{stat_name}_change",
           value
         )
@@ -33,7 +37,7 @@ module InstrumentAllTheThings
             new_value - starting_value
           end
 
-          if (span = IATT.config.tracer.active_span)
+          if (span = IATT.tracer.active_span)
             span.set_tag('gc_stats', diff)
           end
 

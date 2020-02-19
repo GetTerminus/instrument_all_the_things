@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'dry-configurable'
 require 'ddtrace'
 
 require 'instrument_all_the_things/version'
@@ -11,29 +10,39 @@ require_relative './instrument_all_the_things/clients/stat_reporter/datadog'
 module InstrumentAllTheThings
   class Error < StandardError; end
 
-  extend Dry::Configurable
+  class << self
+    attr_accessor :stat_namespace
+    attr_writer :logger, :stat_reporter, :tracer
 
-  setting(:stat_prefix)
+    def logger
+      return @logger if defined?(@logger)
 
-  setting(:logger,
-          if defined?(Rails)
-            Rails.logger
-          elsif defined?(App) && App.respond_to?(:logger)
-            App.logger
-          else
-            require 'logger'
-            Logger.new(STDOUT)
-          end)
+      @logger ||= if defined?(Rails)
+                    Rails.logger
+                  elsif defined?(App) && App.respond_to?(:logger)
+                    App.logger
+                  else
+                    require 'logger'
+                    Logger.new(STDOUT)
+                  end
+    end
 
-  setting(
-    :stat_reporter,
-    Clients::StatReporter::DataDog.new(
-      ENV.fetch('DATADOG_HOST', 'localhost'),
-      ENV.fetch('DATADOG_PORT', 8125)
-    )
-  )
+    def stat_reporter
+      return @stat_reporter if defined?(@stat_reporter)
 
-  setting(:tracer, Datadog.tracer)
+      @stat_reporter ||= Clients::StatReporter::DataDog.new(
+        ENV.fetch('DATADOG_HOST', 'localhost'),
+        ENV.fetch('DATADOG_PORT', 8125),
+        namespace: stat_namespace
+      )
+    end
+
+    def tracer
+      return @tracer if defined?(@tracer)
+
+      @tracer ||= Datadog.tracer
+    end
+  end
 
   def self.included(other)
     other.include(Helpers)

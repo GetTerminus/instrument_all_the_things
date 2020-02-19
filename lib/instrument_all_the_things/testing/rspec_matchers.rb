@@ -4,12 +4,12 @@ module InstrumentAllTheThings
   module Testing
     module RSpecMatchers
       def histogram_value(counter_name)
-        stats = IATT.config.stat_reporter.emitted_values[:histogram][counter_name]
+        stats = IATT.stat_reporter.emitted_values[:histogram][counter_name]
         stats.inject(0){|l, n| l + n[:args][0] }
       end
 
       def counter_value(counter_name)
-        stats = IATT.config.stat_reporter.emitted_values[:count][counter_name]
+        stats = IATT.stat_reporter.emitted_values[:count][counter_name]
         stats.inject(0){|l, n| l + n[:args][0] }
       end
 

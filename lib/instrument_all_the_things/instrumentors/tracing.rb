@@ -17,7 +17,7 @@ module InstrumentAllTheThings
              end
 
       proc do |klass, next_blk, actual_code|
-        InstrumentAllTheThings.config.tracer.trace(
+        InstrumentAllTheThings.tracer.trace(
           opts[:span_name],
           tags: opts[:tags],
           service: opts[:service],
