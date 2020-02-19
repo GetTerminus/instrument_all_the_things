@@ -17,16 +17,16 @@ module InstrumentAllTheThings
     GC_STATS_WRAPPER = lambda do |opts, context|
       opts = DEFAULT_GC_STATS_OPTIONS.merge(opts)
 
-      report_value = lambda do |stat_name, value|
+      report_value = proc do |klass, stat_name, value|
         IATT.config.stat_reporter.histogram(
-          context.stats_name + ".#{stat_name}_change",
+          context.stats_name(klass) + ".#{stat_name}_change",
           value
         )
       end
 
-      lambda do |next_blk, actual_code|
+      lambda do |klass, next_blk, actual_code|
         starting_values = GC_STAT_GETTER.call.slice(*opts[:diffed_stats])
-        next_blk.call(actual_code).tap do
+        next_blk.call(klass, actual_code).tap do
           new_values = GC_STAT_GETTER.call.slice(*opts[:diffed_stats])
 
           diff = new_values.merge(starting_values) do |_, new_value, starting_value|
@@ -37,7 +37,7 @@ module InstrumentAllTheThings
             span.set_tag('gc_stats', diff)
           end
 
-          diff.each { |s, v| report_value.call(s, v) }
+          diff.each { |s, v| report_value.call(klass, s, v) }
         end
       end
     end

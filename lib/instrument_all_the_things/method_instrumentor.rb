@@ -7,7 +7,7 @@ module InstrumentAllTheThings
     WAPPERS = {
       trace: Instrumentors::TRACE_WRAPPER,
       error_logging: Instrumentors::ERROR_LOGGING_WRAPPER,
-      gc_stats: Instrumentors::GC_STATS_WRAPPER,
+      gc_stats: Instrumentors::GC_STATS_WRAPPER
     }.freeze
 
     DEFAULT_OPTIONS = {
@@ -34,8 +34,8 @@ module InstrumentAllTheThings
       self.instrumentor = combine_procs(procs)
     end
 
-    def invoke(&blk)
-      instrumentor.call(blk)
+    def invoke(klass:, &blk)
+      instrumentor.call(klass, blk)
     end
 
     private
@@ -43,8 +43,8 @@ module InstrumentAllTheThings
     def combine_procs(procs)
       # I know it's crazy, but this wraps procs which take "Next Block"
       # and "Final Block"
-      procs.inject(->(f) { f.call }) do |next_blk, current_blk|
-        proc { |final| current_blk.call(next_blk, final) }
+      procs.inject(->(_, f) { f.call }) do |next_blk, current_blk|
+        proc { |k, final| current_blk.call(k, next_blk, final) }
       end
     end
   end

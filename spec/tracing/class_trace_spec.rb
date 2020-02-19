@@ -82,4 +82,33 @@ RSpec.describe 'class method tracing' do
       }.by(1)
     end
   end
+
+  describe 'inheritance' do
+    let(:sub_klass) do
+      Class.new(klass) do
+        def self.to_s
+          'SubKlassName'
+        end
+      end
+    end
+
+    subject(:call_traced_method) do
+      sub_klass.foo
+      flush_traces
+    end
+
+    it 'emits spans with the subklass name'do
+      expect { call_traced_method }.to change {
+        emitted_spans(
+          filtered_by: {
+            name: 'method.execution',
+            service: '',
+            resource: 'SubKlassName#foo',
+            type: '',
+            meta: {}
+          }
+        ).length
+      }.by(1)
+    end
+  end
 end

@@ -44,7 +44,7 @@ module InstrumentAllTheThings
         wrap = MethodInstrumentor.new(**settings)
 
         define_method(method_name) do |*args, **kwargs, &blk|
-          wrap.invoke do
+          wrap.invoke(klass: is_a?(Class) ? self : self.class) do
             super(*args, **kwargs, &blk)
           end
         end

@@ -11,7 +11,7 @@ module InstrumentAllTheThings
       end
 
       def _conscript_last_iatt_settings
-        @last_settings.tap{ @last_settings = nil }
+        @last_settings.tap { @last_settings = nil }
       end
 
       def singleton_method_added(method_name)
@@ -20,13 +20,12 @@ module InstrumentAllTheThings
         return unless settings
 
         settings[:context] = Context.new(
-          klass: self,
           method_name: method_name,
           instance: false
         )
 
         InstrumentAllTheThings::MethodProxy
-          .for_class(self.singleton_class)
+          .for_class(singleton_class)
           .wrap_implementation(method_name, settings)
         super
       end
@@ -37,7 +36,6 @@ module InstrumentAllTheThings
         return unless settings
 
         settings[:context] = Context.new(
-          klass: self,
           method_name: method_name,
           instance: true
         )
