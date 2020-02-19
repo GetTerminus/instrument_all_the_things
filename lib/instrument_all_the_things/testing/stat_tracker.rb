@@ -4,7 +4,7 @@ require 'datadog/statsd'
 
 module InstrumentAllTheThings
   module Testing
-    class StatTracker < Datadog::Statsd
+    class StatTracker < Clients::StatReporter::DataDog
       attr_reader :emitted_values
       %i[
       count

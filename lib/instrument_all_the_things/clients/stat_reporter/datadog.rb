@@ -16,7 +16,7 @@ module InstrumentAllTheThings
           timing
         ].each do |meth|
           define_method(meth) do |*args, **kwarg, &blk|
-            args[0] = stat_prefix + args[0]
+            args[0] = "#{stat_prefix}.#{args[0]}" unless stat_prefix.to_s == ''
             super(*args, **kwarg, &blk)
           end
         end
@@ -24,7 +24,7 @@ module InstrumentAllTheThings
         private
 
         def stat_prefix
-          'omg'
+          IATT.config.stat_prefix
         end
       end
     end
