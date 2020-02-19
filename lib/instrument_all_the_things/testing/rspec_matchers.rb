@@ -8,8 +8,13 @@ module InstrumentAllTheThings
         stats.inject(0){|l, n| l + n[:args][0] }
       end
 
-      def counter_value(counter_name)
+      def counter_value(counter_name, with_tags: nil)
         stats = IATT.stat_reporter.emitted_values[:count][counter_name]
+        if with_tags && !stats.empty?
+          stats = stats.select do |s|
+            with_tags.all?{|t| s[:tags].include?(t) }
+          end
+        end
         stats.inject(0){|l, n| l + n[:args][0] }
       end
 

@@ -42,6 +42,16 @@ module InstrumentAllTheThings
 
       @tracer ||= Datadog.tracer
     end
+
+    %i[
+      increment
+    ].each do |method_name|
+      define_method(method_name) do |*args, **kwargs, &blk|
+        return unless stat_reporter
+
+        stat_reporter.public_send(method_name, *args, **kwargs, &blk)
+      end
+    end
   end
 
   def self.included(other)

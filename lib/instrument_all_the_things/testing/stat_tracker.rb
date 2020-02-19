@@ -18,7 +18,8 @@ module InstrumentAllTheThings
         define_method(meth) do |*args, **kwargs, &blk|
           @emitted_values[meth][args[0]] << {
             args: args[1..-1],
-            kwargs: kwargs
+            tags: kwargs.fetch(:tags, []),
+            kwargs: kwargs,
           }
 
           super(*args, **kwargs, &blk)
