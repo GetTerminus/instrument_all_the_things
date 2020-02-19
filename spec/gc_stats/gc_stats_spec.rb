@@ -37,7 +37,11 @@ RSpec.describe 'error logging on instance methods' do
     ).to receive(:call).and_return(first_gc_stats, second_gc_stats)
 
     klass.instrument(gc_stats: gc_stats_options)
-    klass.define_method(:foo) { |*i| }
+    klass.define_method(:foo) { |*_i| 123 }
+  end
+
+  it 'returns the function value' do
+    expect(call_gc_stats_method).to eq 123
   end
 
   it do

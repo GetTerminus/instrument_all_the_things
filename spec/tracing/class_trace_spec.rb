@@ -16,13 +16,12 @@ RSpec.describe 'class method tracing' do
   end
 
   subject(:call_traced_method) do
-    klass.foo
-    flush_traces
+    klass.foo.tap { flush_traces }
   end
 
   before do
     klass.instrument(trace: trace_options)
-    klass.define_singleton_method(:foo) { |*i| }
+    klass.define_singleton_method(:foo) { |*i| 123 }
   end
 
   it 'creates a trace with defaults' do
@@ -37,6 +36,10 @@ RSpec.describe 'class method tracing' do
         }
       ).length
     }.by(1)
+  end
+
+  it 'returns the function data' do
+    expect(call_traced_method).to eq 123
   end
 
   describe 'when disabled' do
