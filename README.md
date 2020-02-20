@@ -71,6 +71,43 @@ expect {
   .and change { counter_value('my.counter', with_tags: ['foo:baz']) }.from(0).to(2)
 ```
 
+### Gauge
+```ruby
+expect {
+  InstrumentAllTheThings.gauge('my.gauge', 1)
+  InstrumentAllTheThings.gauge('my.gauge', 2)
+}.to change { gauge_value('my.gauge') }.from(nil).to(2)
+
+expect {
+  InstrumentAllTheThings.gauge('my.gauge', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.gauge('my.gauge', 1, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.gauge('my.gauge', 2, tags: ['a:b', 'foo:baz'])
+  InstrumentAllTheThings.gauge('my.gauge', 7, tags: ['a:b'])
+}.to change { gauge_value('my.gauge') }.to(7)
+  .and change { gauge_value('my.gauge', with_tags: ['a:b']) }.to(7)
+  .and change { gauge_value('my.gauge', with_tags: ['foo:bar']) }.to(1)
+  .and change { gauge_value('my.gauge', with_tags: ['foo:baz']) }.to(2)
+```
+
+### Set
+```ruby
+expect {
+  InstrumentAllTheThings.set('my.set', 1)
+  InstrumentAllTheThings.set('my.set', 2)
+}.to change { set_value('my.set') }.from(0).to(2)
+
+expect {
+  InstrumentAllTheThings.set('my.set', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.set('my.set', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.set('my.set', 5, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.set('my.set', 6, tags: ['a:b', 'foo:baz'])
+  InstrumentAllTheThings.set('my.set', 9, tags: ['a:b'])
+}.to change { set_value('my.set') }.to(4)
+  .and change { set_value('my.set', with_tags: ['a:b']) }.to(4)
+  .and change { set_value('my.set', with_tags: ['foo:bar']) }.to(2)
+  .and change { set_value('my.set', with_tags: ['foo:baz']) }.to(1)
+```
+
 ## Method Instrumentation
 Method instrumentation both in APM as well as in simple counts & timings is the bread and butter of visibility, and it
 is trivial to implement with IATT.
