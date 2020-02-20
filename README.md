@@ -108,6 +108,28 @@ expect {
   .and change { set_value('my.set', with_tags: ['foo:baz']) }.to(1)
 ```
 
+### Histogram
+Histogram is a pesudo metric in Datadog based on the StatsD timing metric. InstrumentAllTheThings provides a way to
+test the values emitted, not the statistical calculations derived.
+
+```ruby
+expect {
+  InstrumentAllTheThings.histogram('my.histogram', 1)
+  InstrumentAllTheThings.histogram('my.histogram', 2)
+}.to change { histogram_values('my.histogram') }.from([]).to([1, 2])
+
+expect {
+  InstrumentAllTheThings.histogram('my.histogram', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.histogram('my.histogram', 5, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.histogram('my.histogram', 6, tags: ['a:b', 'foo:baz'])
+  InstrumentAllTheThings.histogram('my.histogram', 9, tags: ['a:b'])
+}.to change { histogram_values('my.histogram') }.to([3, 5, 6, 9])
+  .and change { histogram_values('my.histogram', with_tags: ['a:b']) }.to([3, 5, 6, 9])
+  .and change { histogram_values('my.histogram', with_tags: ['foo:bar']) }.to([3, 5])
+  .and change { histogram_values('my.histogram', with_tags: ['foo:baz']) }.to([6])
+```
+
+
 ## Method Instrumentation
 Method instrumentation both in APM as well as in simple counts & timings is the bread and butter of visibility, and it
 is trivial to implement with IATT.
