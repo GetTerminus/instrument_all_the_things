@@ -25,110 +25,6 @@ Or install it yourself as:
 ## Usage
 *Note:* For convenience the InstrumentAllTheThings constant is aliased to IATT.
 
-## Stat Transmission
-InstrumentAllTheThings provides no real functionality on top of the build in Datadog statsd utility. The primary goal
-of the IATT library is to allow for easy testing. The following method are provided on the InstrumentAllTheThings module.
-
-### Increment
-Examples:
-```ruby
-expect{
-  InstrumentAllTheThings.increment('my.counter')
-}.to change{ counter_value('my.counter') }.from(0).to(1)
-
-expect{
-  InstrumentAllTheThings.increment('my.counter', by: 5)
-}.to change { counter_value('my.counter') }.from(0).to(5)
-
-# You can also filter by tags
-expect {
-  InstrumentAllTheThings.increment('my.counter', by: 3, tags: ['a:b', 'foo:bar'])
-  InstrumentAllTheThings.increment('my.counter', by: 2, tags: ['a:b', 'foo:baz'])
-}.to change { counter_value('my.counter') }.from(0).to(5)
-  .and change { counter_value('my.counter', with_tags: ['a:b']) }.from(0).to(5)
-  .and change { counter_value('my.counter', with_tags: ['foo:bar']) }.from(0).to(3)
-  .and change { counter_value('my.counter', with_tags: ['foo:baz']) }.from(0).to(2)
-```
-
-### Decrement
-See Increment for all examples
-```ruby
-expect{
-  InstrumentAllTheThings.increment('my.counter')
-}.to change{ counter_value('my.counter') }.from(0).to(-1)
-```
-
-### Count
-Count underlies both increment and decrement, and works in a similar way.
-
-```ruby
-expect {
-  InstrumentAllTheThings.count('my.counter', 3, tags: ['a:b', 'foo:bar'])
-  InstrumentAllTheThings.count('my.counter', 2, tags: ['a:b', 'foo:baz'])
-}.to change { counter_value('my.counter') }.from(0).to(5)
-  .and change { counter_value('my.counter', with_tags: ['a:b']) }.from(0).to(5)
-  .and change { counter_value('my.counter', with_tags: ['foo:bar']) }.from(0).to(3)
-  .and change { counter_value('my.counter', with_tags: ['foo:baz']) }.from(0).to(2)
-```
-
-### Gauge
-```ruby
-expect {
-  InstrumentAllTheThings.gauge('my.gauge', 1)
-  InstrumentAllTheThings.gauge('my.gauge', 2)
-}.to change { gauge_value('my.gauge') }.from(nil).to(2)
-
-expect {
-  InstrumentAllTheThings.gauge('my.gauge', 3, tags: ['a:b', 'foo:bar'])
-  InstrumentAllTheThings.gauge('my.gauge', 1, tags: ['a:b', 'foo:bar'])
-  InstrumentAllTheThings.gauge('my.gauge', 2, tags: ['a:b', 'foo:baz'])
-  InstrumentAllTheThings.gauge('my.gauge', 7, tags: ['a:b'])
-}.to change { gauge_value('my.gauge') }.to(7)
-  .and change { gauge_value('my.gauge', with_tags: ['a:b']) }.to(7)
-  .and change { gauge_value('my.gauge', with_tags: ['foo:bar']) }.to(1)
-  .and change { gauge_value('my.gauge', with_tags: ['foo:baz']) }.to(2)
-```
-
-### Set
-```ruby
-expect {
-  InstrumentAllTheThings.set('my.set', 1)
-  InstrumentAllTheThings.set('my.set', 2)
-}.to change { set_value('my.set') }.from(0).to(2)
-
-expect {
-  InstrumentAllTheThings.set('my.set', 3, tags: ['a:b', 'foo:bar'])
-  InstrumentAllTheThings.set('my.set', 3, tags: ['a:b', 'foo:bar'])
-  InstrumentAllTheThings.set('my.set', 5, tags: ['a:b', 'foo:bar'])
-  InstrumentAllTheThings.set('my.set', 6, tags: ['a:b', 'foo:baz'])
-  InstrumentAllTheThings.set('my.set', 9, tags: ['a:b'])
-}.to change { set_value('my.set') }.to(4)
-  .and change { set_value('my.set', with_tags: ['a:b']) }.to(4)
-  .and change { set_value('my.set', with_tags: ['foo:bar']) }.to(2)
-  .and change { set_value('my.set', with_tags: ['foo:baz']) }.to(1)
-```
-
-### Histogram
-Histogram is a pesudo metric in Datadog based on the StatsD timing metric. InstrumentAllTheThings provides a way to
-test the values emitted, not the statistical calculations derived.
-
-```ruby
-expect {
-  InstrumentAllTheThings.histogram('my.histogram', 1)
-  InstrumentAllTheThings.histogram('my.histogram', 2)
-}.to change { histogram_values('my.histogram') }.from([]).to([1, 2])
-
-expect {
-  InstrumentAllTheThings.histogram('my.histogram', 3, tags: ['a:b', 'foo:bar'])
-  InstrumentAllTheThings.histogram('my.histogram', 5, tags: ['a:b', 'foo:bar'])
-  InstrumentAllTheThings.histogram('my.histogram', 6, tags: ['a:b', 'foo:baz'])
-  InstrumentAllTheThings.histogram('my.histogram', 9, tags: ['a:b'])
-}.to change { histogram_values('my.histogram') }.to([3, 5, 6, 9])
-  .and change { histogram_values('my.histogram', with_tags: ['a:b']) }.to([3, 5, 6, 9])
-  .and change { histogram_values('my.histogram', with_tags: ['foo:bar']) }.to([3, 5])
-  .and change { histogram_values('my.histogram', with_tags: ['foo:baz']) }.to([6])
-```
-
 
 ## Method Instrumentation
 Method instrumentation both in APM as well as in simple counts & timings is the bread and butter of visibility, and it
@@ -255,6 +151,165 @@ some awesome rspec helpers like so:
 end
 ```
 
+## Stat Transmission
+InstrumentAllTheThings provides no real functionality on top of the build in Datadog statsd utility. The primary goal
+of the IATT library is to allow for easy testing. The following method are provided on the InstrumentAllTheThings module.
+
+### Increment
+Examples:
+```ruby
+expect{
+  InstrumentAllTheThings.increment('my.counter')
+}.to change{ counter_value('my.counter') }.from(0).to(1)
+
+expect{
+  InstrumentAllTheThings.increment('my.counter', by: 5)
+}.to change { counter_value('my.counter') }.from(0).to(5)
+
+# You can also filter by tags
+expect {
+  InstrumentAllTheThings.increment('my.counter', by: 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.increment('my.counter', by: 2, tags: ['a:b', 'foo:baz'])
+}.to change { counter_value('my.counter') }.from(0).to(5)
+  .and change { counter_value('my.counter', with_tags: ['a:b']) }.from(0).to(5)
+  .and change { counter_value('my.counter', with_tags: ['foo:bar']) }.from(0).to(3)
+  .and change { counter_value('my.counter', with_tags: ['foo:baz']) }.from(0).to(2)
+```
+
+### Decrement
+See Increment for all examples
+```ruby
+expect{
+  InstrumentAllTheThings.increment('my.counter')
+}.to change{ counter_value('my.counter') }.from(0).to(-1)
+```
+
+### Count
+Count underlies both increment and decrement, and works in a similar way.
+
+```ruby
+expect {
+  InstrumentAllTheThings.count('my.counter', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.count('my.counter', 2, tags: ['a:b', 'foo:baz'])
+}.to change { counter_value('my.counter') }.from(0).to(5)
+  .and change { counter_value('my.counter', with_tags: ['a:b']) }.from(0).to(5)
+  .and change { counter_value('my.counter', with_tags: ['foo:bar']) }.from(0).to(3)
+  .and change { counter_value('my.counter', with_tags: ['foo:baz']) }.from(0).to(2)
+```
+
+### Gauge
+```ruby
+expect {
+  InstrumentAllTheThings.gauge('my.gauge', 1)
+  InstrumentAllTheThings.gauge('my.gauge', 2)
+}.to change { gauge_value('my.gauge') }.from(nil).to(2)
+
+expect {
+  InstrumentAllTheThings.gauge('my.gauge', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.gauge('my.gauge', 1, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.gauge('my.gauge', 2, tags: ['a:b', 'foo:baz'])
+  InstrumentAllTheThings.gauge('my.gauge', 7, tags: ['a:b'])
+}.to change { gauge_value('my.gauge') }.to(7)
+  .and change { gauge_value('my.gauge', with_tags: ['a:b']) }.to(7)
+  .and change { gauge_value('my.gauge', with_tags: ['foo:bar']) }.to(1)
+  .and change { gauge_value('my.gauge', with_tags: ['foo:baz']) }.to(2)
+```
+
+### Set
+```ruby
+expect {
+  InstrumentAllTheThings.set('my.set', 1)
+  InstrumentAllTheThings.set('my.set', 2)
+}.to change { set_value('my.set') }.from(0).to(2)
+
+expect {
+  InstrumentAllTheThings.set('my.set', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.set('my.set', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.set('my.set', 5, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.set('my.set', 6, tags: ['a:b', 'foo:baz'])
+  InstrumentAllTheThings.set('my.set', 9, tags: ['a:b'])
+}.to change { set_value('my.set') }.to(4)
+  .and change { set_value('my.set', with_tags: ['a:b']) }.to(4)
+  .and change { set_value('my.set', with_tags: ['foo:bar']) }.to(2)
+  .and change { set_value('my.set', with_tags: ['foo:baz']) }.to(1)
+```
+
+### Histogram
+Histogram is a pesudo metric in Datadog based on the StatsD timing metric. InstrumentAllTheThings provides a way to
+test the values emitted, not the statistical calculations derived.
+
+```ruby
+expect {
+  InstrumentAllTheThings.histogram('my.histogram', 1)
+  InstrumentAllTheThings.histogram('my.histogram', 2)
+}.to change { histogram_values('my.histogram') }.from([]).to([1, 2])
+
+expect {
+  InstrumentAllTheThings.histogram('my.histogram', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.histogram('my.histogram', 5, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.histogram('my.histogram', 6, tags: ['a:b', 'foo:baz'])
+  InstrumentAllTheThings.histogram('my.histogram', 9, tags: ['a:b'])
+}.to change { histogram_values('my.histogram') }.to([3, 5, 6, 9])
+  .and change { histogram_values('my.histogram', with_tags: ['a:b']) }.to([3, 5, 6, 9])
+  .and change { histogram_values('my.histogram', with_tags: ['foo:bar']) }.to([3, 5])
+  .and change { histogram_values('my.histogram', with_tags: ['foo:baz']) }.to([6])
+```
+
+### Distribution
+```ruby
+expect {
+  InstrumentAllTheThings.distribution('my.distribution', 1)
+  InstrumentAllTheThings.distribution('my.distribution', 2)
+}.to change { distribution_values('my.distribution') }.from([]).to([1, 2])
+
+expect {
+  InstrumentAllTheThings.distribution('my.distribution', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.distribution('my.distribution', 5, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.distribution('my.distribution', 6, tags: ['a:b', 'foo:baz'])
+  InstrumentAllTheThings.distribution('my.distribution', 9, tags: ['a:b'])
+}.to change { distribution_values('my.distribution') }.to([3, 5, 6, 9])
+  .and change { distribution_values('my.distribution', with_tags: ['a:b']) }.to([3, 5, 6, 9])
+  .and change { distribution_values('my.distribution', with_tags: ['foo:bar']) }.to([3, 5])
+  .and change { distribution_values('my.distribution', with_tags: ['foo:baz']) }.to([6])
+```
+
+### Timing
+```ruby
+expect {
+  InstrumentAllTheThings.timing('my.timing', 1)
+  InstrumentAllTheThings.timing('my.timing', 2)
+}.to change { timing_values('my.timing') }.from([]).to([1, 2])
+
+expect {
+  InstrumentAllTheThings.timing('my.timing', 3, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.timing('my.timing', 5, tags: ['a:b', 'foo:bar'])
+  InstrumentAllTheThings.timing('my.timing', 6, tags: ['a:b', 'foo:baz'])
+  InstrumentAllTheThings.timing('my.timing', 9, tags: ['a:b'])
+}.to change { timing_values('my.timing') }.to([3, 5, 6, 9])
+  .and change { timing_values('my.timing', with_tags: ['a:b']) }.to([3, 5, 6, 9])
+  .and change { timing_values('my.timing', with_tags: ['foo:bar']) }.to([3, 5])
+  .and change { timing_values('my.timing', with_tags: ['foo:baz']) }.to([6])
+```
+
+### Time
+The time helper wraps a block with reporting to the timing metric time. As such specs should leverage that spec helper.
+
+```ruby
+expect {
+  InstrumentAllTheThings.time('my.time') {}
+  InstrumentAllTheThings.time('my.time') {}
+}.to change { timing_values('my.time').length }.from(0).to(2)
+
+expect {
+  InstrumentAllTheThings.time('my.time', tags: ['a:b', 'foo:bar']) {}
+  InstrumentAllTheThings.time('my.time', tags: ['a:b', 'foo:bar']) {}
+  InstrumentAllTheThings.time('my.time', tags: ['a:b', 'foo:baz']) {}
+  InstrumentAllTheThings.time('my.time', tags: ['a:b']) {}
+}.to change { timing_values('my.time').length }.to(4)
+  .and change { timing_values('my.time', with_tags: ['a:b']).length }.to(4)
+  .and change { timing_values('my.time', with_tags: ['foo:bar']).length }.to(2)
+  .and change { timing_values('my.time', with_tags: ['foo:baz']).length }.to(1)
+```
 ## Configuration
 The configuration for IATT is available on the top level  InstrumentAllTheThings module.
 

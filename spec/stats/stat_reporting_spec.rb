@@ -138,4 +138,68 @@ RSpec.describe 'stat reporting' do
         .and change { histogram_values('my.histogram', with_tags: ['foo:baz']) }.to([6])
     end
   end
+
+  describe 'distribution' do
+    it do
+      expect {
+        InstrumentAllTheThings.distribution('my.distribution', 1)
+        InstrumentAllTheThings.distribution('my.distribution', 2)
+      }.to change { distribution_values('my.distribution') }.from([]).to([1, 2])
+    end
+
+    it do
+      expect {
+        InstrumentAllTheThings.distribution('my.distribution', 3, tags: ['a:b', 'foo:bar'])
+        InstrumentAllTheThings.distribution('my.distribution', 5, tags: ['a:b', 'foo:bar'])
+        InstrumentAllTheThings.distribution('my.distribution', 6, tags: ['a:b', 'foo:baz'])
+        InstrumentAllTheThings.distribution('my.distribution', 9, tags: ['a:b'])
+      }.to change { distribution_values('my.distribution') }.to([3, 5, 6, 9])
+        .and change { distribution_values('my.distribution', with_tags: ['a:b']) }.to([3, 5, 6, 9])
+        .and change { distribution_values('my.distribution', with_tags: ['foo:bar']) }.to([3, 5])
+        .and change { distribution_values('my.distribution', with_tags: ['foo:baz']) }.to([6])
+    end
+  end
+
+  describe 'timing' do
+    it do
+      expect {
+        InstrumentAllTheThings.timing('my.timing', 1)
+        InstrumentAllTheThings.timing('my.timing', 2)
+      }.to change { timing_values('my.timing') }.from([]).to([1, 2])
+    end
+
+    it do
+      expect {
+        InstrumentAllTheThings.timing('my.timing', 3, tags: ['a:b', 'foo:bar'])
+        InstrumentAllTheThings.timing('my.timing', 5, tags: ['a:b', 'foo:bar'])
+        InstrumentAllTheThings.timing('my.timing', 6, tags: ['a:b', 'foo:baz'])
+        InstrumentAllTheThings.timing('my.timing', 9, tags: ['a:b'])
+      }.to change { timing_values('my.timing') }.to([3, 5, 6, 9])
+        .and change { timing_values('my.timing', with_tags: ['a:b']) }.to([3, 5, 6, 9])
+        .and change { timing_values('my.timing', with_tags: ['foo:bar']) }.to([3, 5])
+        .and change { timing_values('my.timing', with_tags: ['foo:baz']) }.to([6])
+    end
+  end
+
+  describe 'time' do
+    it do
+      expect {
+        InstrumentAllTheThings.time('my.time') {}
+        InstrumentAllTheThings.time('my.time') {}
+      }.to change { timing_values('my.time').length }.from(0).to(2)
+    end
+
+    it do
+      expect {
+        InstrumentAllTheThings.time('my.time', tags: ['a:b', 'foo:bar']) {}
+        InstrumentAllTheThings.time('my.time', tags: ['a:b', 'foo:bar']) {}
+        InstrumentAllTheThings.time('my.time', tags: ['a:b', 'foo:baz']) {}
+        InstrumentAllTheThings.time('my.time', tags: ['a:b']) {}
+      }.to change { timing_values('my.time').length }.to(4)
+        .and change { timing_values('my.time', with_tags: ['a:b']).length }.to(4)
+        .and change { timing_values('my.time', with_tags: ['foo:bar']).length }.to(2)
+        .and change { timing_values('my.time', with_tags: ['foo:baz']).length }.to(1)
+    end
+  end
+
 end
