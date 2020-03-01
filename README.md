@@ -310,6 +310,31 @@ expect {
   .and change { timing_values('my.time', with_tags: ['foo:bar']).length }.to(2)
   .and change { timing_values('my.time', with_tags: ['foo:baz']).length }.to(1)
 ```
+## Performance
+Is it slow? That depends quite a bit on your perspective. We keep a benchmark as part of our specs and monitor the
+overall cost of instrumentation. The current numbers look roughly like:
+
+```
+Calculating -------------------------------------
+      uninstrumetned     17.038M (± 3.3%) i/s -     85.164M in   5.004312s
+           the_works      7.404k (±12.9%) i/s -     36.936k in   5.100630s
+          only_trace     27.968k (±12.7%) i/s -    139.209k in   5.061907s
+  only_error_logging    638.098k (± 4.6%) i/s -      3.231M in   5.075275s
+       only_gc_stats     12.930k (±13.2%) i/s -     63.865k in   5.070874s
+only_execution_counts     9.847k (±11.1%) i/s -     49.088k in   5.073475s
+```
+
+All of these calculations are performed against an empty method, which ruby executes in 0.000059ms. If we consider
+this the baseline, running all of the included instrumentation in the non-error case has a cost of 0.135ms. If this
+is an expensive calculation is directly proportional to the execution duration of the method. If you are tracing a 1ms
+method, it represents a 13% overhead, but if you are tracing a 100ms method it is only 0.13%.
+
+The moral of the story, don't blindly add the works to every method in your stack, instead choose methods who's output
+will be diagnostically meaningful.
+
+We are also always looking for patches with will reduce execution time and allocations of the instrumentation, so
+please open some PRs!
+
 ## Configuration
 The configuration for IATT is available on the top level  InstrumentAllTheThings module.
 
