@@ -9,6 +9,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.0)
+    benchmark-ips (2.7.2)
     coderay (1.1.2)
     ddtrace (0.32.0)
       msgpack
@@ -60,6 +61,7 @@ PLATFORMS
   x86_64-darwin-18
 
 DEPENDENCIES
+  benchmark-ips
   bundler (~> 2.0)
   instrument_all_the_things!
   pry

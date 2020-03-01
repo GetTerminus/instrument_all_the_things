@@ -6,7 +6,7 @@ module InstrumentAllTheThings
       @stats_name ||= [
         class_name(klass_or_instance),
         (instance ? 'instance' : 'class') + '_methods',
-        method_name
+        method_name,
       ].join('.')
     end
 
@@ -15,6 +15,7 @@ module InstrumentAllTheThings
     end
 
     private
+
     def class_name(klass_or_instance)
       klass_or_instance.is_a?(Class) ? klass_or_instance.to_s : klass_or_instance
     end

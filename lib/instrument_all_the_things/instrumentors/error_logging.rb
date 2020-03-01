@@ -30,16 +30,16 @@ module InstrumentAllTheThings
       lambda do |klass, next_blk, actual_code|
         next_blk.call(klass, actual_code)
       rescue opts[:rescue_class] => e
-        val = e.instance_variable_get(:@_logged_by_iatt)
-        raise if val
-        val = e.instance_variable_set(:@_logged_by_iatt, true)
+        raise if e.instance_variable_get(:@_logged_by_iatt)
+
+        e.instance_variable_set(:@_logged_by_iatt, true)
 
         IATT.logger&.error("An error occurred in #{context.trace_name(klass)}")
         IATT.logger&.error(e.message)
 
         callstack = backtrace_cleaner.call(e.backtrace || [])
 
-        callstack.each{|path| IATT.logger&.error(path) }
+        IATT.logger&.error(callstack.join("\n"))
 
         raise
       end
