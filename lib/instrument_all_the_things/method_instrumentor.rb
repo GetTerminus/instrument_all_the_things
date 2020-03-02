@@ -8,7 +8,7 @@ module InstrumentAllTheThings
       trace: Instrumentors::TRACE_WRAPPER,
       error_logging: Instrumentors::ERROR_LOGGING_WRAPPER,
       gc_stats: Instrumentors::GC_STATS_WRAPPER,
-      execution_counts: Instrumentors::EXECUTION_COUNT_WRAPPER,
+      execution_counts_and_timing: Instrumentors::EXECUTION_COUNT_AND_TIMING_WRAPPER,
     }.freeze
 
     DEFAULT_OPTIONS = {

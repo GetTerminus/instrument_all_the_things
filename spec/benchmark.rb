@@ -15,20 +15,20 @@ class Instrumented
   def the_works
   end
 
-  instrument trace: true, error_logging: false, gc_stats: false, execution_counts: false
+  instrument trace: true, error_logging: false, gc_stats: false, execution_counts_and_timing: false
   def only_trace
   end
 
-  instrument trace: false, error_logging: true, gc_stats: false, execution_counts: false
+  instrument trace: false, error_logging: true, gc_stats: false, execution_counts_and_timing: false
   def only_error_logging
   end
 
 
-  instrument trace: false, error_logging: false, gc_stats: true, execution_counts: false
+  instrument trace: false, error_logging: false, gc_stats: true, execution_counts_and_timing: false
   def only_gc_stats
   end
 
-  instrument trace: false, error_logging: false, gc_stats: true, execution_counts: true
+  instrument trace: false, error_logging: false, gc_stats: true, execution_counts_and_timing: true
   def only_execution_counts
   end
 end
