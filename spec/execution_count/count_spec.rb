@@ -35,7 +35,6 @@ RSpec.describe 'execution counters' do
     }.to change { timing_values('KlassName.instance_methods.bar.duration') }.from([])
   end
 
-
   it 'counts and re-raises errors' do
     expect {
       instance.baz
