@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    instrument_all_the_things (0.9.1.alpha)
+    instrument_all_the_things (1.0.1)
       ddtrace
       dogstatsd-ruby
 
