@@ -1,42 +1,41 @@
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'pry'
+# frozen_string_literal: true
+
+require 'bundler/setup'
 require 'simplecov'
 SimpleCov.start do
-  add_filter "/spec/"
-  add_filter ".bundle"
+  enable_coverage :branch
 end
 
 require 'instrument_all_the_things'
-require 'instrument_all_the_things/testing/setup'
-require 'instrument_all_the_things/testing/aggregators'
+
+require 'instrument_all_the_things/testing/stat_tracker'
+require 'instrument_all_the_things/testing/trace_tracker'
+require 'instrument_all_the_things/testing/rspec_matchers'
+
+require 'pry'
+
+Datadog.configure do |c|
+  c.tracer transport_options: proc { |t|
+    t.adapter :test, IATT::Testing::TraceTracker.tracker
+  }
+end
+
+IATT.stat_reporter = IATT::Testing::StatTracker.new
 
 RSpec.configure do |config|
-  # rspec-expectations config goes here. You can use an alternate
-  # assertion/expectation library such as wrong or the stdlib/minitest
-  # assertions if you prefer.
-  config.expect_with :rspec do |expectations|
-    # This option will default to `true` in RSpec 4. It makes the `description`
-    # and `failure_message` of custom matchers include text for helper methods
-    # defined using `chain`, e.g.:
-    #     be_bigger_than(2).and_smaller_than(4).description
-    #     # => "be bigger than 2 and smaller than 4"
-    # ...rather than:
-    #     # => "be bigger than 2"
-    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  # Enable flags like --only-failures and --next-failure
+  config.example_status_persistence_file_path = '.rspec_status'
+
+  # Disable RSpec exposing methods globally on `Module` and `main`
+  config.disable_monkey_patching!
+
+  config.include InstrumentAllTheThings::Testing::RSpecMatchers
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
   end
 
-  # rspec-mocks config goes here. You can use an alternate test double
-  # library (such as bogus or mocha) by changing the `mock_with` option here.
-  config.mock_with :rspec do |mocks|
-    # Prevents you from mocking or stubbing a method that does not exist on
-    # a real object. This is generally recommended, and will default to
-    # `true` in RSpec 4.
-    mocks.verify_partial_doubles = true
-  end
-
-  config.include InstrumentAllTheThings::Testing::Aggregators
-
-  config.after :each do
-    InstrumentAllTheThings::ControllerAction.instance_variable_set(:@request, nil)
+  config.before(:each) do
+    IATT::Testing::TraceTracker.tracker.reset!
+    IATT.stat_reporter.reset!
   end
 end
