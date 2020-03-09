@@ -368,4 +368,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/instrument_all_the_things.
+Bug reports and pull requests are welcome on GitHub at https://github.com/GetTerminus/instrument_all_the_things.
