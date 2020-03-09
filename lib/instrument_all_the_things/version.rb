@@ -1,3 +1,3 @@
 module InstrumentAllTheThings
-  VERSION = "0.9.1.alpha"
+  VERSION = "1.0.1"
 end
