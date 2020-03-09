@@ -22,7 +22,7 @@ module InstrumentAllTheThings
             end
 
       report_value = proc do |klass, stat_name, value|
-        IATT.stat_reporter.histogram(
+        InstrumentAllTheThings.stat_reporter.histogram(
           context.stats_name(klass) + ".#{stat_name}_change",
           value
         )
@@ -37,7 +37,7 @@ module InstrumentAllTheThings
             new_value - starting_value
           end
 
-          if (span = IATT.tracer.active_span)
+          if (span = InstrumentAllTheThings.tracer.active_span)
             span.set_tag('gc_stats', diff)
           end
 

@@ -34,7 +34,7 @@ module InstrumentAllTheThings
 
         e.instance_variable_set(:@_logged_by_iatt, true)
 
-        IATT.logger&.error <<~ERROR
+        InstrumentAllTheThings.logger&.error <<~ERROR
           An error occurred in #{context.trace_name(klass)}
 
           #{e.message}
