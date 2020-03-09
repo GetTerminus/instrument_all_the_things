@@ -24,9 +24,7 @@ RSpec.describe 'error logging on instance methods' do
   end
 
   it 'logs the error to the IATT logger' do
-    expect(IATT.logger).to receive(:error).with('An error occurred in KlassName.foo')
-    expect(IATT.logger).to receive(:error).with('Foobar')
-    expect(IATT.logger).to receive(:error).with(/.*\.rb/).at_least(1).times
+    expect(IATT.logger).to receive(:error).with(/An error occurred in KlassName.foo/)
 
     call_error_logged_method rescue nil
   end

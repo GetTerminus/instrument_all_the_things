@@ -100,6 +100,7 @@ You can setup your test environment by running the following setup:
 ```ruby
 require 'instrument_all_the_things/testing/stat_tracker'
 require 'instrument_all_the_things/testing/trace_tracker'
+require 'instrument_all_the_things/testing/rspec_matchers'
 
 Datadog.configure do |c|
   c.tracer transport_options: proc { |t|
@@ -110,6 +111,7 @@ end
 IATT.stat_reporter = IATT::Testing::StatTracker.new
 
 RSpec.configure do |config|
+  config.include InstrumentAllTheThings::Testing::RSpecMatchers
   config.before(:each) do
     IATT::Testing::TraceTracker.tracker.reset!
     IATT.stat_reporter.reset!
@@ -338,12 +340,12 @@ please open some PRs!
 ## Configuration
 The configuration for IATT is available on the top level  InstrumentAllTheThings module.
 
-| Config Name   | Description                                                                                       | Default
-| -----------   | -----------                                                                                       | -------
-| stat_prefix   | The string to add to all outbound stats (may not be changed after stat transmiter initialization) | `nil`
-| logger        | The logger used to report errors and info                                                         | If the constant `Rails` is set, use `Rails.logger`. <br>If `App` and it responds to `logger` use `App.logger`. Otherwise create a new `Logger` sent to STDOUT
-| stat_reporter | The class which receives simple stats                                                             | If [Datadog::Statsd](https://github.com/DataDog/dogstatsd-ruby) is found, use that, otherwise the Blackhole client is used
-| tracer        | The instance of a tracer which will handle all traces                                             | If `Datadog` is defined and responds to `tracer`, use the value returned by that. Otherwise use the Blackhole. [Gem](https://github.com/DataDog/dd-trace-rb/blob/master/docs/GettingStarted.md)
+| Config Name    | Description                                                                                       | Default
+| -----------    | -----------                                                                                       | -------
+| stat_namespace | The string to add to all outbound stats (may not be changed after stat transmiter initialization) | `nil`
+| logger         | The logger used to report errors and info                                                         | If the constant `Rails` is set, use `Rails.logger`. <br>If `App` and it responds to `logger` use `App.logger`. Otherwise create a new `Logger` sent to STDOUT
+| stat_reporter  | The class which receives simple stats                                                             | If [Datadog::Statsd](https://github.com/DataDog/dogstatsd-ruby) is found, use that, otherwise the Blackhole client is used
+| tracer         | The instance of a tracer which will handle all traces                                             | If `Datadog` is defined and responds to `tracer`, use the value returned by that. Otherwise use the Blackhole. [Gem](https://github.com/DataDog/dd-trace-rb/blob/master/docs/GettingStarted.md)
 
 
 ### Stats Reporters

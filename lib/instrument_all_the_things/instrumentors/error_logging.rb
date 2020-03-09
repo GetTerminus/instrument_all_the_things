@@ -20,9 +20,9 @@ module InstrumentAllTheThings
                DEFAULT_ERROR_LOGGING_OPTIONS.merge(opts)
              end
 
-      backtrace_cleaner = if opts[:exclude_bundle_path ] && defined?(Bundler)
+      backtrace_cleaner = if opts[:exclude_bundle_path] && defined?(Bundler)
                             bundle_path = Bundler.bundle_path.to_s
-                            ->(trace) { trace.reject{|p| p.start_with?(bundle_path)} }
+                            ->(trace) { trace.reject { |p| p.start_with?(bundle_path) } }
                           else
                             ->(trace) { trace }
                           end
@@ -34,12 +34,12 @@ module InstrumentAllTheThings
 
         e.instance_variable_set(:@_logged_by_iatt, true)
 
-        IATT.logger&.error("An error occurred in #{context.trace_name(klass)}")
-        IATT.logger&.error(e.message)
+        IATT.logger&.error <<~ERROR
+          An error occurred in #{context.trace_name(klass)}
 
-        callstack = backtrace_cleaner.call(e.backtrace || [])
-
-        IATT.logger&.error(callstack.join("\n"))
+          #{e.message}
+          #{backtrace_cleaner.call(e.backtrace || []).join("\n")}
+        ERROR
 
         raise
       end
