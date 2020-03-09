@@ -67,4 +67,4 @@ module InstrumentAllTheThings
   end
 end
 
-IATT = InstrumentAllTheThings
+IATT = InstrumentAllTheThings unless defined?(IATT)
