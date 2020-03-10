@@ -23,7 +23,7 @@ Or install it yourself as:
     $ gem install instrument_all_the_things
 
 ## Usage
-*Note:* For convenience the InstrumentAllTheThings constant is aliased to IATT.
+*Note:* For convenience the InstrumentAllTheThings constant is aliased to IATT unless the constant is already defined.
 
 
 ## Method Instrumentation
