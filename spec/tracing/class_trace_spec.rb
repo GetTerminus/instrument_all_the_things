@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'pry'
 
 RSpec.describe 'class method tracing' do
   let(:trace_options) { {} }
@@ -21,7 +20,7 @@ RSpec.describe 'class method tracing' do
 
   before do
     klass.instrument(trace: trace_options)
-    klass.define_singleton_method(:foo) { |*i| 123 }
+    klass.define_singleton_method(:foo) { |*_i| 123 }
   end
 
   it 'creates a trace with defaults' do
@@ -32,8 +31,7 @@ RSpec.describe 'class method tracing' do
           service: '',
           resource: 'KlassName#foo',
           type: '',
-          meta: {}
-        }
+        },
       ).length
     }.by(1)
   end
@@ -56,7 +54,7 @@ RSpec.describe 'class method tracing' do
     it 'respects the configuration' do
       expect { call_traced_method }.to change {
         emitted_spans(
-          filtered_by: { service: 'foobar' }
+          filtered_by: { service: 'foobar' },
         ).length
       }.by(1)
     end
@@ -68,7 +66,7 @@ RSpec.describe 'class method tracing' do
     it 'respects the configuration' do
       expect { call_traced_method }.to change {
         emitted_spans(
-          filtered_by: { resource: 'foobar' }
+          filtered_by: { resource: 'foobar' },
         ).length
       }.by(1)
     end
@@ -80,7 +78,7 @@ RSpec.describe 'class method tracing' do
     it 'respects the configuration' do
       expect { call_traced_method }.to change {
         emitted_spans(
-          filtered_by: { type: 'ddd' }
+          filtered_by: { type: 'ddd' },
         ).length
       }.by(1)
     end
@@ -100,7 +98,7 @@ RSpec.describe 'class method tracing' do
       flush_traces
     end
 
-    it 'emits spans with the subklass name'do
+    it 'emits spans with the subklass name' do
       expect { call_traced_method }.to change {
         emitted_spans(
           filtered_by: {
@@ -108,8 +106,7 @@ RSpec.describe 'class method tracing' do
             service: '',
             resource: 'SubKlassName#foo',
             type: '',
-            meta: {}
-          }
+          },
         ).length
       }.by(1)
     end
