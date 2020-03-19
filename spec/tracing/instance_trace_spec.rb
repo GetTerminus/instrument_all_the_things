@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'pry'
 
 RSpec.describe 'instance method tracing' do
   let(:trace_options) { {} }
@@ -33,8 +32,7 @@ RSpec.describe 'instance method tracing' do
           service: '',
           resource: 'KlassName.foo',
           type: '',
-          meta: {}
-        }
+        },
       ).length
     }.by(1)
   end
@@ -58,8 +56,7 @@ RSpec.describe 'instance method tracing' do
             service: '',
             resource: 'KlassName.foo',
             type: '',
-            meta: {}
-          }
+          },
         ).length
       }.by(1)
     end
@@ -71,7 +68,7 @@ RSpec.describe 'instance method tracing' do
     it 'respects the configuration' do
       expect { call_traced_method }.to change {
         emitted_spans(
-          filtered_by: { service: 'foobar' }
+          filtered_by: { service: 'foobar' },
         ).length
       }.by(1)
     end
@@ -83,7 +80,7 @@ RSpec.describe 'instance method tracing' do
     it 'respects the configuration' do
       expect { call_traced_method }.to change {
         emitted_spans(
-          filtered_by: { resource: 'foobar' }
+          filtered_by: { resource: 'foobar' },
         ).length
       }.by(1)
     end
@@ -95,7 +92,7 @@ RSpec.describe 'instance method tracing' do
     it 'respects the configuration' do
       expect { call_traced_method }.to change {
         emitted_spans(
-          filtered_by: { type: 'ddd' }
+          filtered_by: { type: 'ddd' },
         ).length
       }.by(1)
     end

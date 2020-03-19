@@ -4,17 +4,20 @@ require_relative './instrumentors/all'
 
 module InstrumentAllTheThings
   class MethodInstrumentor
-    WAPPERS = {
-      trace: Instrumentors::TRACE_WRAPPER,
-      error_logging: Instrumentors::ERROR_LOGGING_WRAPPER,
+    WRAPPERS = {
+      # Note that the order of these hash keys are applied top to bottom, with the first inserted key
+      # being the inner most wrapper
       gc_stats: Instrumentors::GC_STATS_WRAPPER,
+      error_logging: Instrumentors::ERROR_LOGGING_WRAPPER,
       execution_counts_and_timing: Instrumentors::EXECUTION_COUNT_AND_TIMING_WRAPPER,
+      trace: Instrumentors::TRACE_WRAPPER,
     }.freeze
 
     DEFAULT_OPTIONS = {
       trace: true,
       gc_stats: true,
       error_logging: true,
+      execution_counts_and_timing: true
     }.freeze
 
     attr_accessor :options, :instrumentor
@@ -28,7 +31,7 @@ module InstrumentAllTheThings
     end
 
     def build_instrumentor
-      procs = WAPPERS.collect do |type, builder|
+      procs = WRAPPERS.collect do |type, builder|
         next unless options[type]
 
         builder.call(options[type], options[:context])
