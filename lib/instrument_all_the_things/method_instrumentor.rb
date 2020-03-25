@@ -34,7 +34,8 @@ module InstrumentAllTheThings
       procs = WRAPPERS.collect do |type, builder|
         next unless options[type]
 
-        builder.call(options[type], options[:context])
+        opts = !!options[type] == true && options[:trace].is_a?(Hash) ? options[:trace] : options[type]
+        builder.call(opts, options[:context])
       end.compact
 
       self.instrumentor = combine_procs(procs)

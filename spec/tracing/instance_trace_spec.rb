@@ -87,7 +87,7 @@ RSpec.describe 'instance method tracing' do
   end
 
   describe 'when the type is configured' do
-    let(:trace_options) { { span_type: 'ddd' } }
+    let(:trace_options) { { span_type: 'ddd', tags: ['hey'] } }
 
     it 'respects the configuration' do
       expect { call_traced_method }.to change {
