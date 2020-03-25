@@ -6,14 +6,14 @@ module InstrumentAllTheThings
 
     EXECUTION_COUNT_AND_TIMING_WRAPPER = proc do |opts, context|
       proc do |klass, next_blk, actual_code|
-        opts = opts.is_a?(Hash) ? opts : {}
-        InstrumentAllTheThings.increment("#{context.stats_name(klass)}.executed", opts)
+        tags = opts.is_a?(Hash) && opts[:tags] ? { tags: opts[:tags] } : {}
+        InstrumentAllTheThings.increment("#{context.stats_name(klass)}.executed", tags)
 
-        InstrumentAllTheThings.time("#{context.stats_name(klass)}.duration", opts) do
+        InstrumentAllTheThings.time("#{context.stats_name(klass)}.duration", tags) do
           next_blk.call(klass, actual_code)
         end
       rescue
-        InstrumentAllTheThings.increment("#{context.stats_name(klass)}.errored", opts)
+        InstrumentAllTheThings.increment("#{context.stats_name(klass)}.errored", tags)
         raise
       end
     end

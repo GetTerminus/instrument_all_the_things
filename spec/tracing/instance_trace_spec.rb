@@ -87,7 +87,7 @@ RSpec.describe 'instance method tracing' do
   end
 
   describe 'when the type is configured' do
-    let(:trace_options) { { span_type: 'ddd', tags: ['hey'] } }
+    let(:trace_options) { { span_type: 'ddd' } }
 
     it 'respects the configuration' do
       expect { call_traced_method }.to change {
@@ -95,6 +95,17 @@ RSpec.describe 'instance method tracing' do
           filtered_by: { type: 'ddd' },
         ).length
       }.by(1)
+    end
+  end
+
+  describe 'with tags' do
+    let(:trace_options) { { span_type: 'ddd', tags: ['hey'] } }
+
+    it 'passes the tags to metrics' do
+      expect { call_traced_method }.to change {
+        IATT.stat_reporter.emitted_values[:count].length
+      }.by(1)
+      expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['hey'])
     end
   end
 end
