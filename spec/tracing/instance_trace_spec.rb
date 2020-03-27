@@ -7,6 +7,10 @@ RSpec.describe 'instance method tracing' do
   let(:klass) do
     Class.new do
       include InstrumentAllTheThings
+      attr_accessor :test_tag
+      def initialize
+        self.test_tag = 'cool_tag_bro'
+      end
 
       def self.to_s
         'KlassName'
@@ -99,13 +103,24 @@ RSpec.describe 'instance method tracing' do
   end
 
   describe 'with tags' do
-    let(:trace_options) { { span_type: 'ddd', tags: ['hey'] } }
+    let(:trace_options) { { tags: ['hey'] } }
 
     it 'passes the tags to metrics' do
       expect { call_traced_method }.to change {
         IATT.stat_reporter.emitted_values[:count].length
       }.by(1)
       expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['hey'])
+    end
+
+    context 'with instance variables' do
+      let(:trace_options) { { tags: [-> { "some_stat:#{test_tag}" }] } }
+
+      it 'evaluates the instance var and passes the tag to metrics' do
+        expect { call_traced_method }.to change {
+          IATT.stat_reporter.emitted_values[:count].length
+        }.by(1)
+        expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['some_stat:cool_tag_bro'])
+      end
     end
   end
 end
