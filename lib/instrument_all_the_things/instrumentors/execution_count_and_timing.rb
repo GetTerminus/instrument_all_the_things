@@ -4,9 +4,9 @@ module InstrumentAllTheThings
   module Instrumentors
     DEFAULT_EXECUTION_COUNT_AND_TIMING_OPTIONS = { }.freeze
 
-    EXECUTION_COUNT_AND_TIMING_WRAPPER = proc do |opts, context|
+    EXECUTION_COUNT_AND_TIMING_WRAPPER = proc do |_opts, context|
       proc do |klass, next_blk, actual_code|
-        context.tags = [] if context.tags.nil? 
+        context.tags ||= []
 
         starting = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         res = next_blk.call(klass, actual_code)
