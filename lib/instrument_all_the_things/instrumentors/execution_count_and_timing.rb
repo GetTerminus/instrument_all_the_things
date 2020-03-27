@@ -6,15 +6,18 @@ module InstrumentAllTheThings
 
     EXECUTION_COUNT_AND_TIMING_WRAPPER = proc do |opts, context|
       proc do |klass, next_blk, actual_code|
-        tags = opts.is_a?(Hash) && opts[:tags] ? { tags: opts[:tags] } : {}
-        InstrumentAllTheThings.increment("#{context.stats_name(klass)}.executed", tags)
+        context.tags = [] if context.tags.nil? 
 
-        InstrumentAllTheThings.time("#{context.stats_name(klass)}.duration", tags) do
-          next_blk.call(klass, actual_code)
-        end
+        starting = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        res = next_blk.call(klass, actual_code)
+        ending = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        InstrumentAllTheThings.timing("#{context.stats_name(klass)}.duration", ((ending - starting)*1000).to_i, {tags: context.tags})
+        res
       rescue
-        InstrumentAllTheThings.increment("#{context.stats_name(klass)}.errored", tags)
+        InstrumentAllTheThings.increment("#{context.stats_name(klass)}.errored", {tags: context.tags})
         raise
+      ensure
+        InstrumentAllTheThings.increment("#{context.stats_name(klass)}.executed", {tags: context.tags})
       end
     end
   end

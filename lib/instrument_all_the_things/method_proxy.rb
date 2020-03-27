@@ -45,6 +45,10 @@ module InstrumentAllTheThings
 
         define_method(method_name) do |*args, **kwargs, &blk|
           wrap.invoke(klass: is_a?(Class) ? self : self.class) do
+            if settings.dig(:trace, :tags)
+              settings[:context][:tags] = settings[:trace][:tags].map { |tag| tag.is_a?(Proc) ? instance_exec(&tag) : tag }
+            end
+            
             super(*args, **kwargs, &blk)
           end
         end
