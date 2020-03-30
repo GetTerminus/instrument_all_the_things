@@ -120,6 +120,7 @@ RSpec.describe 'instance method tracing' do
           IATT.stat_reporter.emitted_values[:count].length
         }.by(1)
         expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['some_stat:cool_tag_bro'])
+        expect(IATT.stat_reporter.emitted_values[:timing]["#{klass}.instance_methods.foo.duration"].first[:tags]).to eq(['some_stat:cool_tag_bro'])
       end
     end
   end
