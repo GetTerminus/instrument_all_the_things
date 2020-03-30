@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module InstrumentAllTheThings
-  Context = Struct.new(:method_name, :instance, keyword_init: true) do
+  Context = Struct.new(:method_name, :instance, :tags, keyword_init: true) do
     def stats_name(klass_or_instance)
       @stats_name ||= [
         class_name(klass_or_instance),
