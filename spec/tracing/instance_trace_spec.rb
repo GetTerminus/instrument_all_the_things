@@ -112,10 +112,10 @@ RSpec.describe 'instance method tracing' do
       expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['hey'])
     end
 
-    context 'with instance variables' do
+    context 'with a proc' do
       let(:trace_options) { { tags: [-> { "some_stat:#{test_tag}" }] } }
 
-      it 'evaluates the instance var and passes the tag to metrics' do
+      it 'evaluates the instance var in the proc and passes the tag to metrics' do
         expect { call_traced_method }.to change {
           IATT.stat_reporter.emitted_values[:count].length
         }.by(1)
