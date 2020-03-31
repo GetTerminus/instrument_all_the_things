@@ -41,7 +41,8 @@ module InstrumentAllTheThings
       end
 
       def set_context_tags(klass, settings, *args, **kwargs)
-        if settings.is_a?(Hash) && settings[:trace].is_a?(Hash) && settings[:trace][:tags]
+        return unless settings.is_a?(Hash) && settings[:trace].is_a?(Hash) && settings[:trace][:tags]
+        
           settings[:context][:tags] = settings[:trace][:tags].map do |tag|
             if tag.is_a?(Proc)
               if tag.arity == 1
@@ -55,7 +56,6 @@ module InstrumentAllTheThings
           rescue StandardError
             nil
           end.compact
-        end
       end
 
       def wrap_implementation(method_name, settings)
