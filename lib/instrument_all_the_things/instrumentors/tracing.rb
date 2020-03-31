@@ -17,7 +17,6 @@ module InstrumentAllTheThings
              end
 
       proc do |klass, next_blk, actual_code|
-        # binding.pry 
         InstrumentAllTheThings.tracer.trace(
           opts[:span_name],
           tags: context[:tags] || {},

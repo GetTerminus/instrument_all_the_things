@@ -30,7 +30,6 @@ module InstrumentAllTheThings
 
       lambda do |klass, next_blk, actual_code|
         starting_values = GC_STAT_GETTER.call.slice(*opts[:diffed_stats])
-        # binding.pry
         next_blk.call(klass, actual_code).tap do
           new_values = GC_STAT_GETTER.call.slice(*opts[:diffed_stats])
 

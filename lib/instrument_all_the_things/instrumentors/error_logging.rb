@@ -28,7 +28,6 @@ module InstrumentAllTheThings
                           end
 
       lambda do |klass, next_blk, actual_code|
-        # binding.pry
         next_blk.call(klass, actual_code)
       rescue opts[:rescue_class] => e
         raise if e.instance_variable_get(:@_logged_by_iatt)

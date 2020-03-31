@@ -44,20 +44,19 @@ module InstrumentAllTheThings
         wrap = MethodInstrumentor.new(**settings)
 
         define_method(method_name) do |*args, **kwargs, &blk|
-          # binding.pry #we have access to instance here
-
           if settings.is_a?(Hash) && settings[:trace].is_a?(Hash) && settings[:trace][:tags]
             settings[:context][:tags] = settings[:trace][:tags].map do |tag|
               if tag.is_a?(Proc)
                 if tag.arity == 1
-                  binding.pry
-                  tag.call(*tag.parameters[0][1..-1].map { |v| eval(v.to_s) })
-                else 
+                  tag.call(eval(tag.parameters[0][1].to_s))
+                else
                   instance_exec(&tag)
                 end
               else
                 tag
               end
+            rescue StandardError
+              nil
             end
           end
 
