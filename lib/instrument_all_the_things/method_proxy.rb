@@ -57,7 +57,7 @@ module InstrumentAllTheThings
               end
             rescue StandardError
               nil
-            end
+            end.compact
           end
 
           wrap.invoke(klass: is_a?(Class) ? self : self.class) do
