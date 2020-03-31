@@ -40,26 +40,30 @@ module InstrumentAllTheThings
         @_iatt_built_for = val
       end
 
+      def set_context_tags(klass, settings, *args, **kwargs)
+        if settings.is_a?(Hash) && settings[:trace].is_a?(Hash) && settings[:trace][:tags]
+          settings[:context][:tags] = settings[:trace][:tags].map do |tag|
+            if tag.is_a?(Proc)
+              if tag.arity == 1
+                tag.call(eval(tag.parameters[0][1].to_s))
+              else
+                klass.instance_exec(&tag)
+              end
+            else
+              tag
+            end
+          rescue StandardError
+            nil
+          end.compact
+        end
+      end
+
       def wrap_implementation(method_name, settings)
         wrap = MethodInstrumentor.new(**settings)
+        set_tags = method(:set_context_tags) 
 
         define_method(method_name) do |*args, **kwargs, &blk|
-          if settings.is_a?(Hash) && settings[:trace].is_a?(Hash) && settings[:trace][:tags]
-            settings[:context][:tags] = settings[:trace][:tags].map do |tag|
-              if tag.is_a?(Proc)
-                if tag.arity == 1
-                  tag.call(eval(tag.parameters[0][1].to_s))
-                else
-                  instance_exec(&tag)
-                end
-              else
-                tag
-              end
-            rescue StandardError
-              nil
-            end.compact
-          end
-
+          set_tags.call(self, settings, args, kwargs)
           wrap.invoke(klass: is_a?(Class) ? self : self.class) do
             super(*args, **kwargs, &blk)
           end
