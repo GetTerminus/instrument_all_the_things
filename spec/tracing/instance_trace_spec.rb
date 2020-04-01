@@ -112,7 +112,7 @@ RSpec.describe 'instance method tracing' do
       expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['hey'])
     end
 
-    context 'with a proc' do
+    context 'with an instance var in a proc' do
       let(:trace_options) { { tags: [-> { "some_stat:#{test_tag}" }] } }
 
       it 'evaluates the instance var in the proc and passes the tag to metrics' do
@@ -121,6 +121,26 @@ RSpec.describe 'instance method tracing' do
         }.by(1)
         expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['some_stat:cool_tag_bro'])
         expect(IATT.stat_reporter.emitted_values[:timing]["#{klass}.instance_methods.foo.duration"].first[:tags]).to eq(['some_stat:cool_tag_bro'])
+      end
+    end
+
+    context 'with a method argument in a proc' do
+      let(:trace_options) { { tags: [->(kwargs) { "log_args:#{kwargs[:my_arg]}" }] } }
+      it 'evaluates args to the method' do
+        expect { klass.new.foo(my_arg: 'hello') }.to change {
+          IATT.stat_reporter.emitted_values[:count].length
+        }.by(1)
+        expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['log_args:hello'])
+      end
+
+      context 'when the argument doesnt exist' do
+        let(:trace_options) { { tags: [->(garbage) { "log_args:#{garbage[:my_arg]}" }] } }
+        it 'ignores the tag' do
+          expect { klass.new.foo(my_arg: 'hello') }.to change {
+            IATT.stat_reporter.emitted_values[:count].length
+          }.by(1)
+          expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq([])
+        end
       end
     end
   end

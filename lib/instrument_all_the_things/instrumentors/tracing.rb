@@ -19,7 +19,7 @@ module InstrumentAllTheThings
       proc do |klass, next_blk, actual_code|
         InstrumentAllTheThings.tracer.trace(
           opts[:span_name],
-          tags: opts[:tags],
+          tags: context[:tags] || {},
           service: opts[:service],
           resource: opts[:resource] || context.trace_name(klass),
           span_type: opts[:span_type]

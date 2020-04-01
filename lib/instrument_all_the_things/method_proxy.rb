@@ -40,15 +40,31 @@ module InstrumentAllTheThings
         @_iatt_built_for = val
       end
 
+      def set_context_tags(klass, settings, *args, **kwargs) # rubocop:disable Lint/UnusedMethodArgument
+        return unless settings.is_a?(Hash) && settings[:trace].is_a?(Hash) && settings[:trace][:tags]
+
+        settings[:context][:tags] = settings[:trace][:tags].map do |tag|
+          if tag.is_a?(Proc)
+            if tag.arity == 1
+              tag.call(eval(tag.parameters[0][1].to_s))
+            else
+              klass.instance_exec(&tag)
+            end
+          else
+            tag
+          end
+        rescue StandardError
+          nil
+        end.compact
+      end
+
       def wrap_implementation(method_name, settings)
         wrap = MethodInstrumentor.new(**settings)
+        set_tags = method(:set_context_tags)
 
         define_method(method_name) do |*args, **kwargs, &blk|
+          set_tags.call(self, settings, args, kwargs)
           wrap.invoke(klass: is_a?(Class) ? self : self.class) do
-            if settings.is_a?(Hash) && settings[:trace].is_a?(Hash) && settings[:trace][:tags]
-              settings[:context][:tags] = settings[:trace][:tags].map { |tag| tag.is_a?(Proc) ? instance_exec(&tag) : tag }
-            end
-
             super(*args, **kwargs, &blk)
           end
         end
