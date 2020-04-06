@@ -134,7 +134,7 @@ RSpec.describe 'instance method tracing' do
       end
     end
 
-    context 'with a method argument in a proc' do
+    context 'with a method keyword argument in a proc' do
       let(:trace_options) { { tags: [->(kwargs) { "log_args:#{kwargs[:my_arg]}" }] } }
       it 'evaluates args to the method' do
         expect { klass.new.foo(my_arg: 'hello') }.to change {
