@@ -145,11 +145,21 @@ RSpec.describe 'instance method tracing' do
 
       context 'when the argument doesnt exist' do
         let(:trace_options) { { tags: [->(garbage) { "log_args:#{garbage[:my_arg]}" }] } }
-        it 'ignores the tag' do
+        it 'uses kwargs' do
           expect { klass.new.foo(my_arg: 'hello') }.to change {
             IATT.stat_reporter.emitted_values[:count].length
           }.by(1)
-          expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq([])
+          expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['log_args:hello'])
+        end
+      end
+
+      context 'with args and kwargs in a proc' do
+        let(:trace_options) { { tags: [->(args, kwargs) { "all_args:#{args[0]},#{kwargs[:my_arg]}" }] } }
+        it 'evaluates args to the method' do
+          expect { klass.new.foo('norm_arg', my_arg: 'hello_kwarg') }.to change {
+            IATT.stat_reporter.emitted_values[:count].length
+          }.by(1)
+          expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['all_args:norm_arg,hello_kwarg'])
         end
       end
     end
