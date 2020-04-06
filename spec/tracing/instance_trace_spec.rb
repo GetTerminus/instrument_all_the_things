@@ -125,6 +125,16 @@ RSpec.describe 'instance method tracing' do
     end
 
     context 'with a method argument in a proc' do
+      let(:trace_options) { { tags: [->(args) { "log_args:#{args[0]}" }] } }
+      it 'evaluates args to the method' do
+        expect { klass.new.foo('hello') }.to change {
+          IATT.stat_reporter.emitted_values[:count].length
+        }.by(1)
+        expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['log_args:hello'])
+      end
+    end
+
+    context 'with a method argument in a proc' do
       let(:trace_options) { { tags: [->(kwargs) { "log_args:#{kwargs[:my_arg]}" }] } }
       it 'evaluates args to the method' do
         expect { klass.new.foo(my_arg: 'hello') }.to change {

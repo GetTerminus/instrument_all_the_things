@@ -40,7 +40,7 @@ module InstrumentAllTheThings
         @_iatt_built_for = val
       end
 
-      def set_context_tags(klass, settings, *args, **kwargs) # rubocop:disable Lint/UnusedMethodArgument
+      def set_context_tags(klass, settings, args, kwargs) # rubocop:disable Lint/UnusedMethodArgument
         return unless settings.is_a?(Hash) && settings[:trace].is_a?(Hash) && settings[:trace][:tags]
 
         settings[:context][:tags] = settings[:trace][:tags].map do |tag|
