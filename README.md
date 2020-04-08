@@ -93,6 +93,32 @@ also be passed to the DataDog tracer, and their [options](https://github.com/Dat
 | span_type | See DD Docs.                                                  | `nil`
 | tags      | Set of tags to be added to the span, expected to be a hash    | {}
 
+#### Dynamic Tags
+
+If a trace's tags need to reference either an instance variable or a parameter to the method being traced, you must pass in a proc for the tag value.
+
+For instance variables, this will look like this:
+```ruby
+instrument trace: { tags: [-> { "some_stat:#{some_instance_var}" }]}
+def my_instance_method
+...
+end
+```
+
+For parameter references, your proc will need to to have a parameter of `args` or `kwargs` (or both), depending on if the parameter you need to reference is a normal parameter or a keyword parameter. Examples:
+
+```ruby
+instrument trace: { tags: [->(args) { "log_args:#{args[0]}" }]}
+def my_instance_method(my_var)
+...
+end
+
+instrument trace: { tags: [->(kwargs) { "log_args:#{kwargs[:my_arg]}" }]}
+def my_instance_method(my_arg:)
+...
+end
+```
+
 ## Testing Support
 
 You can setup your test environment by running the following setup:
