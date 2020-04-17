@@ -102,6 +102,19 @@ RSpec.describe 'instance method tracing' do
     end
   end
 
+  describe 'arbitrary config' do
+    let(:trace_options) { { fooBaz: 'ddd' } }
+
+    it 'respects the configuration' do
+      expect(InstrumentAllTheThings.tracer).to receive(:trace).with(
+        anything,
+        a_hash_including(fooBaz: 'ddd'),
+      )
+
+      call_traced_method
+    end
+  end
+
   describe 'with tags' do
     let(:trace_options) { { tags: ['hey'] } }
 
