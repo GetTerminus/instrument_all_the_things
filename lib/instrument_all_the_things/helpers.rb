@@ -50,6 +50,9 @@ module InstrumentAllTheThings
 
     def self.included(other_class)
       other_class.extend(ClassMethods)
+
+      InstrumentAllTheThings::MethodProxy.for_class(other_class)
+      InstrumentAllTheThings::MethodProxy.for_class(other_class.singleton_class)
     end
   end
 end
