@@ -9,7 +9,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.0)
-    benchmark-ips (2.7.2)
+    benchmark-ips (2.8.2)
     coderay (1.1.2)
     ddtrace (0.34.2)
       msgpack
