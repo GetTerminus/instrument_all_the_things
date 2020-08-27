@@ -2,9 +2,19 @@ kind: pipeline
 name: default
 
 steps:
-- name: test-ruby
+- name: test-ruby-2.6
   image: getterminus/ruby-ci-image:2.6-je-20190205
-  group: bundler
+  group: test
+  volumes:
+    - name: bundledir
+      path: /usr/local/bundle
+  commands:
+    - bundle check --path=/usr/local/bundle || bundle --local --path=/usr/local/bundle
+    - bundle exec rspec
+
+- name: test-ruby-2.7
+  image: getterminus/ruby-ci-image:2.7-je-20200826
+  group: test
   volumes:
     - name: bundledir
       path: /usr/local/bundle
