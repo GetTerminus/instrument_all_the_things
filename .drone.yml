@@ -3,8 +3,8 @@ name: default
 
 steps:
 - name: test-ruby-2.6
-  image: getterminus/ruby-ci-image:2.6-je-20190205
-  group: test
+  image: getterminus/ruby-docker-images:2.7-je-20200826
+  group: test-2.6
   volumes:
     - name: bundledir
       path: /usr/local/bundle
@@ -13,8 +13,8 @@ steps:
     - bundle exec rspec
 
 - name: test-ruby-2.7
-  image: getterminus/ruby-ci-image:2.7-je-20200826
-  group: test
+  image: getterminus/ruby-docker-images:2.7-je-20200826
+  group: test-2.7
   volumes:
     - name: bundledir
       path: /usr/local/bundle
