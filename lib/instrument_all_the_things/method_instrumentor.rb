@@ -17,7 +17,7 @@ module InstrumentAllTheThings
       trace: true,
       gc_stats: true,
       error_logging: true,
-      execution_counts_and_timing: true
+      execution_counts_and_timing: true,
     }.freeze
 
     attr_accessor :options, :instrumentor
