@@ -66,9 +66,11 @@ module InstrumentAllTheThings
         set_tags = method(:set_context_tags)
 
         define_method(method_name) do |*args, **kwargs, &blk|
+          puts "OUTSIDE: Calling #{method_name} with args #{args} and kwargs #{kwargs}"
           set_tags.call(self, settings, args, kwargs)
           wrap.invoke(klass: is_a?(Class) ? self : self.class) do
-            super(*args, **kwargs, &blk)
+            puts "INSIDE: Calling #{method_name} with args #{args} and kwargs #{kwargs}"
+            super
           end
         end
       end

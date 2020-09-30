@@ -11,6 +11,16 @@ RSpec.describe 'class method tracing' do
       def self.to_s
         'KlassName'
       end
+
+      instrument(trace: true)
+      def self.bar(int_var = 1000)
+        int_var
+      end
+
+      instrument(trace: true)
+      def bar(int_var = 1000)
+        int_var
+      end
     end
   end
 
@@ -38,6 +48,18 @@ RSpec.describe 'class method tracing' do
 
   it 'returns the function data' do
     expect(call_traced_method).to eq 123
+  end
+
+  describe 'args with defaults' do
+    it 'honors the existing default' do
+      expect(klass.bar).to eq 1000
+    end
+  end
+
+  describe 'instance args with default' do
+    it 'honors the existing default' do
+      expect(klass.new.bar).to eq 1000
+    end
   end
 
   describe 'when disabled' do
