@@ -26,7 +26,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     rainbow (3.0.0)
-    rake (10.5.0)
+    rake (13.0.3)
     rexml (3.2.4)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -65,7 +65,7 @@ DEPENDENCIES
   bundler (~> 2.0)
   instrument_all_the_things!
   pry
-  rake (~> 10.0)
+  rake (~> 13.0)
   rspec (~> 3.0)
   rubocop
   simplecov
