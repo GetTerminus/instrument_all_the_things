@@ -28,8 +28,6 @@ module InstrumentAllTheThings
     end
 
     def stat_reporter
-      return @stat_reporter if defined?(@stat_reporter)
-
       @stat_reporter ||= Clients::StatReporter::DataDog.new(
         ENV.fetch('DATADOG_HOST', 'localhost'),
         ENV.fetch('DATADOG_PORT', 8125),
@@ -54,10 +52,10 @@ module InstrumentAllTheThings
       timing
       time
     ].each do |method_name|
-      define_method(method_name) do |*args, **kwargs, &blk|
+      define_method(method_name) do |*args, &blk|
         return unless stat_reporter
 
-        stat_reporter.public_send(method_name, *args, **kwargs, &blk)
+        stat_reporter.public_send(method_name, *args, &blk)
       end
     end
   end
