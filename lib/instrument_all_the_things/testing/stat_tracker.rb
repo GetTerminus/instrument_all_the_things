@@ -15,14 +15,14 @@ module InstrumentAllTheThings
       time
       timing
       ].each do |meth|
-        define_method(meth) do |*args, **kwargs, &blk|
+        define_method(meth) do |*args, &blk|
+          opts = args.last.is_a?(Hash) ? args.last : {}
           @emitted_values[meth][args[0]] << {
             args: args[1..-1],
-            tags: kwargs.fetch(:tags, []),
-            kwargs: kwargs,
+            tags: opts.fetch(:tags, []),
           }
 
-          super(*args, **kwargs, &blk)
+          super(*args, &blk)
         end
       end
 
