@@ -6,7 +6,7 @@ module InstrumentAllTheThings
       service: '',
       span_type: '',
       tags: {},
-      span_name: 'method.execution'
+      span_name: 'method.execution',
     }.freeze
 
     TRACE_WRAPPER = proc do |opts, context|

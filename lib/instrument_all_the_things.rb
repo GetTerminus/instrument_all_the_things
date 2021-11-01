@@ -23,7 +23,7 @@ module InstrumentAllTheThings
                     App.logger
                   else
                     require 'logger'
-                    Logger.new(STDOUT)
+                    Logger.new($stdout)
                   end
     end
 
@@ -62,6 +62,33 @@ module InstrumentAllTheThings
 
   def self.included(other)
     other.include(Helpers)
+  end
+
+  def self.tag_active_span(tag_name, tag_value)
+    tracer&.active_span&.set_tags(to_tracer_tags(tag_name => tag_value))
+  end
+
+  def self.tag_active_root_span(tag_name, tag_value)
+    tracer&.active_span&.set_tags(to_tracer_tags(tag_name => tag_value))
+  end
+
+  def self.to_tracer_tags(hsh, prefix = nil)
+    hsh.each_with_object({}) do |(hash_key, value), acc|
+      key = prefix ? "#{prefix}.#{hash_key}" : hash_key
+
+      case value
+      when Hash
+        acc.merge!(to_tracer_tags(value, key))
+      when Array
+        content = value.each_with_index.each_with_object({}) do |(item, index), reformed|
+          reformed[index] = item
+        end
+
+        acc.merge!(to_tracer_tags(content, key))
+      else
+        acc[key] = value
+      end
+    end
   end
 end
 

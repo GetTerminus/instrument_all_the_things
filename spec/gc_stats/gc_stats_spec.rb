@@ -6,7 +6,7 @@ RSpec.describe 'error logging on instance methods' do
     {
       total_allocated_pages: 10,
       total_allocated_objects: 100,
-      count: 10
+      count: 10,
     }
   end
 
@@ -14,7 +14,7 @@ RSpec.describe 'error logging on instance methods' do
     {
       total_allocated_pages: 11,
       total_allocated_objects: 90,
-      count: 13
+      count: 13,
     }
   end
 
@@ -33,7 +33,7 @@ RSpec.describe 'error logging on instance methods' do
 
   before do
     allow(
-      InstrumentAllTheThings::Instrumentors::GC_STAT_GETTER
+      InstrumentAllTheThings::Instrumentors::GC_STAT_GETTER,
     ).to receive(:call).and_return(first_gc_stats, second_gc_stats)
 
     klass.instrument(gc_stats: gc_stats_options)
@@ -45,9 +45,9 @@ RSpec.describe 'error logging on instance methods' do
   end
 
   it do
-    expect do
+    expect {
       call_gc_stats_method
-    end.to change {
+    }.to change {
       histogram_value('KlassName.instance_methods.foo.total_allocated_pages_change')
     }.by(1)
       .and change {

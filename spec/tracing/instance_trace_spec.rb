@@ -8,6 +8,7 @@ RSpec.describe 'instance method tracing' do
     Class.new do
       include InstrumentAllTheThings
       attr_accessor :test_tag
+
       def initialize
         self.test_tag = 'cool_tag_bro'
       end

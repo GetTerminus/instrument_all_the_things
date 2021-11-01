@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.description   = 'Wrappers to make instrumentation of methods easy and pleasant to read'
   spec.homepage      = 'https://github.com/GetTerminus/instrument-all-the-things'
 
-  spec.metadata['allowed_push_host'] = "https://www.rubygems.org"
+  spec.metadata['allowed_push_host'] = 'https://www.rubygems.org'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/GetTerminus/instrument-all-the-things'
@@ -28,15 +28,16 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
+  spec.required_ruby_version = '>= 2.6.0'
 
   spec.add_dependency 'ddtrace'
   spec.add_dependency 'dogstatsd-ruby'
 
+  spec.add_development_dependency 'benchmark-ips'
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'rubocop'
-  spec.add_development_dependency 'benchmark-ips'
+  spec.add_development_dependency 'simplecov'
 end

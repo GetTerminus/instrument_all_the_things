@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:todo Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
 require_relative './method_instrumentor'
 
 module InstrumentAllTheThings
@@ -22,9 +24,13 @@ module InstrumentAllTheThings
     end
 
     def self.construct_for_class(klass)
-      Module.new do
+      mod = Module.new do
         extend Instrumentor
-      end.tap { |m| m._iatt_built_for = klass }
+      end
+
+      mod._iatt_built_for = klass
+
+      mod
     end
 
     module Instrumentor
@@ -56,8 +62,8 @@ module InstrumentAllTheThings
           else
             tag
           end
-          rescue StandardError
-            nil
+        rescue StandardError
+          nil
         end.compact
       end
 
@@ -75,3 +81,5 @@ module InstrumentAllTheThings
     end
   end
 end
+
+# rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity

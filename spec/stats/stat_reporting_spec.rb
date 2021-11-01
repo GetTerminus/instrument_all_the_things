@@ -201,5 +201,4 @@ RSpec.describe 'stat reporting' do
         .and change { timing_values('my.time', with_tags: ['foo:baz']).length }.to(1)
     end
   end
-
 end
