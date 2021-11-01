@@ -24,9 +24,13 @@ module InstrumentAllTheThings
     end
 
     def self.construct_for_class(klass)
-      Module.new do
+      mod = Module.new do
         extend Instrumentor
-      end.tap { |m| m._iatt_built_for = klass }
+      end
+
+      mod._iatt_built_for = klass
+
+      mod
     end
 
     module Instrumentor
