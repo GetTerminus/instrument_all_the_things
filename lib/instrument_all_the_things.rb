@@ -23,7 +23,7 @@ module InstrumentAllTheThings
                     App.logger
                   else
                     require 'logger'
-                    Logger.new(STDOUT)
+                    Logger.new($stdout)
                   end
     end
 
@@ -58,7 +58,6 @@ module InstrumentAllTheThings
         stat_reporter.public_send(method_name, *args, &blk)
       end
     end
-
   end
 
   def self.included(other)
@@ -81,7 +80,7 @@ module InstrumentAllTheThings
       when Hash
         acc.merge!(to_tracer_tags(value, key))
       when Array
-        content = value.each_with_index.each_with_object({}) do |(item, index),reformed|
+        content = value.each_with_index.each_with_object({}) do |(item, index), reformed|
           reformed[index] = item
         end
 

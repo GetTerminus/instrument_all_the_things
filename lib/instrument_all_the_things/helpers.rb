@@ -21,7 +21,7 @@ module InstrumentAllTheThings
 
         settings[:context] = Context.new(
           method_name: method_name,
-          instance: false
+          instance: false,
         )
 
         InstrumentAllTheThings::MethodProxy
@@ -37,7 +37,7 @@ module InstrumentAllTheThings
 
         settings[:context] = Context.new(
           method_name: method_name,
-          instance: true
+          instance: true,
         )
 
         InstrumentAllTheThings::MethodProxy

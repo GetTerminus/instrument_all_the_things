@@ -5,7 +5,7 @@ module InstrumentAllTheThings
     def stats_name(klass_or_instance)
       @stats_name ||= [
         class_name(klass_or_instance),
-        (instance ? 'instance' : 'class') + '_methods',
+        "#{instance ? 'instance' : 'class'}_methods",
         method_name,
       ].join('.')
     end

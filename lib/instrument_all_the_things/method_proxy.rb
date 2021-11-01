@@ -56,8 +56,8 @@ module InstrumentAllTheThings
           else
             tag
           end
-          rescue StandardError
-            nil
+        rescue StandardError
+          nil
         end.compact
       end
 

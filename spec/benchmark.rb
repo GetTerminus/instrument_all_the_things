@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'instrument_all_the_things'
 require 'benchmark/ips'
 
@@ -8,29 +10,22 @@ end
 class Instrumented
   include InstrumentAllTheThings
 
-  def uninstrumetned
-  end
+  def uninstrumetned; end
 
   instrument
-  def the_works
-  end
+  def the_works; end
 
   instrument trace: true, error_logging: false, gc_stats: false, execution_counts_and_timing: false
-  def only_trace
-  end
+  def only_trace; end
 
   instrument trace: false, error_logging: true, gc_stats: false, execution_counts_and_timing: false
-  def only_error_logging
-  end
-
+  def only_error_logging; end
 
   instrument trace: false, error_logging: false, gc_stats: true, execution_counts_and_timing: false
-  def only_gc_stats
-  end
+  def only_gc_stats; end
 
   instrument trace: false, error_logging: false, gc_stats: true, execution_counts_and_timing: true
-  def only_execution_counts
-  end
+  def only_execution_counts; end
 end
 
 instance = Instrumented.new

@@ -5,7 +5,7 @@ module InstrumentAllTheThings
     module RSpecMatchers
       def histogram_value(counter_name)
         stats = InstrumentAllTheThings.stat_reporter.emitted_values[:histogram][counter_name]
-        stats.inject(0){|l, n| l + n[:args][0] }
+        stats.inject(0) { |l, n| l + n[:args][0] }
       end
 
       def distribution_values(distribution_name, with_tags: nil)
@@ -13,11 +13,11 @@ module InstrumentAllTheThings
 
         if with_tags && !stats.empty?
           stats = stats.select do |s|
-            with_tags.all?{|t| s[:tags].include?(t) }
+            with_tags.all? { |t| s[:tags].include?(t) }
           end
         end
 
-        stats&.map{|i| i[:args] }&.map(&:first) || []
+        stats&.map { |i| i[:args] }&.map(&:first) || []
       end
 
       def histogram_values(histogram_name, with_tags: nil)
@@ -25,11 +25,11 @@ module InstrumentAllTheThings
 
         if with_tags && !stats.empty?
           stats = stats.select do |s|
-            with_tags.all?{|t| s[:tags].include?(t) }
+            with_tags.all? { |t| s[:tags].include?(t) }
           end
         end
 
-        stats&.map{|i| i[:args] }&.map(&:first) || []
+        stats&.map { |i| i[:args] }&.map(&:first) || []
       end
 
       def timing_values(timing_name, with_tags: nil)
@@ -37,11 +37,11 @@ module InstrumentAllTheThings
 
         if with_tags && !stats.empty?
           stats = stats.select do |s|
-            with_tags.all?{|t| s[:tags].include?(t) }
+            with_tags.all? { |t| s[:tags].include?(t) }
           end
         end
 
-        stats&.map{|i| i[:args] }&.map(&:first) || []
+        stats&.map { |i| i[:args] }&.map(&:first) || []
       end
 
       def set_value(counter_name, with_tags: nil)
@@ -49,11 +49,11 @@ module InstrumentAllTheThings
 
         if with_tags && !stats.empty?
           stats = stats.select do |s|
-            with_tags.all?{|t| s[:tags].include?(t) }
+            with_tags.all? { |t| s[:tags].include?(t) }
           end
         end
 
-        data = stats&.map{|i| i[:args] }&.map(&:first)
+        data = stats&.map { |i| i[:args] }&.map(&:first)
         data ? data.uniq.length : 0
       end
 
@@ -62,7 +62,7 @@ module InstrumentAllTheThings
 
         if with_tags && !stats.empty?
           stats = stats.select do |s|
-            with_tags.all?{|t| s[:tags].include?(t) }
+            with_tags.all? { |t| s[:tags].include?(t) }
           end
         end
         stats.last&.fetch(:args)&.first
@@ -72,10 +72,10 @@ module InstrumentAllTheThings
         stats = InstrumentAllTheThings.stat_reporter.emitted_values[:count][counter_name]
         if with_tags && !stats.empty?
           stats = stats.select do |s|
-            with_tags.all?{|t| s[:tags].include?(t) }
+            with_tags.all? { |t| s[:tags].include?(t) }
           end
         end
-        stats.inject(0){|l, n| l + n[:args][0] }
+        stats.inject(0) { |l, n| l + n[:args][0] }
       end
 
       def flush_traces

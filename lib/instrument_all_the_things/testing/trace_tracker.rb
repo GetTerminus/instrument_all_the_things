@@ -18,7 +18,7 @@ module InstrumentAllTheThings
       end
 
       def <<(val)
-        @traces = @traces.concat(MessagePack.load(val[:body]).flatten)
+        @traces.concat(MessagePack.load(val[:body]).flatten)
       end
     end
   end

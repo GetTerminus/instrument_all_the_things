@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe 'IATT Helpers' do
@@ -9,16 +11,16 @@ RSpec.describe 'IATT Helpers' do
     it 'provides nesting with . delimiting' do
       expect(IATT.to_tracer_tags(foo: { baz: 'nitch' })).to eq('foo.baz' => 'nitch')
     end
-   
+
     it 'provides nesting deeply' do
-      expect(IATT.to_tracer_tags(foo: { baz: {one: 'nitch' } })).to eq('foo.baz.one' => 'nitch')
+      expect(IATT.to_tracer_tags(foo: { baz: { one: 'nitch' } })).to eq('foo.baz.one' => 'nitch')
     end
 
     it 'provides nesting for arrays' do
       expect(IATT.to_tracer_tags(foo: { baz: %w[a b c] })).to eq(
         'foo.baz.0' => 'a',
         'foo.baz.1' => 'b',
-        'foo.baz.2' => 'c'
+        'foo.baz.2' => 'c',
       )
     end
   end
