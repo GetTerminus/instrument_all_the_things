@@ -38,7 +38,7 @@ module InstrumentAllTheThings
           end
 
           if (span = InstrumentAllTheThings.tracer.active_span)
-            span.set_tag('gc_stats', diff)
+            span.set_tags(IATT.to_tracer_tags(diff, 'gc_stats'))
           end
 
           diff.each { |s, v| report_value.call(klass, s, v) }
