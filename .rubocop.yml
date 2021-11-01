@@ -1,3 +1,5 @@
+inherit_from: https://raw.githubusercontent.com/GetTerminus/ruby_shared_configs/master/.rubocop.yml
+
 AllCops:
   Exclude:
     - Makefile

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:todo Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
 require_relative './method_instrumentor'
 
 module InstrumentAllTheThings
@@ -75,3 +77,5 @@ module InstrumentAllTheThings
     end
   end
 end
+
+# rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
