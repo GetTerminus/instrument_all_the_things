@@ -1,0 +1,31 @@
+name: Test
+
+on: push
+
+jobs:
+  run-tests:
+    name: Test code
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - 3.1.2
+          - 3.0.4
+          - 2.7.6
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          cache-version: ${{ matrix.ruby }}-0
+      - name: Run RSpec
+        env:
+          CI: true
+        run: bundle exec rspec
+      - name: Coveralls
+        uses: coverallsapp/github-action@v1.1.2
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
