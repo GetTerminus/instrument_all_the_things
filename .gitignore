@@ -11,3 +11,5 @@
 .rspec_status
 .DS_Store
 .vscode
+
+instrument_all_the_things*.gem
