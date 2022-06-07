@@ -1,17 +1,8 @@
-inherit_from: https://raw.githubusercontent.com/GetTerminus/ruby_shared_configs/master/.rubocop.yml
-
-
 AllCops:
-  TargetRubyVersion: 2.7
   Exclude:
     - Makefile
     - vendor/**/*
-    - bin/*
-    - Guardfile
-
-Naming/AccessorMethodName:
-  Exclude:
-    - app/controllers/**/*
+    - bin/**/*
 
 Layout/EndOfLine:
   Enabled: false
@@ -54,10 +45,10 @@ Layout/LineLength:
 
 Metrics/AbcSize:
   Enabled: true
-  Max: 46
+  Max: 48
 
 Metrics/CyclomaticComplexity:
-  Max: 7
+  Max: 9
 
 Metrics/MethodLength:
   Enabled: true
@@ -87,13 +78,14 @@ Metrics/BlockLength:
     - spec/**/*.rb
     - '**/*_pb.rb'
 
-Style/BlockDelimiters:
-  Enabled: true
-  BracesRequiredMethods: ['expect']
-
 Metrics/ParameterLists:
   Max: 6
 
 Lint/AmbiguousBlockAssociation:
   Exclude:
     - spec/**/*.rb
+
+Style/BlockDelimiters:
+  Enabled: true
+  Exclude:
+    - spec/**/*
