@@ -66,10 +66,6 @@ module InstrumentAllTheThings
     tracer&.active_span&.set_tags(to_tracer_tags(tag_name => tag_value))
   end
 
-  def self.tag_active_root_span(tag_name, tag_value)
-    tracer&.active_span&.set_tags(to_tracer_tags(tag_name => tag_value))
-  end
-
   def self.to_tracer_tags(hsh, prefix = nil)
     hsh.each_with_object({}) do |(hash_key, value), acc|
       key = prefix ? "#{prefix}.#{hash_key}" : hash_key
