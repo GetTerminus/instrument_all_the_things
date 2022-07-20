@@ -30,8 +30,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 2.6.0'
 
-  spec.add_dependency 'ddtrace'
-  spec.add_dependency 'dogstatsd-ruby'
+  spec.add_dependency 'ddtrace', '~> 1.2.0'
+  spec.add_dependency 'dogstatsd-ruby', '~> 5.5.0'
 
   spec.add_development_dependency 'benchmark-ips'
   spec.add_development_dependency 'bundler', '~> 2.0'

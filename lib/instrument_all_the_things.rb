@@ -36,9 +36,7 @@ module InstrumentAllTheThings
     end
 
     def tracer
-      return @tracer if defined?(@tracer)
-
-      @tracer ||= Datadog.tracer
+      Datadog::Tracing
     end
 
     %i[

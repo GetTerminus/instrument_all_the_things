@@ -23,7 +23,7 @@ module InstrumentAllTheThings
         passed_ops[:resource] ||= context.trace_name(klass)
         passed_ops[:tags] ||= {}
 
-        InstrumentAllTheThings.tracer.trace(span_name, passed_ops) do
+        InstrumentAllTheThings.tracer.trace(span_name, **passed_ops) do
           next_blk.call(klass, actual_code)
         end
       end
