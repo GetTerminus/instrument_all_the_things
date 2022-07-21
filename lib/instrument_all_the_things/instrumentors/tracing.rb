@@ -3,7 +3,6 @@
 module InstrumentAllTheThings
   module Instrumentors
     DEFAULT_TRACE_OPTIONS = {
-      service: '',
       span_type: '',
       tags: {},
       span_name: 'method.execution',
