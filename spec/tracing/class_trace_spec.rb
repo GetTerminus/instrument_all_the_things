@@ -28,7 +28,6 @@ RSpec.describe 'class method tracing' do
       emitted_spans(
         filtered_by: {
           name: 'method.execution',
-          service: '',
           resource: 'KlassName#foo',
           type: '',
         },
@@ -103,7 +102,6 @@ RSpec.describe 'class method tracing' do
         emitted_spans(
           filtered_by: {
             name: 'method.execution',
-            service: '',
             resource: 'SubKlassName#foo',
             type: '',
           },

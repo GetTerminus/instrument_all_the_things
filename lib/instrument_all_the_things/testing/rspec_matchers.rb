@@ -81,7 +81,7 @@ module InstrumentAllTheThings
       end
 
       def flush_traces
-        Datadog.tracer&.writer&.worker&.flush_data
+        Datadog::Tracing.send(:tracer)&.writer&.worker&.flush_data
       end
 
       def emitted_spans(filtered_by: nil)

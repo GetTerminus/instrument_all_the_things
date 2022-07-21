@@ -36,9 +36,7 @@ module InstrumentAllTheThings
     end
 
     def tracer
-      return @tracer if defined?(@tracer)
-
-      @tracer ||= Datadog.tracer
+      Datadog::Tracing
     end
 
     %i[
@@ -65,10 +63,6 @@ module InstrumentAllTheThings
   end
 
   def self.tag_active_span(tag_name, tag_value)
-    tracer&.active_span&.set_tags(to_tracer_tags(tag_name => tag_value))
-  end
-
-  def self.tag_active_root_span(tag_name, tag_value)
     tracer&.active_span&.set_tags(to_tracer_tags(tag_name => tag_value))
   end
 

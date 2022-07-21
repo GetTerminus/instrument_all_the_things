@@ -15,7 +15,7 @@ require 'instrument_all_the_things/testing/rspec_matchers'
 require 'pry'
 
 Datadog.configure do |c|
-  c.tracer transport_options: proc { |t|
+  c.tracing.transport_options = proc { |t|
     t.adapter :test, IATT::Testing::TraceTracker.tracker
   }
 end

@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    instrument_all_the_things (1.3.0)
-      ddtrace (< 1)
-      dogstatsd-ruby
+    instrument_all_the_things (2.0.0)
+      ddtrace (~> 1.2.0)
+      dogstatsd-ruby (~> 5.5.0)
 
 GEM
   remote: https://rubygems.org/
@@ -11,15 +11,24 @@ GEM
     ast (2.4.2)
     benchmark-ips (2.10.0)
     coderay (1.1.3)
-    ddtrace (0.54.2)
-      debase-ruby_core_source (<= 0.10.14)
+    ddtrace (1.2.0)
+      debase-ruby_core_source (= 0.10.16)
+      libddprof (~> 0.6.0.1.0)
+      libddwaf (~> 1.3.0.2.0)
       msgpack
-    debase-ruby_core_source (0.10.14)
+    debase-ruby_core_source (0.10.16)
     diff-lcs (1.5.0)
     docile (1.4.0)
     dogstatsd-ruby (5.5.0)
+    ffi (1.15.5)
+    json (2.6.2)
+    libddprof (0.6.0.1.0)
+    libddwaf (1.3.0.2.0)
+      ffi (~> 1.0)
+    libddwaf (1.3.0.2.0-x86_64-darwin)
+      ffi (~> 1.0)
     method_source (1.0.0)
-    msgpack (1.5.2)
+    msgpack (1.5.3)
     parallel (1.22.1)
     parser (3.1.2.0)
       ast (~> 2.4.1)
@@ -43,7 +52,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
-    rubocop (1.30.1)
+    rubocop (1.31.2)
+      json (~> 2.3)
       parallel (~> 1.10)
       parser (>= 3.1.0.0)
       rainbow (>= 2.2.2, < 4.0)
@@ -52,7 +62,7 @@ GEM
       rubocop-ast (>= 1.18.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.18.0)
+    rubocop-ast (1.19.1)
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
     simplecov (0.21.2)
@@ -61,7 +71,7 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
-    unicode-display_width (2.1.0)
+    unicode-display_width (2.2.0)
 
 PLATFORMS
   ruby
