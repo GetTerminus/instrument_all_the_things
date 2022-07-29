@@ -25,6 +25,7 @@ RSpec.describe 'instance method tracing' do
 
   subject(:call_traced_method) do
     klass.new.async_method
+    sleep(0.1)
     flush_traces
   end
 
@@ -50,8 +51,6 @@ RSpec.describe 'instance method tracing' do
 
   it 'sets the parent_ids of the children spans properly and includes them in the same trace' do
     call_traced_method
-    sleep(0.1) # Simplest way of ensuring the thread executes. Tried a mutex lock, but even that wasn't consistently getting all the spans.
-    flush_traces
 
     async_method_span = emitted_spans(
       filtered_by: {
