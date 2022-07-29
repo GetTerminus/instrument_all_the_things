@@ -7,79 +7,173 @@ RSpec.describe 'instance method tracing' do
   let(:klass) do
     Class.new do
       include InstrumentAllTheThings
+      attr_accessor :test_tag
+
+      def initialize
+        self.test_tag = 'cool_tag_bro'
+      end
+
       def self.to_s
         'KlassName'
       end
-
-      instrument trace: true
-      def async_method
-        Thread.new_traced do
-          noop
-        end
-      end
-
-      instrument trace: true
-      def noop; end
     end
   end
 
   subject(:call_traced_method) do
-    klass.new.async_method
+    klass.new.foo
     flush_traces
   end
 
-  it 'creates a trace with defaults for both methods' do
+  before do
+    klass.instrument(trace: trace_options)
+    klass.define_method(:foo) { |*i| }
+  end
+
+  it 'creates a trace with defaults' do
     expect { call_traced_method }.to change {
       emitted_spans(
         filtered_by: {
           name: 'method.execution',
-          resource: 'KlassName.async_method',
-          type: '',
-        },
-      ).length
-    }.by(1).and change {
-      emitted_spans(
-        filtered_by: {
-          name: 'method.execution',
-          resource: 'KlassName.noop',
+          resource: 'KlassName.foo',
           type: '',
         },
       ).length
     }.by(1)
   end
 
-  it 'sets the parent_ids of the children spans properly and includes them in the same trace' do
-    call_traced_method
-    sleep(0.1) # Simplest way of ensuring the thread executes. Tried a mutex lock, but even that wasn't consistently getting all the spans.
-    flush_traces
+  describe 'when disabled' do
+    let(:trace_options) { false }
 
-    async_method_span = emitted_spans(
-      filtered_by: {
-        name: 'method.execution',
-        resource: 'KlassName.async_method',
-        type: '',
-      },
-    ).first
+    it 'respects the configuration' do
+      expect { call_traced_method }.not_to(change { emitted_spans.length })
+    end
+  end
 
-    method_execution_span = emitted_spans(
-      filtered_by: {
-        name: 'method.execution',
-        resource: 'method.execution',
-        type: nil,
-      },
-    ).first
+  describe 'a config of true' do
+    let(:trace_options) { true }
 
-    noop_method_span = emitted_spans(
-      filtered_by: {
-        name: 'method.execution',
-        resource: 'KlassName.noop',
-        type: '',
-      },
-    ).first
+    it 'respects the configuration' do
+      expect { call_traced_method }.to change {
+        emitted_spans(
+          filtered_by: {
+            name: 'method.execution',
+            resource: 'KlassName.foo',
+            type: '',
+          },
+        ).length
+      }.by(1)
+    end
+  end
 
-    expect(noop_method_span['parent_id']).to eq(method_execution_span['span_id'])
-    expect(method_execution_span['parent_id']).to eq(async_method_span['span_id'])
+  describe 'when the service name is configured' do
+    let(:trace_options) { { service: 'foobar' } }
 
-    expect(noop_method_span['trace_id']).to eq(async_method_span['trace_id'])
+    it 'respects the configuration' do
+      expect { call_traced_method }.to change {
+        emitted_spans(
+          filtered_by: { service: 'foobar' },
+        ).length
+      }.by(1)
+    end
+  end
+
+  describe 'when the resource name is configured' do
+    let(:trace_options) { { resource: 'foobar' } }
+
+    it 'respects the configuration' do
+      expect { call_traced_method }.to change {
+        emitted_spans(
+          filtered_by: { resource: 'foobar' },
+        ).length
+      }.by(1)
+    end
+  end
+
+  describe 'when the type is configured' do
+    let(:trace_options) { { span_type: 'ddd' } }
+
+    it 'respects the configuration' do
+      expect { call_traced_method }.to change {
+        emitted_spans(
+          filtered_by: { type: 'ddd' },
+        ).length
+      }.by(1)
+    end
+  end
+
+  describe 'arbitrary config' do
+    let(:trace_options) { { fooBaz: 'ddd' } }
+
+    it 'respects the configuration' do
+      expect(InstrumentAllTheThings.tracer).to receive(:trace).with(
+        anything,
+        a_hash_including(fooBaz: 'ddd'),
+      )
+
+      call_traced_method
+    end
+  end
+
+  describe 'with tags' do
+    let(:trace_options) { { tags: ['hey'] } }
+
+    it 'passes the tags to metrics' do
+      expect { call_traced_method }.to change {
+        IATT.stat_reporter.emitted_values[:count].length
+      }.by(1)
+      expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['hey'])
+    end
+
+    context 'with an instance var in a proc' do
+      let(:trace_options) { { tags: [-> { "some_stat:#{test_tag}" }] } }
+
+      it 'evaluates the instance var in the proc and passes the tag to metrics' do
+        expect { call_traced_method }.to change {
+          IATT.stat_reporter.emitted_values[:count].length
+        }.by(1)
+        expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['some_stat:cool_tag_bro'])
+        expect(IATT.stat_reporter.emitted_values[:timing]["#{klass}.instance_methods.foo.duration"].first[:tags]).to eq(['some_stat:cool_tag_bro'])
+      end
+    end
+
+    context 'with a method argument in a proc' do
+      let(:trace_options) { { tags: [->(args) { "log_args:#{args[0]}" }] } }
+      it 'evaluates args to the method' do
+        expect { klass.new.foo('hello') }.to change {
+          IATT.stat_reporter.emitted_values[:count].length
+        }.by(1)
+        expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['log_args:hello'])
+      end
+    end
+
+    context 'with a method keyword argument in a proc' do
+      let(:trace_options) { { tags: [->(kwargs) { "log_args:#{kwargs[:my_arg]}" }] } }
+      it 'evaluates args to the method' do
+        expect { klass.new.foo(my_arg: 'hello') }.to change {
+          IATT.stat_reporter.emitted_values[:count].length
+        }.by(1)
+        expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['log_args:hello'])
+      end
+
+      context 'when the argument doesnt exist' do
+        let(:trace_options) { { tags: [->(garbage) { "log_args:#{garbage[:my_arg]}" }] } }
+        it 'uses kwargs' do
+          expect { klass.new.foo(my_arg: 'hello') }.to change {
+            IATT.stat_reporter.emitted_values[:count].length
+          }.by(1)
+          expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['log_args:hello'])
+        end
+      end
+
+      context 'with args and kwargs in a proc' do
+        let(:trace_options) { { tags: [->(args, kwargs) { "all_args:#{args[0]},#{kwargs[:my_arg]}" }] } }
+        it 'evaluates args to the method' do
+          expect { klass.new.foo('norm_arg', my_arg: 'hello_kwarg') }.to change {
+            IATT.stat_reporter.emitted_values[:count].length
+          }.by(1)
+          expect(IATT.stat_reporter.emitted_values[:count]["#{klass}.instance_methods.foo.executed"].first[:tags]).to eq(['all_args:norm_arg,hello_kwarg'])
+        end
+      end
+    end
   end
 end
