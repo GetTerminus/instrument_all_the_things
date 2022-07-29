@@ -8,6 +8,7 @@ AllCops:
     - vendor/**/*
     - bin/*
     - Guardfile
+    - lib/instrument_all_the_things/thread.rb
 
 Naming/AccessorMethodName:
   Exclude:
