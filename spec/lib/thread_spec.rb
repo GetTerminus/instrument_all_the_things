@@ -39,6 +39,27 @@ RSpec.describe 'instance method tracing' do
     it 'creates a new thread with no errors' do
       expect { call_traced_method }.to_not raise_error
     end
+
+
+    it 'creates a trace with defaults for the traced method' do
+      expect { call_traced_method }.to change {
+        emitted_spans(
+          filtered_by: {
+            name: 'method.execution',
+            resource: 'KlassName.async_method_untraced',
+            type: '',
+          },
+        ).length
+      }.by(0).and change {
+        emitted_spans(
+          filtered_by: {
+            name: 'method.execution',
+            resource: 'KlassName.noop',
+            type: '',
+          },
+        ).length
+      }.by(1)
+    end
   end
 
   context 'traced async_method' do
