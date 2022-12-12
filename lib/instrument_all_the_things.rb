@@ -29,8 +29,6 @@ module InstrumentAllTheThings
 
     def stat_reporter
       @stat_reporter ||= Clients::StatReporter::DataDog.new(
-        ENV.fetch('DATADOG_HOST', 'localhost'),
-        ENV.fetch('DATADOG_PORT', 8125),
         namespace: stat_namespace,
       )
     end
