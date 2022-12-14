@@ -6,6 +6,7 @@ require 'instrument_all_the_things/version'
 
 require_relative './instrument_all_the_things/helpers'
 require_relative './instrument_all_the_things/clients/stat_reporter/datadog'
+require_relative './instrument_all_the_things/thread'
 
 module InstrumentAllTheThings
   class Error < StandardError; end
