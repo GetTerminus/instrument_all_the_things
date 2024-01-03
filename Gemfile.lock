@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    instrument_all_the_things (3.1.0)
+    instrument_all_the_things (3.1.2.pre1)
       ddtrace (~> 1.0)
-      dogstatsd-ruby (~> 5.6)
+      dogstatsd-ruby (~> 5.0)
 
 GEM
   remote: https://rubygems.org/
@@ -27,8 +27,6 @@ GEM
     json (2.7.1)
     language_server-protocol (3.17.0.3)
     libdatadog (5.0.0.1.0)
-    libddwaf (1.14.0.0.0)
-      ffi (~> 1.0)
     libddwaf (1.14.0.0.0-x86_64-darwin)
       ffi (~> 1.0)
     method_source (1.0.0)
@@ -81,8 +79,7 @@ GEM
     unicode-display_width (2.5.0)
 
 PLATFORMS
-  ruby
-  x86_64-darwin-18
+  x86_64-darwin-20
 
 DEPENDENCIES
   benchmark-ips
@@ -95,4 +92,4 @@ DEPENDENCIES
   simplecov
 
 BUNDLED WITH
-   2.3.12
+   2.4.13
