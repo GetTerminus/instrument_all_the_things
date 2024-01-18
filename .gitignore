@@ -11,5 +11,6 @@
 .rspec_status
 .DS_Store
 .vscode
+Gemfile.lock
 
 instrument_all_the_things*.gem
