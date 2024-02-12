@@ -395,6 +395,9 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 # Breaking Changes
 
+# V3 => V4
+Removed the default StatsD based wrappers.
+
 # V2 => V3
 IATT no longer takes ENV var configuration for directly. All DataDog configuration is handled by their env vars.
 
