@@ -4,6 +4,14 @@ require 'spec_helper'
 
 RSpec.describe 'instance method tracing' do
   let(:trace_options) { {} }
+  let(:instrumentation_options) do
+    {
+      trace: trace_options,
+      gc_stats: true,
+      error_logging: true,
+      execution_counts_and_timing: true,
+    }
+  end
   let(:klass) do
     Class.new do
       include InstrumentAllTheThings
@@ -25,7 +33,7 @@ RSpec.describe 'instance method tracing' do
   end
 
   before do
-    klass.instrument(trace: trace_options)
+    klass.instrument(**instrumentation_options)
     klass.define_method(:foo) { |*i| }
   end
 
@@ -115,7 +123,11 @@ RSpec.describe 'instance method tracing' do
   end
 
   describe 'with tags' do
-    let(:trace_options) { { tags: ['hey'] } }
+    let(:trace_options) do
+      {
+        tags: ['hey'],
+      }
+    end
 
     it 'passes the tags to metrics' do
       expect { call_traced_method }.to change {
