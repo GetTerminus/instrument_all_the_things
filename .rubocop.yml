@@ -2,7 +2,7 @@ inherit_from: https://raw.githubusercontent.com/GetTerminus/ruby_shared_configs/
 
 
 AllCops:
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 2.6
   Exclude:
     - Makefile
     - vendor/**/*
