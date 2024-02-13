@@ -19,7 +19,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-          cache-version: ${{ matrix.ruby }}-0
+          cache-version: "${{ matrix.rubyVersion }}-v1x-0"
       - name: Run RSpec
         env:
           CI: true
