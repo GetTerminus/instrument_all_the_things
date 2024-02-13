@@ -15,9 +15,9 @@ module InstrumentAllTheThings
 
     DEFAULT_OPTIONS = {
       trace: true,
-      gc_stats: true,
+      gc_stats: false,
       error_logging: true,
-      execution_counts_and_timing: true,
+      execution_counts_and_timing: false,
     }.freeze
 
     attr_accessor :options, :instrumentor

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    instrument_all_the_things (1.3.0)
+    instrument_all_the_things (1.4.0)
       ddtrace (< 1)
       dogstatsd-ruby
 
@@ -19,7 +19,7 @@ GEM
     docile (1.4.0)
     dogstatsd-ruby (5.5.0)
     method_source (1.0.0)
-    msgpack (1.5.2)
+    msgpack (1.6.0)
     parallel (1.22.1)
     parser (3.1.2.0)
       ast (~> 2.4.1)
