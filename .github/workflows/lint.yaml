@@ -16,6 +16,6 @@ jobs:
         with:
           ruby-version: ${{ matrix.rubyVersion }}
           bundler-cache: true
-          cache-version: "${{ matrix.rubyVersion }}-0"
+          cache-version: "${{ matrix.rubyVersion }}-v1x-0"
       - name: Run RuboCop
         run: bundle exec rubocop

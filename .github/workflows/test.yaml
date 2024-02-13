@@ -13,13 +13,14 @@ jobs:
           - 3.1.2
           - 3.0.4
           - 2.7.6
+          - 2.6.10
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-          cache-version: ${{ matrix.ruby }}-0
+          cache-version: "${{ matrix.rubyVersion }}-v1x-0"
       - name: Run RSpec
         env:
           CI: true
