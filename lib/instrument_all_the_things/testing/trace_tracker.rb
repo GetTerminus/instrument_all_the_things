@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'datadog/tracing/transport/io/client'
+
 module InstrumentAllTheThings
-  module Testing
+  module Testing 
     class TraceTracker < Datadog::Tracing::Transport::IO::Client
       attr_reader :traces
 
