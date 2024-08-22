@@ -30,7 +30,6 @@ RSpec.describe 'instance method tracing' do
 
   subject(:call_traced_method) do
     klass.new.foo
-    flush_traces
   end
 
   before do

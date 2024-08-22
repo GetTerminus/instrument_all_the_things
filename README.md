@@ -129,8 +129,9 @@ require 'instrument_all_the_things/testing/trace_tracker'
 require 'instrument_all_the_things/testing/rspec_matchers'
 
 Datadog.configure do |c|
-  c.tracing.transport_options = proc { |t|
-    t.adapter :test, IATT::Testing::TraceTracker.new
+  c.tracing.test_mode.enabled = true 
+  c.tracing.test_mode.writer_options = {
+    transport: InstrumentAllTheThings::Testing::TraceTracker.tracker
   }
 end
 
@@ -166,10 +167,6 @@ some awesome rspec helpers like so:
   it 'traces' do
     expect {
       klass.new.foo
-
-      # Datadog writes trace to the wire and to the test harness asynchronously
-      # This helper is provided to force the flush before expectations are stated
-      flush_traces
     }.to change{
       emitted_spans(
         filtered_by: {resource: 'KlassName.foo'}
