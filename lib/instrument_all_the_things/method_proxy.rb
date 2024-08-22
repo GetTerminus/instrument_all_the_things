@@ -26,6 +26,10 @@ module InstrumentAllTheThings
     def self.construct_for_class(klass)
       mod = Module.new do
         extend Instrumentor
+
+        def self.to_s
+          klass.to_s
+        end
       end
 
       mod._iatt_built_for = klass
