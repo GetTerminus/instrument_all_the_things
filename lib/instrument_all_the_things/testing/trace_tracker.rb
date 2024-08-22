@@ -3,14 +3,14 @@
 require 'datadog/tracing/transport/io/client'
 
 module InstrumentAllTheThings
-  module Testing 
+  module Testing
     class TraceTracker < Datadog::Tracing::Transport::IO::Client
       attr_reader :traces
 
       def self.tracker
         @tracker ||= new(
           StringIO.new,
-          Datadog::Core::Encoding::JSONEncoder
+          Datadog::Core::Encoding::JSONEncoder,
         )
       end
 

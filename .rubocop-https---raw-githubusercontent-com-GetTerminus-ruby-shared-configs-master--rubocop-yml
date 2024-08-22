@@ -3,7 +3,8 @@ AllCops:
     - Makefile
     - vendor/**/*
     - bin/**/*
-
+    - '**/*_pb.rb'
+    
 Layout/EndOfLine:
   Enabled: false
 
@@ -40,8 +41,6 @@ Layout/LineLength:
   Max: 280
   IgnoreCopDirectives: true
   AllowedPatterns: ['\A#', '\A\s*sig { .* }\Z']
-  Exclude:
-    - '**/*_pb.rb'
 
 Metrics/AbcSize:
   Enabled: true
@@ -76,7 +75,6 @@ Metrics/BlockLength:
   Max: 30
   Exclude:
     - spec/**/*.rb
-    - '**/*_pb.rb'
 
 Metrics/ParameterLists:
   Max: 6

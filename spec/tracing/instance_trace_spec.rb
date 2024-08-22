@@ -23,6 +23,7 @@ RSpec.describe 'instance method tracing' do
 
       def initialize
         self.test_tag = 'cool_tag_bro'
+        super
       end
     end
   end

@@ -30,7 +30,7 @@ module InstrumentAllTheThings
 
       # attaching to the original to_s
       method = klass.method(:to_s)
-      mod.define_singleton_method(:to_s, &method) 
+      mod.define_singleton_method(:to_s, &method)
 
       mod._iatt_built_for = klass
 

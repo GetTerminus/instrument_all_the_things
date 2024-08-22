@@ -17,9 +17,9 @@ require 'instrument_all_the_things/testing/rspec_matchers'
 require 'pry'
 
 Datadog.configure do |c|
-  c.tracing.test_mode.enabled = true 
+  c.tracing.test_mode.enabled = true
   c.tracing.test_mode.writer_options = {
-    transport: InstrumentAllTheThings::Testing::TraceTracker.tracker
+    transport: InstrumentAllTheThings::Testing::TraceTracker.tracker,
   }
 end
 
