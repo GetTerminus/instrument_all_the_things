@@ -7,7 +7,6 @@ RSpec.describe 'instance method tracing' do
   let(:instrumentation_options) do
     {
       trace: trace_options,
-      gc_stats: true,
       error_logging: true,
       execution_counts_and_timing: true,
     }

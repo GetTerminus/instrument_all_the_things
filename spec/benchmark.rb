@@ -15,16 +15,13 @@ class Instrumented
   instrument
   def the_works; end
 
-  instrument trace: true, error_logging: false, gc_stats: false, execution_counts_and_timing: false
+  instrument trace: true, error_logging: false, execution_counts_and_timing: false
   def only_trace; end
 
-  instrument trace: false, error_logging: true, gc_stats: false, execution_counts_and_timing: false
+  instrument trace: false, error_logging: true, execution_counts_and_timing: false
   def only_error_logging; end
 
-  instrument trace: false, error_logging: false, gc_stats: true, execution_counts_and_timing: false
-  def only_gc_stats; end
-
-  instrument trace: false, error_logging: false, gc_stats: true, execution_counts_and_timing: true
+  instrument trace: false, error_logging: false, execution_counts_and_timing: true
   def only_execution_counts; end
 end
 
@@ -34,6 +31,5 @@ Benchmark.ips do |x|
   x.report('the_works') { instance.the_works }
   x.report('only_trace') { instance.only_trace }
   x.report('only_error_logging') { instance.only_error_logging }
-  x.report('only_gc_stats') { instance.only_gc_stats }
   x.report('only_execution_counts') { instance.only_execution_counts }
 end
