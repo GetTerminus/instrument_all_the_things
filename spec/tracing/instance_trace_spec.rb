@@ -7,34 +7,44 @@ RSpec.describe 'instance method tracing' do
   let(:instrumentation_options) do
     {
       trace: trace_options,
-      gc_stats: true,
       error_logging: true,
       execution_counts_and_timing: true,
     }
   end
   let(:klass) do
-    Class.new do
+    base_klass = Class.new do
+      def self.to_s
+        'KlassName'
+      end
+    end
+    Class.new(base_klass) do
       include InstrumentAllTheThings
       attr_accessor :test_tag
 
       def initialize
         self.test_tag = 'cool_tag_bro'
-      end
-
-      def self.to_s
-        'KlassName'
+        super
       end
     end
   end
 
   subject(:call_traced_method) do
     klass.new.foo
-    flush_traces
   end
 
   before do
     klass.instrument(**instrumentation_options)
     klass.define_method(:foo) { |*i| }
+  end
+
+  context '.to_s' do
+    it 'keeps the name of the owner the same' do
+      expect(klass.new.method(:foo).owner.to_s).to eq 'KlassName'
+    end
+
+    it 'keeps the class name of the owner the same' do
+      expect(klass.to_s).to eq 'KlassName'
+    end
   end
 
   it 'creates a trace with defaults' do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ddtrace'
+require 'datadog'
 
 require 'instrument_all_the_things/version'
 

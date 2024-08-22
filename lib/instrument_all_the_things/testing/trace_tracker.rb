@@ -1,15 +1,21 @@
 # frozen_string_literal: true
 
+require 'datadog/tracing/transport/io/client'
+
 module InstrumentAllTheThings
   module Testing
-    class TraceTracker
+    class TraceTracker < Datadog::Tracing::Transport::IO::Client
       attr_reader :traces
 
       def self.tracker
-        @tracker ||= new
+        @tracker ||= new(
+          StringIO.new,
+          Datadog::Core::Encoding::JSONEncoder,
+        )
       end
 
-      def initialize
+      def initialize(...)
+        super
         reset!
       end
 
@@ -17,8 +23,9 @@ module InstrumentAllTheThings
         @traces = []
       end
 
-      def <<(val)
-        @traces.concat(MessagePack.load(val[:body]).flatten)
+      def write_data(_, val)
+        body = JSON.parse(val)
+        @traces.concat(body.fetch('traces', []).flatten)
       end
     end
   end

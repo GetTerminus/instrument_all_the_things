@@ -80,10 +80,6 @@ module InstrumentAllTheThings
         stats.inject(0) { |l, n| l + n[:args][0] }
       end
 
-      def flush_traces
-        Datadog::Tracing.send(:tracer)&.writer&.worker&.flush_data
-      end
-
       def emitted_spans(filtered_by: nil)
         sleep 0.01
         traces = InstrumentAllTheThings::Testing::TraceTracker.tracker.traces.map(&:dup)

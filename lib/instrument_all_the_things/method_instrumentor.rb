@@ -5,9 +5,6 @@ require_relative './instrumentors/all'
 module InstrumentAllTheThings
   class MethodInstrumentor
     WRAPPERS = {
-      # Note that the order of these hash keys are applied top to bottom, with the first inserted key
-      # being the inner most wrapper
-      gc_stats: Instrumentors::GC_STATS_WRAPPER,
       error_logging: Instrumentors::ERROR_LOGGING_WRAPPER,
       execution_counts_and_timing: Instrumentors::EXECUTION_COUNT_AND_TIMING_WRAPPER,
       trace: Instrumentors::TRACE_WRAPPER,
@@ -15,7 +12,6 @@ module InstrumentAllTheThings
 
     DEFAULT_OPTIONS = {
       trace: true,
-      gc_stats: false,
       error_logging: true,
       execution_counts_and_timing: false,
     }.freeze

@@ -15,7 +15,7 @@ RSpec.describe 'class method tracing' do
   end
 
   subject(:call_traced_method) do
-    klass.foo.tap { flush_traces }
+    klass.foo
   end
 
   before do
@@ -94,7 +94,6 @@ RSpec.describe 'class method tracing' do
 
     subject(:call_traced_method) do
       sub_klass.foo
-      flush_traces
     end
 
     it 'emits spans with the subklass name' do

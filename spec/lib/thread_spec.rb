@@ -33,7 +33,6 @@ RSpec.describe 'instance method tracing' do
     subject(:call_traced_method) do
       klass.new.async_method_untraced
       sleep(0.1)
-      flush_traces
     end
 
     it 'creates a new thread with no errors' do
@@ -65,7 +64,6 @@ RSpec.describe 'instance method tracing' do
     subject(:call_traced_method) do
       klass.new.async_method
       sleep(0.1)
-      flush_traces
     end
 
     it 'creates a trace with defaults for both methods' do

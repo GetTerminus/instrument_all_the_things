@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ddtrace'
+require 'datadog'
 
 # https://github.com/DataDog/dd-trace-rb/blob/master/docs/UpgradeGuide.md#between-threads
 class Thread

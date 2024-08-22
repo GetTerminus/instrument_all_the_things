@@ -44,28 +44,6 @@ class Foo
   end
 end
 ```
-### Garbage Collection Stats
-_Configuration Key `gc_stats`_
-
-Collects the difference between the specified keys during the execution of the method.
-
-Stat diffs are added to the active trace span as a tag, and a stat is emitted with the following format
-
-`klass_name.(instance|class)_methods.(stat_name)_change`
-
-#### Description of default stats
-_GC Stats are not thread local, if your app is multi threaded other threads may be contributing to these stats_
-| Option                  | Description
-| -----                   | ----
-| total_allocated_pages   | Total number of memory pages owned by this ruby process. Mature processes tend to see a slowdown in page allocations
-| total_allocated_objects | Total number of objects which have not been garbage collected yet
-| count                   | Total number of GC runs during this method's exuection
-
-#### Options
-| Option       | Description              | Default
-| -----        | ----                     | -----
-| diffed_stats | Stats to diff and record | [:total_allocated_pages, :total_allocated_objects, :count]
-
 ### Error Logging
 _Configuration Key `log_errors`_
 
@@ -129,8 +107,9 @@ require 'instrument_all_the_things/testing/trace_tracker'
 require 'instrument_all_the_things/testing/rspec_matchers'
 
 Datadog.configure do |c|
-  c.tracing.transport_options = proc { |t|
-    t.adapter :test, IATT::Testing::TraceTracker.new
+  c.tracing.test_mode.enabled = true 
+  c.tracing.test_mode.writer_options = {
+    transport: InstrumentAllTheThings::Testing::TraceTracker.tracker
   }
 end
 
@@ -166,10 +145,6 @@ some awesome rspec helpers like so:
   it 'traces' do
     expect {
       klass.new.foo
-
-      # Datadog writes trace to the wire and to the test harness asynchronously
-      # This helper is provided to force the flush before expectations are stated
-      flush_traces
     }.to change{
       emitted_spans(
         filtered_by: {resource: 'KlassName.foo'}
@@ -348,7 +323,6 @@ Calculating -------------------------------------
            the_works      7.404k (±12.9%) i/s -     36.936k in   5.100630s
           only_trace     27.968k (±12.7%) i/s -    139.209k in   5.061907s
   only_error_logging    638.098k (± 4.6%) i/s -      3.231M in   5.075275s
-       only_gc_stats     12.930k (±13.2%) i/s -     63.865k in   5.070874s
 only_execution_counts     9.847k (±11.1%) i/s -     49.088k in   5.073475s
 ```
 

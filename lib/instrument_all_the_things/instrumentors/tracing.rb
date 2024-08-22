@@ -21,6 +21,7 @@ module InstrumentAllTheThings
         passed_ops = opts.dup
         passed_ops[:resource] ||= context.trace_name(klass)
         passed_ops[:tags] ||= {}
+        passed_ops[:type] = passed_ops.delete(:span_type)
 
         InstrumentAllTheThings.tracer.trace(span_name, **passed_ops) do
           next_blk.call(klass, actual_code)
