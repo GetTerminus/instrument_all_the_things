@@ -28,7 +28,7 @@ module InstrumentAllTheThings
         extend Instrumentor
 
         def self.to_s
-          klass.to_s
+          super 
         end
       end
 
