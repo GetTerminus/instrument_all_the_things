@@ -26,11 +26,11 @@ module InstrumentAllTheThings
     def self.construct_for_class(klass)
       mod = Module.new do
         extend Instrumentor
-
-        def self.to_s
-          super 
-        end
       end
+
+      # attaching to the original to_s
+      method = klass.method(:to_s)
+      mod.define_singleton_method(:to_s, &method) 
 
       mod._iatt_built_for = klass
 

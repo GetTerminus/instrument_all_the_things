@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'datadog/tracing/transport/io'
+
 require 'bundler/setup'
 require 'simplecov'
 SimpleCov.start do
@@ -15,8 +17,9 @@ require 'instrument_all_the_things/testing/rspec_matchers'
 require 'pry'
 
 Datadog.configure do |c|
-  c.tracing.transport_options = proc { |t|
-    t.adapter :test, IATT::Testing::TraceTracker.tracker
+  c.tracing.test_mode.enabled = true 
+  c.tracing.test_mode.writer_options = {
+    transport: InstrumentAllTheThings::Testing::TraceTracker.tracker
   }
 end
 

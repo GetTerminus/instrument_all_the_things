@@ -3,9 +3,9 @@
 require 'instrument_all_the_things'
 require 'benchmark/ips'
 
-Datadog.configure do |c|
-  c.tracing.transport_options = proc { |t| t.adapter :test }
-end
+# Datadog.configure do |c|
+#   c.tracing.transport_options = proc { |t| t.adapter :test }
+# end
 
 class Instrumented
   include InstrumentAllTheThings
