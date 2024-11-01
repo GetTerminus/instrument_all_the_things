@@ -18,7 +18,7 @@ module InstrumentAllTheThings
     def logger
       return @logger if defined?(@logger)
 
-      @logger ||= if defined?(Rails)
+      @logger ||= if defined?(Rails) && Rails.respond_to?(:logger)
                     Rails.logger
                   elsif defined?(App) && App.respond_to?(:logger)
                     App.logger
